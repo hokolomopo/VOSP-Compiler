@@ -6,7 +6,7 @@ import java_cup.runtime.*;
  */
 %%
 
-%class TestLexer
+%class VSOPLexer
 %unicode
 %line
 %column

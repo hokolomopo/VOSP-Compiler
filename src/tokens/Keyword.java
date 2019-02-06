@@ -2,6 +2,8 @@ package tokens;
 
 public class Keyword {
     //TODO : HashMap to optimize
+
+    //TODO : Complete enum
     private enum Keywords{
         WHILE("while");
 
@@ -10,5 +12,15 @@ public class Keyword {
         Keywords(String value){
             this.value = value;
         }
+    }
+
+    private Keywords type;
+
+    public Keyword(Keywords type) {
+        this.type = type;
+    }
+
+    public Keywords getType() {
+        return type;
     }
 }
