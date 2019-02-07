@@ -1,16 +1,19 @@
 /* JFlex file for VSOP language */
-import tokens.*;
-
+import tokens.Token;
+import tokens.Token.Tokens;
+import java.util.HashMap;
 %%
 
 %class VSOPLexer
 %unicode
 %line
 %column
+%type Token
 
 %{
   StringBuffer string = new StringBuffer();
 
+      HashMap<String, Tokens> keywordsMap = Token.Tokens.getKeywordsHashMap();
 %}
 
 lowercaseLetter = [a-z]
@@ -28,7 +31,7 @@ cr = \\u000B // LINE TABULATION
 space = \\u0020 // SPACE
 Whitespace = space | tab | lf | ff | cr;
 
-Identifier = lowercaseLetter (letter | _)*
+Identifier = lowercaseLetter(letter|_)*
 
 DecIntegerLiteral = 0 | [1-9][0-9]*
 
@@ -38,10 +41,10 @@ DecIntegerLiteral = 0 | [1-9][0-9]*
 
 <YYINITIAL> {
   /* identifiers */
-  {Identifier}                   { return symbol(new Identifier()); }
+  {Identifier}                   { return new Token(Tokens.IDENTIFIER); }
 
   /* literals */
-  {DecIntegerLiteral}            { return symbol(new IntegerConstant()); }
+  {DecIntegerLiteral}            { return new Token(Tokens.INTEGER_CONSTANT); }
   \"                             { string.setLength(0); yybegin(STRING); }
 
   /* operators */
@@ -52,7 +55,7 @@ DecIntegerLiteral = 0 | [1-9][0-9]*
 
 <STRING> {
   \"                             { yybegin(YYINITIAL);
-                                   return new StringConstant(string.toString());}
+                                   return new Token(Tokens.STRING_CONSTANT, string.toString());}
   [^\n\r\"\\]+                   { string.append( yytext() ); }
   \\t                            { string.append('\t'); }
   \\n                            { string.append('\n'); }
