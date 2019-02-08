@@ -21,6 +21,7 @@ class VSOPLexer {
   /** lexical states */
   public static final int YYINITIAL = 0;
   public static final int STRING = 2;
+  public static final int COMMENT = 4;
 
   /**
    * ZZ_LEXSTATE[l] is the state in the DFA for the lexical state l
@@ -29,19 +30,17 @@ class VSOPLexer {
    * l is of the form l = 2*k, k a non negative integer
    */
   private static final int ZZ_LEXSTATE[] = { 
-     0,  0,  1, 1
+     0,  0,  1,  1,  2, 2
   };
 
   /** 
    * Translates characters to character classes
    */
   private static final String ZZ_CMAP_PACKED = 
-    "\12\0\1\24\2\0\1\24\24\0\1\23\15\0\1\11\1\12\1\12"+
-    "\6\12\1\12\1\0\1\17\5\0\1\0\1\0\1\0\3\0\5\0"+
-    "\1\7\16\0\1\0\1\14\2\0\1\22\1\0\1\5\1\15\1\4"+
-    "\1\0\1\2\1\13\1\0\1\0\1\0\2\0\1\16\1\0\1\25"+
-    "\1\20\1\1\1\0\1\3\1\6\1\10\1\0\1\0\1\21\3\0"+
-    "\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uff95\0";
+    "\11\0\1\5\1\6\1\0\1\5\1\7\22\0\1\5\1\0\1\12"+
+    "\7\0\1\13\4\0\1\11\1\3\1\4\10\4\1\0\1\10\5\0"+
+    "\6\2\24\2\1\0\1\14\2\0\1\2\1\0\6\1\7\1\1\16"+
+    "\3\1\1\17\1\1\1\15\6\1\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uff95\0";
 
   /** 
    * Translates characters to character classes
@@ -54,12 +53,12 @@ class VSOPLexer {
   private static final int [] ZZ_ACTION = zzUnpackAction();
 
   private static final String ZZ_ACTION_PACKED_0 =
-    "\2\0\4\1\2\2\2\1\1\3\1\4\1\5\1\6"+
-    "\3\0\1\7\1\0\1\10\1\11\1\12\1\13\16\0"+
-    "\1\14";
+    "\3\0\1\1\1\2\2\3\2\4\1\1\1\5\1\6"+
+    "\1\7\1\10\2\4\1\0\1\4\1\11\1\12\1\13"+
+    "\1\14\1\15\1\16\1\17";
 
   private static int [] zzUnpackAction() {
-    int [] result = new int[38];
+    int [] result = new int[25];
     int offset = 0;
     offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
     return result;
@@ -84,14 +83,13 @@ class VSOPLexer {
   private static final int [] ZZ_ROWMAP = zzUnpackRowMap();
 
   private static final String ZZ_ROWMAP_PACKED_0 =
-    "\0\0\0\26\0\54\0\102\0\130\0\156\0\54\0\204"+
-    "\0\232\0\260\0\54\0\306\0\334\0\54\0\362\0\u0108"+
-    "\0\u011e\0\54\0\u0134\0\54\0\54\0\54\0\54\0\u014a"+
-    "\0\u0160\0\u0176\0\u018c\0\u01a2\0\u01b8\0\u01ce\0\u01e4\0\u01fa"+
-    "\0\u0210\0\u0226\0\u023c\0\u0252\0\u0268\0\u027e";
+    "\0\0\0\20\0\40\0\60\0\100\0\60\0\120\0\60"+
+    "\0\140\0\160\0\60\0\200\0\60\0\220\0\240\0\260"+
+    "\0\300\0\320\0\60\0\60\0\60\0\60\0\60\0\60"+
+    "\0\60";
 
   private static int [] zzUnpackRowMap() {
-    int [] result = new int[38];
+    int [] result = new int[25];
     int offset = 0;
     offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
     return result;
@@ -114,21 +112,17 @@ class VSOPLexer {
   private static final int [] ZZ_TRANS = zzUnpackTrans();
 
   private static final String ZZ_TRANS_PACKED_0 =
-    "\4\3\1\4\1\3\1\5\1\3\1\6\1\7\1\10"+
-    "\1\11\2\3\1\12\4\3\1\13\2\3\14\14\1\15"+
-    "\6\14\1\16\1\3\1\14\31\0\1\17\23\0\1\20"+
-    "\31\0\1\21\31\0\2\10\26\0\1\22\25\0\1\22"+
-    "\4\0\1\23\5\0\14\14\1\0\6\14\2\0\1\14"+
-    "\3\0\1\24\4\0\1\25\12\0\1\26\1\0\1\27"+
-    "\17\0\1\22\13\0\1\30\35\0\1\22\31\0\1\31"+
-    "\10\0\1\32\23\0\1\33\25\0\1\22\26\0\1\34"+
-    "\26\0\1\35\26\0\1\36\26\0\1\37\21\0\1\40"+
-    "\32\0\1\41\20\0\1\42\33\0\1\43\25\0\1\44"+
-    "\17\0\1\45\26\0\1\46\40\0\1\41\3\0\1\46"+
-    "\3\0";
+    "\1\4\1\5\1\4\1\6\1\7\2\10\1\11\1\4"+
+    "\1\12\1\13\2\4\3\5\6\14\2\4\2\14\1\15"+
+    "\1\14\1\16\3\14\11\10\1\17\1\10\1\20\4\10"+
+    "\21\0\2\5\12\0\3\5\3\0\2\7\21\0\1\21"+
+    "\22\0\1\22\1\0\1\23\4\0\6\14\2\0\2\14"+
+    "\1\0\1\14\1\0\3\14\12\0\1\24\2\0\1\25"+
+    "\1\26\1\27\13\0\1\30\15\0\1\31\16\0\1\10"+
+    "\7\0\6\22\1\10\1\11\10\22";
 
   private static int [] zzUnpackTrans() {
-    int [] result = new int[660];
+    int [] result = new int[224];
     int offset = 0;
     offset = zzUnpackTrans(ZZ_TRANS_PACKED_0, offset, result);
     return result;
@@ -166,11 +160,11 @@ class VSOPLexer {
   private static final int [] ZZ_ATTRIBUTE = zzUnpackAttribute();
 
   private static final String ZZ_ATTRIBUTE_PACKED_0 =
-    "\2\0\1\11\3\1\1\11\3\1\1\11\2\1\1\11"+
-    "\3\0\1\11\1\0\4\11\16\0\1\1";
+    "\3\0\1\11\1\1\1\11\1\1\1\11\2\1\1\11"+
+    "\1\1\1\11\3\1\1\0\1\1\7\11";
 
   private static int [] zzUnpackAttribute() {
-    int [] result = new int[38];
+    int [] result = new int[25];
     int offset = 0;
     offset = zzUnpackAttribute(ZZ_ATTRIBUTE_PACKED_0, offset, result);
     return result;
@@ -248,7 +242,8 @@ class VSOPLexer {
   /* user code: */
   StringBuffer string = new StringBuffer();
 
-      HashMap<String, Tokens> keywordsMap = Token.Tokens.getKeywordsHashMap();
+  HashMap<String, Tokens> keywordsMap = Token.Tokens.getKeywordsHashMap();
+  int commentLevel = 0;
 
 
   /**
@@ -271,7 +266,7 @@ class VSOPLexer {
     char [] map = new char[0x110000];
     int i = 0;  /* index in packed string  */
     int j = 0;  /* index in unpacked array */
-    while (i < 134) {
+    while (i < 104) {
       int  count = packed.charAt(i++);
       char value = packed.charAt(i++);
       do map[j++] = value; while (--count > 0);
@@ -617,7 +612,14 @@ class VSOPLexer {
 
       if (zzInput == YYEOF && zzStartRead == zzCurrentPos) {
         zzAtEOF = true;
+            switch (zzLexicalState) {
+            case COMMENT: {
+              throw new Error("EOF in comment");
+            }  // fall though
+            case 26: break;
+            default:
         return null;
+        }
       }
       else {
         switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
@@ -626,63 +628,81 @@ class VSOPLexer {
                                                     yytext()+">");
             } 
             // fall through
-          case 13: break;
-          case 2: 
-            { return new Token(Tokens.INTEGER_CONSTANT);
-            } 
-            // fall through
-          case 14: break;
-          case 3: 
-            { string.setLength(0); yybegin(STRING);
-            } 
-            // fall through
-          case 15: break;
-          case 4: 
-            { string.append( yytext() );
-            } 
-            // fall through
           case 16: break;
-          case 5: 
-            { string.append('\\');
+          case 2: 
+            { Tokens t = keywordsMap.get(yytext());
+                                    if(t == null) return new Token(Tokens.IDENTIFIER);
+                                    return new Token(t);
             } 
             // fall through
           case 17: break;
-          case 6: 
-            { yybegin(YYINITIAL);
-                                   return new Token(Tokens.STRING_CONSTANT, string.toString());
+          case 3: 
+            { return new Token(Tokens.INTEGER_CONSTANT);
             } 
             // fall through
           case 18: break;
-          case 7: 
+          case 4: 
             { /* ignore */
             } 
             // fall through
           case 19: break;
-          case 8: 
-            { string.append('\r');
+          case 5: 
+            { string.setLength(0); yybegin(STRING);
             } 
             // fall through
           case 20: break;
-          case 9: 
-            { string.append('\t');
+          case 6: 
+            { string.append( yytext() );
             } 
             // fall through
           case 21: break;
+          case 7: 
+            { yybegin(YYINITIAL);
+                                   return new Token(Tokens.STRING_CONSTANT, string.toString());
+            } 
+            // fall through
+          case 22: break;
+          case 8: 
+            { string.append('\\');
+            } 
+            // fall through
+          case 23: break;
+          case 9: 
+            { commentLevel = 1; yybegin(COMMENT);
+            } 
+            // fall through
+          case 24: break;
           case 10: 
             { string.append('\"');
             } 
             // fall through
-          case 22: break;
+          case 25: break;
           case 11: 
+            { string.append('\t');
+            } 
+            // fall through
+          case 26: break;
+          case 12: 
             { string.append('\n');
             } 
             // fall through
-          case 23: break;
-          case 12: 
-            { return new Token(Tokens.IDENTIFIER);
+          case 27: break;
+          case 13: 
+            { string.append('\r');
             } 
             // fall through
-          case 24: break;
+          case 28: break;
+          case 14: 
+            { commentLevel++;
+            } 
+            // fall through
+          case 29: break;
+          case 15: 
+            { if(commentLevel == 1) yybegin(YYINITIAL);
+                                        else commentLevel--;
+            } 
+            // fall through
+          case 30: break;
           default:
             zzScanError(ZZ_NO_MATCH);
         }

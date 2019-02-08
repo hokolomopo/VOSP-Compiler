@@ -1,15 +1,19 @@
 /* JFlex example: partial Java language lexer specification */
 import java_cup.runtime.*;
+import tokens.Token;
+import tokens.Token.Tokens;
+import java.util.HashMap;
 
 /**
  * This class is a simple example lexer.
  */
 %%
 
-%class TestLexer
+%class VSOPLexer
 %unicode
 %line
 %column
+%type Token
 
 %{
   StringBuffer string = new StringBuffer();
@@ -44,34 +48,33 @@ DecIntegerLiteral = 0 | [1-9][0-9]*
 %%
 
 /* keywords */
-<YYINITIAL> "abstract"           { return symbol(sym.ABSTRACT); }
-<YYINITIAL> "boolean"            { return symbol(sym.BOOLEAN); }
-<YYINITIAL> "break"              { return symbol(sym.BREAK); }
+//<YYINITIAL> "abstract"           { return new Token(Tokens.PLUS);}
+//<YYINITIAL> "boolean"            { return new Token(Tokens.PLUS);}
+//<YYINITIAL> "break"              { return new Token(Tokens.PLUS); }
 
 <YYINITIAL> {
-  /* identifiers */ 
-  {Identifier}                   { return symbol(sym.IDENTIFIER); }
- 
+  /* identifiers */
+  {Identifier}                   {System.out.println(yytext());return new Token(Tokens.IDENTIFIER); }
+
   /* literals */
-  {DecIntegerLiteral}            { return symbol(sym.INTEGER_LITERAL); }
+  {DecIntegerLiteral}            { return new Token(Tokens.INTEGER_CONSTANT); }
   \"                             { string.setLength(0); yybegin(STRING); }
 
   /* operators */
-  "="                            { return symbol(sym.EQ); }
-  "=="                           { return symbol(sym.EQEQ); }
-  "+"                            { return symbol(sym.PLUS); }
-
+//  "="                            { return new Token(Tokens.) }
+//  "=="                           { return symbol(sym.EQEQ); }
+//  "+"                            { return symbol(sym.PLUS); }
+//
   /* comments */
   {Comment}                      { /* ignore */ }
- 
+
   /* whitespace */
   {WhiteSpace}                   { /* ignore */ }
 }
 
 <STRING> {
   \"                             { yybegin(YYINITIAL); 
-                                   return symbol(sym.STRING_LITERAL, 
-                                   string.toString()); }
+                                   return new Token(Tokens.STRING_CONSTANT, string.toString()); }
   [^\n\r\"\\]+                   { string.append( yytext() ); }
   \\t                            { string.append('\t'); }
   \\n                            { string.append('\n'); }
