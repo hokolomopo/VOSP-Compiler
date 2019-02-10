@@ -7,14 +7,36 @@ import static tokens.TokenType.*;
 public class Token{
     public enum Tokens {
         //TODO : Complete enum
+        //Keywords
+        AND("and", KEYWORD),
+        BOOL("bool", KEYWORD),
+        CLASS("class", KEYWORD),
+        DO("do", KEYWORD),
+        ELSE("else", KEYWORD),
+        EXTENDS("extends", KEYWORD),
+        FALSE("false", KEYWORD),
+        IF("if", KEYWORD),
+        IN("in", KEYWORD),
+        INT32("int32", KEYWORD),
+        ISNULL("isnull", KEYWORD),
+        LET("let", KEYWORD),
+        NEW("new", KEYWORD),
+        NOT("not", KEYWORD),
+        STRING("string", KEYWORD),
+        THEN("then", KEYWORD),
+        TRUE("true", KEYWORD),
+        UNIT("unit", KEYWORD),
         WHILE("while", KEYWORD),
+
 
         OPEN_BRACKET("(", SYMBOL),
 
         PLUS("+", OPERATOR),
 
-        INTEGER_CONSTANT(null, CONSTANT),//TODO : Mettre la regex comme string, utile?
-        STRING_CONSTANT(null, CONSTANT),
+        INT_LITERAL(null, LITERAL),//TODO : Mettre la regex comme string, utile?
+        HEXA_LITERAL(null, LITERAL),
+        BIN_LITERAL(null, LITERAL),
+        STRING_LITERAL(null, LITERAL),
         IDENTIFIER(null, ID);
 
         private String stringValue;

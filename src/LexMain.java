@@ -15,7 +15,7 @@ public class LexMain {
             Token t = lexer.yylex();
             if(t == null)
                 break;
-
+        //TODO : counting lines/columns : useful to keep it ?(ajouter attributs au Token), ou juste le faire ici à l'arrache
             System.out.println(t.getTokenType() + "  " + t.getValue());
         }
     }

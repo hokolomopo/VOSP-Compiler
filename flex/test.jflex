@@ -2,7 +2,6 @@
 import java_cup.runtime.*;
 import tokens.Token;
 import tokens.Token.Tokens;
-import java.util.HashMap;
 
 /**
  * This class is a simple example lexer.
@@ -57,7 +56,7 @@ DecIntegerLiteral = 0 | [1-9][0-9]*
   {Identifier}                   {System.out.println(yytext());return new Token(Tokens.IDENTIFIER); }
 
   /* literals */
-  {DecIntegerLiteral}            { return new Token(Tokens.INTEGER_CONSTANT); }
+  {DecIntegerLiteral}            { return new Token(Tokens.INT_LITERAL); }
   \"                             { string.setLength(0); yybegin(STRING); }
 
   /* operators */
@@ -74,7 +73,7 @@ DecIntegerLiteral = 0 | [1-9][0-9]*
 
 <STRING> {
   \"                             { yybegin(YYINITIAL); 
-                                   return new Token(Tokens.STRING_CONSTANT, string.toString()); }
+                                     return new Token(Tokens.STRING_LITERAL, string.toString()); }
   [^\n\r\"\\]+                   { string.append( yytext() ); }
   \\t                            { string.append('\t'); }
   \\n                            { string.append('\n'); }

@@ -443,7 +443,7 @@ Lexical rules</code></pre>
 <li><p><code>%abstract</code></p>
 <p>Makes the generated class abstract.</p></li>
 <li><p><code>%apiprivate</code></p>
-<p>Makes all generated methods and fields of the class private. Exceptions are the constructor, user code in the specification, and, if <code>%cup</code> is present, the method <code>next_token</code>. All occurrences of <code>public</code> (one space character before and after <code>public</code>) in the skeleton file are replaced by <code>private</code> (even if a user-specified skeleton is used). Access to the generated class is expected to be mediated by user class code (see next switch).</p></li>
+<p>Makes all generated methods and fields of the class private. exceptions are the constructor, user code in the specification, and, if <code>%cup</code> is present, the method <code>next_token</code>. All occurrences of <code>public</code> (one space character before and after <code>public</code>) in the skeleton file are replaced by <code>private</code> (even if a user-specified skeleton is used). Access to the generated class is expected to be mediated by user class code (see next switch).</p></li>
 <li><p><code>%{</code><br /><code>...</code><br /><code>%}</code></p>
 <p>The code enclosed in <code>%{</code> and <code>%}</code> is copied verbatim into the generated class. Here you can define your own member variables and functions in the generated scanner. Like all options, both <code>%{</code> and <code>%}</code> must start a line in the specification. If more than one class code directive <code>%{...%}</code> is present, the code is concatenated in order of appearance in the specification.</p></li>
 <li><p><code>%init{</code><br /><code>...</code><br /><code>%init}</code></p>

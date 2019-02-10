@@ -133,7 +133,7 @@
   for some specifications. This affects the generation process only,
   generated scanners remain the same.
 - new %apiprivate switch (feature request #141/1) that causes all 
-  generated and skeleton methods to be made private. Exceptions to this
+  generated and skeleton methods to be made private. exceptions to this
   are user defined functions and the constructor. Thanks to Stephen 
   Ostermiller for the suggestion.
 - allow user defined javadoc class comments (feature request #141/2)
