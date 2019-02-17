@@ -29,7 +29,7 @@ public class Token{
 
         //Operators
         LBRACE("{", OPERATOR),
-        RBRACE("{", OPERATOR),
+        RBRACE("}", OPERATOR),
         LPAR("(", OPERATOR),
         RPAR(")", OPERATOR),
         COLON(":", OPERATOR),
