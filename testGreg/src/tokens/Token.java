@@ -27,7 +27,6 @@ public class Token{
         UNIT("unit", KEYWORD),
         WHILE("while", KEYWORD),
 
-        //Operators
         LBRACE("{", OPERATOR),
         RBRACE("{", OPERATOR),
         LPAR("(", OPERATOR),
@@ -46,7 +45,6 @@ public class Token{
         LOWER_EQUAL("<=", OPERATOR),
         ASSIGN("<-", OPERATOR),
 
-        //Others
         INT_LITERAL(null, LITERAL),//TODO : Mettre la regex comme string, utile?
         HEXA_LITERAL(null, LITERAL),
         BIN_LITERAL(null, LITERAL),

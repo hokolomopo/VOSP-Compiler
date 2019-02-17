@@ -1,0 +1,13 @@
+// this is an (* example
+
+commentaire mono-ligne valide ou erreur car (* terminé par EOF ? (commentaires imbriqués)
+
+-------------------------------------------------------------------------------------------------------------------------------------
+
+while IDENTIFIER "STRING"
+
+colonne du string = colonne de " ou colonne de S ? 18 ou 19 ?
+
+-------------------------------------------------------------------------------------------------------------------------------------
+
+Doit on afficher les commentaires ?
