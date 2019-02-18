@@ -1,5 +1,6 @@
 /* JFlex file for VSOP language */
-import exceptions.LexerError;import tokens.Token;
+import exceptions.LexerError;
+import tokens.Token;
 import tokens.Token.Tokens;
 import java.util.HashMap;
 
@@ -99,7 +100,7 @@ escapedChar = \\b | \\t | \\n | \\r | \\\" | \\\\ | \\x
                                      return new Token(Tokens.STRING_LITERAL, string.toString(), line, column);}
   {forbiddenInString}            {throw new LexerError("Illegal symbol < " + yytext() + ">  in string", yyline, yycolumn);}
   <<EOF>>                        {throw new LexerError("EOF in string", line, column);}
-  \\{lineTerminator}             { /* ignore */ }
+  \\{lineTerminator}(" " | \t)*  { /* ignore */ }
   {escapedChar}                  { string.append( yytext() ); } //TODO maybe modifier l'action pour écrire des \x0a etc
   \\[^]                          {throw new LexerError("Invalid escape sequence" + yytext(), yyline, yycolumn);}
   [^]                            { string.append( yytext() ); }
