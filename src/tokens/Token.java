@@ -48,8 +48,6 @@ public class Token{
 
         //Others
         INT_LITERAL(null, LITERAL),//TODO : Mettre la regex comme string, utile?
-        HEXA_LITERAL(null, LITERAL),
-        BIN_LITERAL(null, LITERAL),
         STRING_LITERAL(null, LITERAL),
         IDENTIFIER(null, ID),
         TYPE_IDENTIFIER(null, ID);
@@ -94,19 +92,8 @@ public class Token{
     }
     
     public Token(Tokens tokenType, String value, int line, int column) {
-    	if (tokenType == Tokens.HEXA_LITERAL) {
-        	this.value = "," + Integer.parseInt(value, 16);
-        	this.tokenType = Tokens.INT_LITERAL;
-        } else if (tokenType == Tokens.BIN_LITERAL) {
-        	this.value = "," + Integer.parseInt(value, 2);
-        	this.tokenType = Tokens.INT_LITERAL;
-        } else {
-        	this.tokenType = tokenType;
-        	this.value = "," + value;
-        }
-    	
-    	this.line = line;
-    	this.column = column;
+    	this(tokenType, line, column);
+    	this.value = "," + value;
     }
 
     public Tokens getTokenType() {

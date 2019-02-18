@@ -118,7 +118,7 @@ LineComment = "//" {InputCharacter}* {LineTerminator}?
   [g-zG-Z] | _                     {throw new LexerError("Illegal symbol in hexadecimal number");}
   [^]                              {yybegin(YYINITIAL);
                                     yypushback(yylength());
-                                    return new Token(Tokens.HEXA_LITERAL, string.toString(), line, column);}
+                                    return new Token(Tokens.INT_LITERAL, String.valueOf(Integer.parseInt(string.toString(), 16)), line, column);}
 }
 
 <BIN_LITERAL>{
@@ -126,7 +126,7 @@ LineComment = "//" {InputCharacter}* {LineTerminator}?
   [2-9] | {letter} | _             {throw new LexerError("Illegal symbol in binary number" + yytext());}
   [^]                              {yybegin(YYINITIAL);
                                     yypushback(yylength());
-                                    return new Token(Tokens.BIN_LITERAL, string.toString(), line, column);}
+                                    return new Token(Tokens.INT_LITERAL, String.valueOf(Integer.parseInt(string.toString(), 2)), line, column);}
 }
 
 <INT_LITERAL>{

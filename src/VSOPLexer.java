@@ -698,7 +698,7 @@ class VSOPLexer {
           case 10: 
             { yybegin(YYINITIAL);
                                     yypushback(yylength());
-                                    return new Token(Tokens.HEXA_LITERAL, string.toString(), line, column);
+                                    return new Token(Tokens.INT_LITERAL, String.valueOf(Integer.parseInt(string.toString(), 16)), line, column);
             } 
             // fall through
           case 35: break;
@@ -715,7 +715,7 @@ class VSOPLexer {
           case 13: 
             { yybegin(YYINITIAL);
                                     yypushback(yylength());
-                                    return new Token(Tokens.BIN_LITERAL, string.toString(), line, column);
+                                    return new Token(Tokens.INT_LITERAL, String.valueOf(Integer.parseInt(string.toString(), 2)), line, column);
             } 
             // fall through
           case 38: break;
