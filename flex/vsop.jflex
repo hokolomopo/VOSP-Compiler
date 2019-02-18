@@ -48,14 +48,17 @@ lf = \n // LINE FEED (LF)
 ff = \f // FORM FEED (FF)
 cr = \r // CARRIAGE RETURN
 space = " " // SPACE
-Whitespace = {space} | {tab} | {lf} | {ff} | {cr} | {cr}{lf};
-LineTerminator = {lf} | {cr} | {cr}{lf};
+Whitespace = {space} | {tab} | {lf} | {ff} | {cr} | {cr}{lf}
+lineTerminator = {lf} | {cr} | {cr}{lf}
 
 Identifier = {lowercaseLetter} ({letter} | _ | {digit})*
 typeIdentifier = {uppercaseLetter} ({letter} | _ | {digit})*
 
 InputCharacter = [^\r\n]
-LineComment = "//" {InputCharacter}* {LineTerminator}?
+LineComment = "//" {InputCharacter}* {lineTerminator}?
+
+forbiddenInString = "\0" | {lineTerminator}
+escapedChar = \\b | \\t | \\n | \\r | \\\" | \\\\ | \\x
 
 %state STRING
 %state COMMENT
@@ -91,17 +94,15 @@ LineComment = "//" {InputCharacter}* {LineTerminator}?
                                  return new Token(t, yyline, yycolumn);}
 }
 
-//TODO : faire la string correctement pour VSOP, j'ai juste copier coller un truc d'internet là
 <STRING> {
   \"                             { yybegin(YYINITIAL);
                                      return new Token(Tokens.STRING_LITERAL, string.toString(), line, column);}
-  [^\n\r\"\\]+                   { string.append( yytext() ); }
-  \\t                            { string.append('\t'); }
-  \\n                            { string.append('\n'); }
-
-  \\r                            { string.append('\r'); }
-  \\\"                           { string.append('\"'); }
-  \\                             { string.append('\\'); }
+  {forbiddenInString}            {throw new LexerError("Illegal symbol in string");}
+  <<EOF>>                        {throw new LexerError("EOF in string");}
+  \\{lineTerminator}             { /* ignore */ }
+  {escapedChar}                  { string.append( yytext() ); } //TODO maybe modifier l'action pour écrire des \x0a etc
+  \\[^]                          {throw new LexerError("Invalid escape sequence" + yytext());}
+  [^]                            { string.append( yytext() ); }
 }
 
 <COMMENT>{

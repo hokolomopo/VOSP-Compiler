@@ -39,11 +39,11 @@ class VSOPLexer {
    * Translates characters to character classes
    */
   private static final String ZZ_CMAP_PACKED = 
-    "\11\0\1\12\1\13\1\0\1\12\1\14\22\0\1\12\1\0\1\20"+
-    "\5\0\1\21\1\31\1\22\2\0\1\24\1\0\1\17\1\7\1\3"+
-    "\10\4\1\0\1\15\1\23\1\24\3\0\6\6\24\2\1\0\1\25"+
-    "\2\0\1\16\1\0\1\5\1\11\4\5\7\1\1\27\3\1\1\30"+
-    "\1\1\1\26\3\1\1\10\2\1\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uff95\0";
+    "\1\17\10\0\1\12\1\13\1\0\1\12\1\14\22\0\1\12\1\0"+
+    "\1\22\5\0\1\23\1\27\1\24\2\0\1\26\1\0\1\16\1\7"+
+    "\1\3\10\4\2\0\1\25\1\26\3\0\6\6\24\2\1\0\1\20"+
+    "\2\0\1\15\1\0\1\5\1\11\4\5\7\1\1\21\3\1\1\21"+
+    "\1\1\1\21\3\1\1\10\2\1\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uff95\0";
 
   /** 
    * Translates characters to character classes
@@ -57,12 +57,12 @@ class VSOPLexer {
 
   private static final String ZZ_ACTION_PACKED_0 =
     "\6\0\1\1\1\2\1\3\2\4\2\5\1\1\1\6"+
-    "\2\1\1\7\1\10\1\11\2\5\1\12\1\13\1\14"+
-    "\1\15\1\16\1\17\1\20\1\21\1\22\1\0\1\5"+
-    "\1\23\1\24\1\25\1\26\1\27\1\30\1\31";
+    "\2\1\1\7\2\10\1\7\1\11\2\5\1\12\1\13"+
+    "\1\14\1\15\1\16\1\17\1\20\1\21\1\22\1\5"+
+    "\1\23\1\24\1\25\1\26";
 
   private static int [] zzUnpackAction() {
-    int [] result = new int[40];
+    int [] result = new int[38];
     int offset = 0;
     offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
     return result;
@@ -87,14 +87,14 @@ class VSOPLexer {
   private static final int [] ZZ_ROWMAP = zzUnpackRowMap();
 
   private static final String ZZ_ROWMAP_PACKED_0 =
-    "\0\0\0\32\0\64\0\116\0\150\0\202\0\234\0\266"+
-    "\0\320\0\234\0\352\0\234\0\u0104\0\u011e\0\234\0\u0138"+
-    "\0\u0152\0\u016c\0\234\0\u0186\0\u01a0\0\u01ba\0\234\0\234"+
-    "\0\234\0\234\0\234\0\234\0\234\0\234\0\234\0\u01d4"+
-    "\0\u01ee\0\234\0\234\0\234\0\234\0\234\0\234\0\234";
+    "\0\0\0\30\0\60\0\110\0\140\0\170\0\220\0\250"+
+    "\0\300\0\220\0\330\0\220\0\360\0\u0108\0\220\0\u0120"+
+    "\0\u0138\0\220\0\220\0\u0150\0\u0168\0\220\0\u0180\0\u0198"+
+    "\0\220\0\220\0\220\0\220\0\220\0\220\0\220\0\220"+
+    "\0\220\0\u01b0\0\220\0\220\0\220\0\220";
 
   private static int [] zzUnpackRowMap() {
-    int [] result = new int[40];
+    int [] result = new int[38];
     int offset = 0;
     offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
     return result;
@@ -118,22 +118,22 @@ class VSOPLexer {
 
   private static final String ZZ_TRANS_PACKED_0 =
     "\1\7\1\10\1\11\2\12\1\10\1\11\1\13\2\10"+
-    "\2\14\1\15\2\7\1\16\1\17\1\20\1\7\1\21"+
-    "\2\7\3\10\1\7\13\22\2\0\3\22\1\23\4\22"+
-    "\1\24\4\22\21\14\1\25\1\26\7\14\1\27\2\30"+
-    "\5\31\1\30\1\31\4\27\1\30\7\27\3\30\1\27"+
-    "\1\32\2\33\1\31\3\33\1\31\2\33\4\32\1\33"+
-    "\7\32\3\33\1\32\1\34\2\35\2\31\2\35\1\31"+
-    "\2\35\4\34\1\35\7\34\3\35\1\34\33\0\11\10"+
-    "\4\0\1\10\7\0\3\10\2\0\11\11\4\0\1\11"+
-    "\7\0\3\11\11\0\1\36\1\37\33\0\1\40\35\0"+
-    "\1\41\34\0\1\42\33\0\1\7\5\0\13\22\2\0"+
-    "\3\22\1\0\4\22\1\0\4\22\20\0\1\43\5\0"+
-    "\1\44\1\45\1\46\23\0\1\47\40\0\1\50\15\0"+
-    "\1\14\14\0\13\41\1\14\1\15\15\41";
+    "\2\14\1\15\1\7\1\16\2\7\1\10\1\17\1\20"+
+    "\1\7\1\21\2\7\13\22\1\23\1\24\2\22\1\23"+
+    "\1\25\1\22\1\26\5\22\23\14\1\27\1\30\3\14"+
+    "\1\31\2\32\5\33\1\32\1\33\3\31\1\32\3\31"+
+    "\1\32\6\31\1\34\2\35\1\33\3\35\1\33\2\35"+
+    "\3\34\1\35\3\34\1\35\6\34\1\36\2\37\2\33"+
+    "\2\37\1\33\2\37\3\36\1\37\3\36\1\37\6\36"+
+    "\31\0\11\10\3\0\1\10\3\0\1\10\7\0\11\11"+
+    "\3\0\1\11\3\0\1\11\16\0\1\40\1\41\31\0"+
+    "\1\14\32\0\1\42\35\0\1\43\31\0\1\7\14\0"+
+    "\1\23\14\0\10\44\2\22\1\44\1\14\1\15\3\44"+
+    "\3\22\5\44\24\0\1\45\32\0\1\46\13\42\1\14"+
+    "\1\15\13\42";
 
   private static int [] zzUnpackTrans() {
-    int [] result = new int[520];
+    int [] result = new int[456];
     int offset = 0;
     offset = zzUnpackTrans(ZZ_TRANS_PACKED_0, offset, result);
     return result;
@@ -172,10 +172,10 @@ class VSOPLexer {
 
   private static final String ZZ_ATTRIBUTE_PACKED_0 =
     "\6\0\1\11\2\1\1\11\1\1\1\11\2\1\1\11"+
-    "\3\1\1\11\3\1\11\11\1\0\1\1\7\11";
+    "\2\1\2\11\2\1\1\11\2\1\11\11\1\1\4\11";
 
   private static int [] zzUnpackAttribute() {
-    int [] result = new int[40];
+    int [] result = new int[38];
     int offset = 0;
     offset = zzUnpackAttribute(ZZ_ATTRIBUTE_PACKED_0, offset, result);
     return result;
@@ -635,10 +635,14 @@ class VSOPLexer {
       if (zzInput == YYEOF && zzStartRead == zzCurrentPos) {
         zzAtEOF = true;
             switch (zzLexicalState) {
+            case STRING: {
+              throw new LexerError("EOF in string");
+            }  // fall though
+            case 39: break;
             case COMMENT: {
               throw new Error("EOF in comment");
             }  // fall though
-            case 41: break;
+            case 40: break;
             default:
         return null;
         }
@@ -651,137 +655,122 @@ class VSOPLexer {
                                  return new Token(t, yyline, yycolumn);
             } 
             // fall through
-          case 26: break;
+          case 23: break;
           case 2: 
             { Tokens t = keywordsMap.get(yytext());
                                     if(t == null) return new Token(Tokens.IDENTIFIER, yytext(), yyline, yycolumn);
                                     return new Token(t, yyline, yycolumn);
             } 
             // fall through
-          case 27: break;
+          case 24: break;
           case 3: 
             { return new Token(Tokens.TYPE_IDENTIFIER, yytext(), yyline, yycolumn);
             } 
             // fall through
-          case 28: break;
+          case 25: break;
           case 4: 
             { string.setLength(0); yybegin(INT_LITERAL); string.append(yytext()); line = yyline; column = yycolumn;
             } 
             // fall through
-          case 29: break;
+          case 26: break;
           case 5: 
             { /* ignore */
             } 
             // fall through
-          case 30: break;
+          case 27: break;
           case 6: 
             { string.setLength(0); yybegin(STRING); line = yyline; column = yycolumn;
             } 
             // fall through
-          case 31: break;
+          case 28: break;
           case 7: 
             { string.append( yytext() );
             } 
             // fall through
-          case 32: break;
+          case 29: break;
           case 8: 
+            { throw new LexerError("Illegal symbol in string");
+            } 
+            // fall through
+          case 30: break;
+          case 9: 
             { yybegin(YYINITIAL);
                                      return new Token(Tokens.STRING_LITERAL, string.toString(), line, column);
             } 
             // fall through
-          case 33: break;
-          case 9: 
-            { string.append('\\');
-            } 
-            // fall through
-          case 34: break;
+          case 31: break;
           case 10: 
             { yybegin(YYINITIAL);
                                     yypushback(yylength());
                                     return new Token(Tokens.INT_LITERAL, String.valueOf(Integer.parseInt(string.toString(), 16)), line, column);
             } 
             // fall through
-          case 35: break;
+          case 32: break;
           case 11: 
             { throw new LexerError("Illegal symbol in hexadecimal number");
             } 
             // fall through
-          case 36: break;
+          case 33: break;
           case 12: 
             { string.append(yytext());
             } 
             // fall through
-          case 37: break;
+          case 34: break;
           case 13: 
             { yybegin(YYINITIAL);
                                     yypushback(yylength());
                                     return new Token(Tokens.INT_LITERAL, String.valueOf(Integer.parseInt(string.toString(), 2)), line, column);
             } 
             // fall through
-          case 38: break;
+          case 35: break;
           case 14: 
             { throw new LexerError("Illegal symbol in binary number" + yytext());
             } 
             // fall through
-          case 39: break;
+          case 36: break;
           case 15: 
             { yybegin(YYINITIAL);
                                     yypushback(yylength());
                                     return new Token(Tokens.INT_LITERAL, string.toString(), line, column);
             } 
             // fall through
-          case 40: break;
+          case 37: break;
           case 16: 
             { throw new LexerError("Illegal symbol in decimal number");
             } 
             // fall through
-          case 41: break;
+          case 38: break;
           case 17: 
             { string.setLength(0); yybegin(HEXA_LITERAL); line = yyline; column = yycolumn;
             } 
             // fall through
-          case 42: break;
+          case 39: break;
           case 18: 
             { string.setLength(0); yybegin(BIN_LITERAL); line = yyline; column = yycolumn;
             } 
             // fall through
-          case 43: break;
+          case 40: break;
           case 19: 
             { commentLevel = 1; yybegin(COMMENT);
             } 
             // fall through
-          case 44: break;
+          case 41: break;
           case 20: 
-            { string.append('\"');
+            { throw new LexerError("Invalid escape sequence" + yytext());
             } 
             // fall through
-          case 45: break;
+          case 42: break;
           case 21: 
-            { string.append('\t');
-            } 
-            // fall through
-          case 46: break;
-          case 22: 
-            { string.append('\n');
-            } 
-            // fall through
-          case 47: break;
-          case 23: 
-            { string.append('\r');
-            } 
-            // fall through
-          case 48: break;
-          case 24: 
             { commentLevel++;
             } 
             // fall through
-          case 49: break;
-          case 25: 
+          case 43: break;
+          case 22: 
             { if(commentLevel == 1) yybegin(YYINITIAL);
                                         else commentLevel--;
             } 
             // fall through
-          case 50: break;
+          case 44: break;
           default:
             zzScanError(ZZ_NO_MATCH);
         }

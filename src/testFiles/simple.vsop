@@ -1,4 +1,6 @@
-while x_1 "Je suis un heros" 0x123af+0b01110<=69666
+while x_1 "Je suis un heros\n avec \b des \\ escaped \t \x23 sequences \
+en (* et les commentaires ça ma//rche?*) plusieurs lignes ;) \
+meme 3" 0x123af+0b01110<=69666
 (*(* *) while *) 1235456132654 error IdentifiantDe_type	//suivi d'un nouveau commentaire
 int32
 //yolo
