@@ -179,3 +179,4 @@ fabric.properties
 hs_err_pid*
 
 # End of https://www.gitignore.io/api/java,eclipse,intellij
+jflex-1.7.0/doc/._manual.pdf

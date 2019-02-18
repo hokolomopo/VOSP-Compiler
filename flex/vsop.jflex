@@ -86,37 +86,37 @@ escapedChar = \\b | \\t | \\n | \\r | \\\" | \\\\ | \\x
   {LineComment}                  { /* ignore */ }
 
 
-  "(*"                           { commentLevel = 1; yybegin(COMMENT);}
+  "(*"                           { commentLevel = 1; yybegin(COMMENT); line = yyline; column = yycolumn;}
 
   /* operators and error fallback */
   [^] | "<=" | "<-"              { Tokens t = operatorsMap.get(yytext());
-                                 if(t == null) throw new LexerError("Illegal character :" + yytext());
+                                 if(t == null) throw new LexerError("Illegal character :" + yytext(), yyline, yycolumn);
                                  return new Token(t, yyline, yycolumn);}
 }
 
 <STRING> {
   \"                             { yybegin(YYINITIAL);
                                      return new Token(Tokens.STRING_LITERAL, string.toString(), line, column);}
-  {forbiddenInString}            {throw new LexerError("Illegal symbol in string");}
-  <<EOF>>                        {throw new LexerError("EOF in string");}
+  {forbiddenInString}            {throw new LexerError("Illegal symbol < " + yytext() + ">  in string", yyline, yycolumn);}
+  <<EOF>>                        {throw new LexerError("EOF in string", line, column);}
   \\{lineTerminator}             { /* ignore */ }
   {escapedChar}                  { string.append( yytext() ); } //TODO maybe modifier l'action pour écrire des \x0a etc
-  \\[^]                          {throw new LexerError("Invalid escape sequence" + yytext());}
+  \\[^]                          {throw new LexerError("Invalid escape sequence" + yytext(), yyline, yycolumn);}
   [^]                            { string.append( yytext() ); }
 }
 
-<COMMENT>{
-  "(*"                             { commentLevel++; }
+<COMMENT>{//TODO error line in comment inside comment
+  "(*"                             { commentLevel++;}
   "*)"                             { if(commentLevel == 1) yybegin(YYINITIAL);
                                         else commentLevel--;}
-  <<EOF>> { throw new Error("EOF in comment"); }
+  <<EOF>>                          { throw new LexerError("EOF in comment", line, column); }
 
   [^]                              { /* ignore */ }
 }
 
 <HEXA_LITERAL>{
   {hexDigit}                       {string.append(yytext());}
-  [g-zG-Z] | _                     {throw new LexerError("Illegal symbol in hexadecimal number");}
+  [g-zG-Z] | _                     {throw new LexerError("Illegal symbol < " + yytext() + "> in hexadecimal number", line, column);}
   [^]                              {yybegin(YYINITIAL);
                                     yypushback(yylength());
                                     return new Token(Tokens.INT_LITERAL, String.valueOf(Integer.parseInt(string.toString(), 16)), line, column);}
@@ -124,7 +124,7 @@ escapedChar = \\b | \\t | \\n | \\r | \\\" | \\\\ | \\x
 
 <BIN_LITERAL>{
   {binDigit}                       {string.append(yytext());}
-  [2-9] | {letter} | _             {throw new LexerError("Illegal symbol in binary number" + yytext());}
+  [2-9] | {letter} | _             {throw new LexerError("Illegal symbol < " + yytext() + "> in binary number", line, column);}
   [^]                              {yybegin(YYINITIAL);
                                     yypushback(yylength());
                                     return new Token(Tokens.INT_LITERAL, String.valueOf(Integer.parseInt(string.toString(), 2)), line, column);}
@@ -132,7 +132,7 @@ escapedChar = \\b | \\t | \\n | \\r | \\\" | \\\\ | \\x
 
 <INT_LITERAL>{
   {digit}                           {string.append(yytext());}
-  {letter} | _                      {throw new LexerError("Illegal symbol in decimal number");}
+  {letter} | _                      {throw new LexerError("Illegal symbol < " + yytext() + "> in decimal number", line, column);}
   [^]                               {yybegin(YYINITIAL);
                                     yypushback(yylength());
                                     return new Token(Tokens.INT_LITERAL, string.toString(), line, column);}

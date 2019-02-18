@@ -28,36 +28,44 @@ public class Token{
         WHILE("while", KEYWORD),
 
         //Operators
-        LBRACE("{", OPERATOR),
-        RBRACE("}", OPERATOR),
-        LPAR("(", OPERATOR),
-        RPAR(")", OPERATOR),
-        COLON(":", OPERATOR),
-        SEMICOLON(";", OPERATOR),
-        COMMA(",", OPERATOR),
-        PLUS("+", OPERATOR),
-        MINUS("-", OPERATOR),
-        TIMES("*", OPERATOR),
-        DIV("/", OPERATOR),
-        POW("^", OPERATOR),
-        DOT(".", OPERATOR),
-        EQUAL("=", OPERATOR),
-        LOWER("<", OPERATOR),
-        LOWER_EQUAL("<=", OPERATOR),
-        ASSIGN("<-", OPERATOR),
+        LBRACE("{", SYMBOL, "lbrace"),
+        RBRACE("}", SYMBOL, "rbrace"),
+        LPAR("(", SYMBOL, "lpar"),
+        RPAR(")", SYMBOL, "rpar"),
+        COLON(":", SYMBOL, "colon"),
+        SEMICOLON(";", SYMBOL, "semicolon"),
+        COMMA(",", SYMBOL, "comma"),
+        PLUS("+", SYMBOL, "plus"),
+        MINUS("-", SYMBOL, "minus"),
+        TIMES("*", SYMBOL, "times"),
+        DIV("/", SYMBOL, "div"),
+        POW("^", SYMBOL, "pow"),
+        DOT(".", SYMBOL, "dot"),
+        EQUAL("=", SYMBOL, "equal"),
+        LOWER("<", SYMBOL, "lower"),
+        LOWER_EQUAL("<=", SYMBOL, "lower-equal"),
+        ASSIGN("<-", SYMBOL, "assign"),
 
         //Others
-        INT_LITERAL(null, LITERAL),//TODO : Mettre la regex comme string, utile?
-        STRING_LITERAL(null, LITERAL),
-        IDENTIFIER(null, ID),
-        TYPE_IDENTIFIER(null, ID);
+        INT_LITERAL(null, LITERAL, "integer-literal"),
+        STRING_LITERAL(null, LITERAL, "string-literal"),
+        IDENTIFIER(null, ID, "object-identifier"),
+        TYPE_IDENTIFIER(null, ID, "type-identifier");
 
         private String stringValue;
         private TokenType tokenType;
+        private String name;
 
         Tokens(String stringValue, TokenType tokenType) {
             this.stringValue = stringValue;
             this.tokenType = tokenType;
+            this.name = stringValue;
+        }
+
+        Tokens(String stringValue, TokenType tokenType, String name) {
+            this.stringValue = stringValue;
+            this.tokenType = tokenType;
+            this.name = name;
         }
 
         public static HashMap<String, Tokens> getKeywordsHashMap(){
@@ -73,9 +81,13 @@ public class Token{
             HashMap<String, Tokens> map = new HashMap<>();
 
             for(Tokens t : Tokens.values())
-                if(t.tokenType == OPERATOR)
+                if(t.tokenType == SYMBOL)
                     map.put(t.stringValue, t);
             return map;
+        }
+
+        public String getName() {
+            return name;
         }
     }
 
@@ -86,7 +98,6 @@ public class Token{
     
     public Token(Tokens tokenType, int line, int column) {
     	this.tokenType = tokenType;
-        this.value = "";
     	this.line = line;
     	this.column = column;
     }
