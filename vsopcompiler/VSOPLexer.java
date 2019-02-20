@@ -2,9 +2,9 @@
 
 /* JFlex file for VSOP language */
 import exceptions.LexerError;
-import tokens.Token;
-import tokens.Token.Tokens;
 import java.util.HashMap;
+import tokens.Token.Tokens;
+import tokens.Token;
 
 /**
  * This class is a lexer for the VSOP language.
@@ -261,14 +261,6 @@ class VSOPLexer {
   int commentLevel = 0;
   int line;
   int column;
-
-  int getLineNumber() {
-    return yyline + 1;
-  }
-
-  int getColumnNumber() {
-    return yycolumn + 1;
-  }
 
 
   /**
@@ -654,7 +646,7 @@ class VSOPLexer {
         switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
           case 1: 
             { Tokens t = operatorsMap.get(yytext());
-                                 if(t == null) throw new LexerError("Illegal character :" + yytext(), yyline, yycolumn);
+                                 if(t == null) throw new LexerError("Illegal character : " + yytext(), yyline, yycolumn);
                                  return new Token(t, yyline, yycolumn);
             } 
             // fall through
@@ -682,7 +674,7 @@ class VSOPLexer {
             // fall through
           case 27: break;
           case 6: 
-            { string.setLength(0); yybegin(STRING); line = yyline; column = yycolumn;
+            { string.setLength(0); yybegin(STRING); line = yyline; column = yycolumn; string.append("\"");
             } 
             // fall through
           case 28: break;
@@ -697,7 +689,7 @@ class VSOPLexer {
             // fall through
           case 30: break;
           case 9: 
-            { yybegin(YYINITIAL);
+            { yybegin(YYINITIAL); string.append("\"");
                                      return new Token(Tokens.STRING_LITERAL, string.toString(), line, column);
             } 
             // fall through
@@ -759,7 +751,7 @@ class VSOPLexer {
             // fall through
           case 41: break;
           case 20: 
-            { throw new LexerError("Invalid escape sequence" + yytext(), yyline, yycolumn);
+            { throw new LexerError("Invalid escape sequence: " + yytext(), yyline, yycolumn);
             } 
             // fall through
           case 42: break;

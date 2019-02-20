@@ -2,17 +2,35 @@
 
 commentaire mono-ligne valide ou erreur car (* terminé par EOF ? (commentaires imbriqués)
 
+à test avec la plateforme
+
 -------------------------------------------------------------------------------------------------------------------------------------
 
-while IDENTIFIER "STRING"
+dans l'exemple on a 2,5 comme position du début du keyword string, mais si on utilise des \t, ils sont comptés comme un seul caractère
+et ça fait donc 2,2 : problème ?
 
-colonne du string = colonne de " ou colonne de S ? 18 ou 19 ?
+à test avec la plateforme
 
 -------------------------------------------------------------------------------------------------------------------------------------
 
 Doit on afficher les commentaires ?
 
+à test avec la plateforme
+
 -------------------------------------------------------------------------------------------------------------------------------------
 
 Strings : line feed = lineTerminator ou juste \n ?
 Et faut-il ignorer (comme dans le manuel) ou afficher les \n en \x0a etc?
+
+Afficher
+
+-------------------------------------------------------------------------------------------------------------------------------------
+
+Gestion des erreurs : "will be prefixed" => peut-on rajouter quelque chose de plus explicite à la suite ?
+		      \x+*/ renvoie une erreur ? Ou seulement \xghijklmnopqrstuvxyz
+
+Oui
+
+-------------------------------------------------------------------------------------------------------------------------------------
+
+Comment créer un exécutable en java ?

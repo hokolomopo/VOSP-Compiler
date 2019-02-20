@@ -1,8 +1,8 @@
 /* JFlex file for VSOP language */
 import exceptions.LexerError;
-import tokens.Token;
-import tokens.Token.Tokens;
 import java.util.HashMap;
+import tokens.Token.Tokens;
+import tokens.Token;
 
 /**
  * This class is a lexer for the VSOP language.
@@ -15,6 +15,7 @@ import java.util.HashMap;
 %column
 %type Token
 
+
 %{
   StringBuffer string = new StringBuffer();
 
@@ -23,14 +24,6 @@ import java.util.HashMap;
   int commentLevel = 0;
   int line;
   int column;
-
-  int getLineNumber() {
-    return yyline + 1;
-  }
-
-  int getColumnNumber() {
-    return yycolumn + 1;
-  }
 %}
 
 lowercaseLetter = [a-z]
@@ -49,14 +42,14 @@ lf = \n // LINE FEED (LF)
 ff = \f // FORM FEED (FF)
 cr = \r // CARRIAGE RETURN
 space = " " // SPACE
-Whitespace = {space} | {tab} | {lf} | {ff} | {cr} | {cr}{lf}
+whitespace = {space} | {tab} | {lf} | {ff} | {cr} | {cr}{lf}
 lineTerminator = {lf} | {cr} | {cr}{lf}
 
-Identifier = {lowercaseLetter} ({letter} | _ | {digit})*
+identifier = {lowercaseLetter} ({letter} | _ | {digit})*
 typeIdentifier = {uppercaseLetter} ({letter} | _ | {digit})*
 
-InputCharacter = [^\r\n]
-LineComment = "//" {InputCharacter}* {lineTerminator}?
+inputCharacter = [^\r\n]
+lineComment = "//" {inputCharacter}* {lineTerminator}?
 
 forbiddenInString = "\0" | {lineTerminator}
 escapedChar = \\b | \\t | \\n | \\r | \\\" | \\\\ | \\x
@@ -71,38 +64,37 @@ escapedChar = \\b | \\t | \\n | \\r | \\\" | \\\\ | \\x
 
 <YYINITIAL> {
   /* identifiers */
-  {Identifier}                   { Tokens t = keywordsMap.get(yytext());
+  {identifier}                   { Tokens t = keywordsMap.get(yytext());
                                     if(t == null) return new Token(Tokens.IDENTIFIER, yytext(), yyline, yycolumn);
                                     return new Token(t, yyline, yycolumn);}
   {typeIdentifier}               { return new Token(Tokens.TYPE_IDENTIFIER, yytext(), yyline, yycolumn); }
 
   /* literals */
-  \"                             { string.setLength(0); yybegin(STRING); line = yyline; column = yycolumn; }
+  \"                             { string.setLength(0); yybegin(STRING); line = yyline; column = yycolumn; string.append("\""); }
   {digit}                        { string.setLength(0); yybegin(INT_LITERAL); string.append(yytext()); line = yyline; column = yycolumn; }
   {hexaPrefix}                   { string.setLength(0); yybegin(HEXA_LITERAL); line = yyline; column = yycolumn; }
   {binaryPrefix}                 { string.setLength(0); yybegin(BIN_LITERAL); line = yyline; column = yycolumn; }
 
   /* whitespace */
-  {Whitespace}                   { /* ignore */ }
-  {LineComment}                  { /* ignore */ }
-
+  {whitespace}                   { /* ignore */ }
+  {lineComment}                  { /* ignore */ }
 
   "(*"                           { commentLevel = 1; yybegin(COMMENT); line = yyline; column = yycolumn;}
 
   /* operators and error fallback */
   [^] | "<=" | "<-"              { Tokens t = operatorsMap.get(yytext());
-                                 if(t == null) throw new LexerError("Illegal character :" + yytext(), yyline, yycolumn);
+                                 if(t == null) throw new LexerError("Illegal character : " + yytext(), yyline, yycolumn);
                                  return new Token(t, yyline, yycolumn);}
 }
 
 <STRING> {
-  \"                             { yybegin(YYINITIAL);
+  \"                             { yybegin(YYINITIAL); string.append("\"");
                                      return new Token(Tokens.STRING_LITERAL, string.toString(), line, column);}
   {forbiddenInString}            {throw new LexerError("Illegal symbol < " + yytext() + ">  in string", yyline, yycolumn);}
   <<EOF>>                        {throw new LexerError("EOF in string", line, column);}
   \\{lineTerminator}(" " | \t)*  { /* ignore */ }
-  {escapedChar}                  { string.append( yytext() ); } //TODO maybe modifier l'action pour écrire des \x0a etc
-  \\[^]                          {throw new LexerError("Invalid escape sequence" + yytext(), yyline, yycolumn);}
+  {escapedChar}                  { string.append( yytext() ); } //TODO modifier l'action pour écrire des \x0a etc
+  \\[^]                          {throw new LexerError("Invalid escape sequence: " + yytext(), yyline, yycolumn);}
   [^]                            { string.append( yytext() ); }
 }
 
@@ -111,7 +103,6 @@ escapedChar = \\b | \\t | \\n | \\r | \\\" | \\\\ | \\x
   "*)"                             { if(commentLevel == 1) yybegin(YYINITIAL);
                                         else commentLevel--;}
   <<EOF>>                          { throw new LexerError("EOF in comment", line, column); }
-
   [^]                              { /* ignore */ }
 }
 

@@ -4,14 +4,14 @@ import tokens.Token;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class LexMain {
+public class lexerMain {
 
     public static void main(String[] args) throws IOException {
-    	
-    	if (args.length < 1) 
-    		throw new IllegalArgumentException("Missing argument : path to the file to parse");
 
-    	String fileName = args[0];
+    	if (args.length < 2)
+    		throw new IllegalArgumentException("Arguments : \n1) -lex for lexer usage \n2) path to the file to parse.");
+
+    	String fileName = args[1];
         FileReader reader = new FileReader(fileName);
 
         VSOPLexer lexer = new VSOPLexer(reader);
