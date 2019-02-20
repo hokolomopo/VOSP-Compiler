@@ -59,6 +59,7 @@ escapedChar = \\b | \\t | \\n | \\r | \\\" | \\\\ | \\x
 %state HEXA_LITERAL
 %state BIN_LITERAL
 %state INT_LITERAL
+%state OVER
 
 %%
 
@@ -112,6 +113,8 @@ escapedChar = \\b | \\t | \\n | \\r | \\\" | \\\\ | \\x
   [^]                              {yybegin(YYINITIAL);
                                     yypushback(yylength());
                                     return new Token(Tokens.INT_LITERAL, String.valueOf(Integer.parseInt(string.toString(), 16)), line, column);}
+  <<EOF>>                          { yybegin(OVER); 
+                                     return new Token(Tokens.INT_LITERAL, String.valueOf(Integer.parseInt(string.toString(), 16)), line, column); }
 }
 
 <BIN_LITERAL>{
@@ -120,6 +123,8 @@ escapedChar = \\b | \\t | \\n | \\r | \\\" | \\\\ | \\x
   [^]                              {yybegin(YYINITIAL);
                                     yypushback(yylength());
                                     return new Token(Tokens.INT_LITERAL, String.valueOf(Integer.parseInt(string.toString(), 2)), line, column);}
+  <<EOF>>                          { yybegin(OVER);
+                                     return new Token(Tokens.INT_LITERAL, String.valueOf(Integer.parseInt(string.toString(), 2)), line, column); }
 }
 
 <INT_LITERAL>{
@@ -127,5 +132,11 @@ escapedChar = \\b | \\t | \\n | \\r | \\\" | \\\\ | \\x
   {letter} | _                      {throw new LexerError("Illegal symbol < " + yytext() + "> in decimal number", line, column);}
   [^]                               {yybegin(YYINITIAL);
                                     yypushback(yylength());
-                                    return new Token(Tokens.INT_LITERAL, string.toString(), line, column);}
+                                    return new Token(Tokens.INT_LITERAL, String.valueOf(Integer.parseInt(string.toString())), line, column);}
+  <<EOF>>                           { yybegin(OVER);
+                                      return new Token(Tokens.INT_LITERAL, String.valueOf(Integer.parseInt(string.toString())), line, column); }
+}
+
+<OVER>{
+  [^]                               { return null; }
 }
