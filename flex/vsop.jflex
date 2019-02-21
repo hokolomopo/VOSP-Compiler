@@ -3,6 +3,7 @@ import exceptions.LexerError;
 import java.util.HashMap;
 import tokens.Token.Tokens;
 import tokens.Token;
+import java.util.Stack;
 
 /**
  * This class is a lexer for the VSOP language.
@@ -21,6 +22,9 @@ import tokens.Token;
 
   HashMap<String, Tokens> keywordsMap = Token.Tokens.getKeywordsHashMap();
   HashMap<String, Tokens> operatorsMap = Token.Tokens.getOperatorsHashMap();
+
+  Stack<int[]> commentStack = new Stack();
+
   int commentLevel = 0;
   int line;
   int column;
@@ -59,16 +63,15 @@ escapedChar = \\b | \\t | \\n | \\r | \\\" | \\\\ | \\x
 %state HEXA_LITERAL
 %state BIN_LITERAL
 %state INT_LITERAL
-%state OVER
 
 %%
 
 <YYINITIAL> {
   /* identifiers */
   {identifier}                   { Tokens t = keywordsMap.get(yytext());
-                                    if(t == null) return new Token(Tokens.IDENTIFIER, yytext(), yyline, yycolumn);
-                                    return new Token(t, yyline, yycolumn);}
-  {typeIdentifier}               { return new Token(Tokens.TYPE_IDENTIFIER, yytext(), yyline, yycolumn); }
+                                    if(t == null) return new Token(Tokens.IDENTIFIER, yytext(), yyline + 1, yycolumn + 1);
+                                    return new Token(t, yyline + 1, yycolumn + 1);}
+  {typeIdentifier}               { return new Token(Tokens.TYPE_IDENTIFIER, yytext(), yyline + 1, yycolumn + 1); }
 
   /* literals */
   \"                             { string.setLength(0); yybegin(STRING); line = yyline; column = yycolumn; string.append("\""); }
@@ -80,63 +83,63 @@ escapedChar = \\b | \\t | \\n | \\r | \\\" | \\\\ | \\x
   {whitespace}                   { /* ignore */ }
   {lineComment}                  { /* ignore */ }
 
-  "(*"                           { commentLevel = 1; yybegin(COMMENT); line = yyline; column = yycolumn;}
+  "(*"                           { commentLevel = 1; yybegin(COMMENT); commentStack.clear(); commentStack.push(new int[]{yyline, yycolumn});}
 
   /* operators and error fallback */
   [^] | "<=" | "<-"              { Tokens t = operatorsMap.get(yytext());
-                                 if(t == null) throw new LexerError("Illegal character : " + yytext(), yyline, yycolumn);
-                                 return new Token(t, yyline, yycolumn);}
+                                 if(t == null) throw new LexerError("Illegal character : <" + yytext()+ ">", yyline + 1, yycolumn + 1);
+                                 return new Token(t, yyline + 1, yycolumn + 1);}
 }
 
 <STRING> {
   \"                             { yybegin(YYINITIAL); string.append("\"");
-                                     return new Token(Tokens.STRING_LITERAL, string.toString(), line, column);}
-  {forbiddenInString}            {throw new LexerError("Illegal symbol < " + yytext() + ">  in string", yyline, yycolumn);}
-  <<EOF>>                        {throw new LexerError("EOF in string", line, column);}
+                                     return new Token(Tokens.STRING_LITERAL, string.toString(), line + 1, column + 1);}
+  {forbiddenInString}            {throw new LexerError("Illegal symbol < " + yytext() + ">  in string", yyline + 1, yycolumn + 1);}
+  <<EOF>>                        {throw new LexerError("EOF in string", line+ 1, column+ 1);}
   \\{lineTerminator}(" " | \t)*  { /* ignore */ }
   {escapedChar}                  { string.append( yytext() ); } //TODO modifier l'action pour écrire des \x0a etc
-  \\[^]                          {throw new LexerError("Invalid escape sequence: " + yytext(), yyline, yycolumn);}
+  \\[^]                          {throw new LexerError("Invalid escape sequence: <" + yytext() + ">", yyline + 1, yycolumn + 1);}
   [^]                            { string.append( yytext() ); }
 }
 
 <COMMENT>{//TODO error line in comment inside comment
-  "(*"                             { commentLevel++;}
+  "(*"                             { commentLevel++; commentStack.push(new int[]{yyline, yycolumn});}
   "*)"                             { if(commentLevel == 1) yybegin(YYINITIAL);
-                                        else commentLevel--;}
-  <<EOF>>                          { throw new LexerError("EOF in comment", line, column); }
+                                        else commentLevel--; commentStack.pop();}
+  <<EOF>>                          { int[] lineCol = commentStack.pop(); throw new LexerError("EOF in comment", lineCol[0] + 1, lineCol[1] + 1); }
   [^]                              { /* ignore */ }
 }
 
 <HEXA_LITERAL>{
   {hexDigit}                       {string.append(yytext());}
-  [g-zG-Z] | _                     {throw new LexerError("Illegal symbol < " + yytext() + "> in hexadecimal number", line, column);}
-  [^]                              {yybegin(YYINITIAL);
+  [g-zG-Z] | _                     {throw new LexerError("Illegal symbol < " + yytext() + "> in hexadecimal number", line + 1, column + 1);}
+  [^]                              {if(string.length() == 0){throw new LexerError("Empty hexadecimal number", line + 1, column + 1);}
+                                    yybegin(YYINITIAL);
                                     yypushback(yylength());
-                                    return new Token(Tokens.INT_LITERAL, String.valueOf(Integer.parseInt(string.toString(), 16)), line, column);}
-  <<EOF>>                          { yybegin(OVER); 
-                                     return new Token(Tokens.INT_LITERAL, String.valueOf(Integer.parseInt(string.toString(), 16)), line, column); }
+                                    return new Token(Tokens.INT_LITERAL, String.valueOf(Integer.parseInt(string.toString(), 16)), line + 1, column + 1);}
+  <<EOF>>                          {if(string.length() == 0){throw new LexerError("Empty hexadecimal number", line + 1, column + 1);}
+                                    yybegin(YYINITIAL);
+                                    return new Token(Tokens.INT_LITERAL, String.valueOf(Integer.parseInt(string.toString(), 16)), line + 1, column + 1); }
 }
 
 <BIN_LITERAL>{
   {binDigit}                       {string.append(yytext());}
-  [2-9] | {letter} | _             {throw new LexerError("Illegal symbol < " + yytext() + "> in binary number", line, column);}
-  [^]                              {yybegin(YYINITIAL);
+  [2-9] | {letter} | _             {throw new LexerError("Illegal symbol < " + yytext() + "> in binary number", line + 1, column + 1);}
+  [^]                              {if(string.length() == 0){throw new LexerError("Empty binary number", line + 1, column + 1);}
+                                    yybegin(YYINITIAL);
                                     yypushback(yylength());
-                                    return new Token(Tokens.INT_LITERAL, String.valueOf(Integer.parseInt(string.toString(), 2)), line, column);}
-  <<EOF>>                          { yybegin(OVER);
-                                     return new Token(Tokens.INT_LITERAL, String.valueOf(Integer.parseInt(string.toString(), 2)), line, column); }
+                                    return new Token(Tokens.INT_LITERAL, String.valueOf(Integer.parseInt(string.toString(), 2)), line + 1, column + 1);}
+  <<EOF>>                          {if(string.length() == 0){throw new LexerError("Empty binary number", line + 1, column + 1);}
+                                    yybegin(YYINITIAL);
+                                    return new Token(Tokens.INT_LITERAL, String.valueOf(Integer.parseInt(string.toString(), 2)), line + 1, column + 1); }
 }
 
 <INT_LITERAL>{
   {digit}                           {string.append(yytext());}
-  {letter} | _                      {throw new LexerError("Illegal symbol < " + yytext() + "> in decimal number", line, column);}
+  {letter} | _                      {throw new LexerError("Illegal symbol < " + yytext() + "> in decimal number", line + 1, column + 1);}
   [^]                               {yybegin(YYINITIAL);
                                     yypushback(yylength());
-                                    return new Token(Tokens.INT_LITERAL, String.valueOf(Integer.parseInt(string.toString())), line, column);}
-  <<EOF>>                           { yybegin(OVER);
-                                      return new Token(Tokens.INT_LITERAL, String.valueOf(Integer.parseInt(string.toString())), line, column); }
-}
-
-<OVER>{
-  [^]                               { return null; }
+                                    return new Token(Tokens.INT_LITERAL, String.valueOf(Integer.parseInt(string.toString())), line + 1, column + 1);}
+  <<EOF>>                           { yybegin(YYINITIAL);
+                                      return new Token(Tokens.INT_LITERAL, String.valueOf(Integer.parseInt(string.toString())), line + 1, column + 1); }
 }

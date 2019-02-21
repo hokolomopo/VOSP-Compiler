@@ -1,2 +1,2 @@
 #!/bin/bash
-java -jar jflex-1.7.0/lib/jflex-full-1.7.0.jar -d src -nobak flex/vsop.jflex
+java -jar jflex-1.7.0/lib/jflex-full-1.7.0.jar -d vsopcompiler -nobak flex/vsop.jflex

@@ -11,10 +11,10 @@ public class LexerError extends Error {
     }
 
     public int getColumn() {
-        return column + 1;
+        return column;
     }
 
     public int getLine() {
-        return line + 1;
+        return line;
     }
 }

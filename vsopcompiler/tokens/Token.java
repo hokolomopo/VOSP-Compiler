@@ -1,5 +1,8 @@
 package tokens;
 
+import exceptions.LexerError;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import static tokens.TokenType.*;
@@ -104,8 +107,52 @@ public class Token{
     
     public Token(Tokens tokenType, String value, int line, int column) {
     	this(tokenType, line, column);
-    	this.value = "," + value;
+    	this.value = value;
+    	if(tokenType == Tokens.STRING_LITERAL)
+    	    this.value = convertEscapeSymbols(this.value);
     }
+
+    /**
+     * Convert printable escape sequences to their printable symbols in the string
+     *
+     * @param str the string
+     * @return the string with escape sequences converted
+     */
+    private String convertEscapeSymbols(String str) {
+
+        char lastChar = 'a';
+        char curr;
+        int i = 0;
+
+        ArrayList<Integer> foundCodes = new ArrayList<>();
+        try {
+
+            //Find occurences of "\x" in string, and save the escape value found
+            for(i = 0;i < str.length();i++){
+                curr = str.charAt(i);
+
+                if(curr == 'x' && lastChar == '\\'){
+                    String strCode = "" + str.charAt(i+1) + str.charAt(i+2);
+                    int unicode = Integer.parseInt(strCode, 16);
+
+                    //Check if it's a printable character
+                    if(unicode >= 32 && unicode <=126)
+                        foundCodes.add(unicode);
+                }
+                lastChar = curr;
+            }
+
+            //Replace escape values found with their equivalent characters
+            for(int code : foundCodes)
+                str = str.replace("\\x" + Integer.toString(code, 16), ""+(char)code);
+
+        }catch (Exception e){
+            throw new LexerError("Illegal escape symbol", this.line, i);
+        }
+
+        return str;
+    }
+
 
     public Tokens getTokenType() {
         return tokenType;
@@ -116,11 +163,11 @@ public class Token{
     }
     
     public int getLine() {
-    	return line + 1;
+    	return line;
     }
     
     public int getColumn() {
-    	return column + 1;
+    	return column;
     }
 
     public void setValue(String value) {
