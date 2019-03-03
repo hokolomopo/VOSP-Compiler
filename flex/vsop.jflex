@@ -15,6 +15,7 @@ import java.util.Stack;
 %line
 %column
 %type Token
+%public
 
 
 %{

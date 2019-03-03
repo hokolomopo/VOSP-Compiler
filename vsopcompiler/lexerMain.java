@@ -1,4 +1,5 @@
 import exceptions.LexerError;
+import lexer.VSOPLexer;
 import tokens.Token;
 
 import java.io.FileNotFoundException;
