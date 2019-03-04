@@ -8,57 +8,51 @@ package parser;
 /** CUP generated interface containing symbol constants. */
 public interface sym {
   /* terminals */
-  public static final int TYPE_IDENTIFIER = 43;
-  public static final int POW = 35;
-  public static final int STRING_LITERAL = 41;
-  public static final int UMINUS = 2;
-  public static final int INT32 = 14;
-  public static final int UNIT = 22;
-  public static final int IDENTIDIER = 42;
-  public static final int LOWER = 38;
-  public static final int LPAREN = 3;
-  public static final int MINUS = 32;
-  public static final int RPAREN = 4;
-  public static final int NOT = 18;
-  public static final int SEMICOLON = 29;
-  public static final int AND = 5;
-  public static final int RPAR = 27;
-  public static final int IN = 13;
-  public static final int BOOL = 6;
-  public static final int COMMA = 30;
-  public static final int CLASS = 7;
-  public static final int DIV = 34;
-  public static final int PLUS = 31;
-  public static final int ASSIGN = 40;
-  public static final int IF = 12;
-  public static final int DOT = 36;
+  public static final int TYPE_IDENTIFIER = 40;
+  public static final int POW = 32;
+  public static final int STRING_LITERAL = 38;
+  public static final int INT32 = 11;
+  public static final int UNIT = 19;
+  public static final int LOWER = 35;
+  public static final int MINUS = 29;
+  public static final int NOT = 15;
+  public static final int SEMICOLON = 26;
+  public static final int AND = 2;
+  public static final int RPAR = 24;
+  public static final int IN = 10;
+  public static final int BOOL = 3;
+  public static final int COMMA = 27;
+  public static final int CLASS = 4;
+  public static final int DIV = 31;
+  public static final int PLUS = 28;
+  public static final int ASSIGN = 37;
+  public static final int IF = 9;
+  public static final int DOT = 33;
   public static final int EOF = 0;
-  public static final int EQUAL = 37;
-  public static final int TRUE = 21;
-  public static final int NEW = 17;
+  public static final int EQUAL = 34;
+  public static final int TRUE = 18;
+  public static final int NEW = 14;
   public static final int error = 1;
-  public static final int ISNULL = 15;
-  public static final int TIMES = 33;
-  public static final int COLON = 28;
-  public static final int LBRACE = 24;
-  public static final int ELSE = 9;
-  public static final int WHILE = 23;
-  public static final int LET = 16;
-  public static final int THEN = 20;
-  public static final int RBRACE = 25;
-  public static final int LOWER_EQUAL = 39;
-  public static final int EXTENDS = 10;
-  public static final int LPAR = 26;
-  public static final int STRING = 19;
-  public static final int FALSE = 11;
-  public static final int DO = 8;
-  public static final int INT_LITERAL = 44;
+  public static final int ISNULL = 12;
+  public static final int TIMES = 30;
+  public static final int COLON = 25;
+  public static final int LBRACE = 21;
+  public static final int ELSE = 6;
+  public static final int WHILE = 20;
+  public static final int LET = 13;
+  public static final int THEN = 17;
+  public static final int RBRACE = 22;
+  public static final int LOWER_EQUAL = 36;
+  public static final int EXTENDS = 7;
+  public static final int LPAR = 23;
+  public static final int STRING = 16;
+  public static final int FALSE = 8;
+  public static final int DO = 5;
+  public static final int INT_LITERAL = 41;
+  public static final int IDENTIFIER = 39;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
-  "UMINUS",
-  "LPAREN",
-  "RPAREN",
   "AND",
   "BOOL",
   "CLASS",
@@ -96,7 +90,7 @@ public interface sym {
   "LOWER_EQUAL",
   "ASSIGN",
   "STRING_LITERAL",
-  "IDENTIDIER",
+  "IDENTIFIER",
   "TYPE_IDENTIFIER",
   "INT_LITERAL"
   };

@@ -16,29 +16,138 @@ init with {: :};
 scan with {: return s.next_token(); :};
 
 /* Terminals (tokens returned by the scanner). */
-terminal            UMINUS, LPAREN, RPAREN;
 terminal            AND, BOOL, CLASS, DO, ELSE, EXTENDS, FALSE, IF, IN, INT32, ISNULL, LET, NEW, NOT, STRING, THEN, TRUE, UNIT, WHILE;
 terminal            LBRACE, RBRACE, LPAR, RPAR, COLON, SEMICOLON, COMMA, PLUS, MINUS, TIMES, DIV, POW, DOT, EQUAL, LOWER, LOWER_EQUAL, ASSIGN;
-terminal String     STRING_LITERAL, IDENTIDIER, TYPE_IDENTIFIER, INT_LITERAL;
+terminal String     STRING_LITERAL, IDENTIFIER, TYPE_IDENTIFIER, INT_LITERAL;
 
 /* Non terminals */
-non terminal            expr_list;
-non terminal Integer    expr;      // used to store evaluated subexpressions
+non terminal            classList, classItem, classBody, classElementList;
+non terminal            field, method, type, formals, formal, block, expr, elseExpr, exprList, args, argList, literal, booleanLiteral;
+non terminal empty;
 
 /* Precedences */
-precedence left PLUS, MINUS;
-precedence left TIMES;
-precedence left UMINUS;
+precedence right    ASSIGN;
+precedence left     AND;
+precedence right    NOT;
+precedence nonassoc LOWER, LOWER_EQUAL, EQUAL;
+precedence left     PLUS, MINUS;
+precedence left     TIMES, DIV;
+precedence right    ISNULL, UNIT;
+precedence right    POW;
+precedence left     DOT;
+precedence left ELSE;//TODO; ca regle un probleme avec if/then/else, mais est ce que ca le regele bien?
+
+start with classList;  
 
 /* The grammar rules */
-expr_list ::= expr_list expr:e SEMICOLON         {: System.out.println(e);:}
-            | expr:e SEMICOLON                   {: System.out.println(e);:}
+classList ::= 
+  classItem classList 
+| empty
 ;
-expr      ::= expr:e1 PLUS  expr:e2         {: RESULT = e1+e2;       :}
-             | expr:e1 MINUS expr:e2        {: RESULT = e1-e2;       :}
-             | expr:e1 TIMES expr:e2        {: RESULT = e1*e2;       :}
-             | MINUS expr:e                 {: RESULT = -e;          :}
-  	     %prec UMINUS
-       | LPAREN expr:e RPAREN	         {: RESULT = e;           :}
-       | INT_LITERAL:n	                     {: RESULT = Integer.parseInt(n);           :}
-             ;
+
+classItem ::= 
+  CLASS TYPE_IDENTIFIER classBody     {: System.out.println("Simple class");:}
+| CLASS TYPE_IDENTIFIER EXTENDS TYPE_IDENTIFIER classBody    {: System.out.println("Herited class");:}
+;
+
+classBody ::= 
+  LBRACE classElementList RBRACE
+;//TODO : Empty class OK?
+
+classElementList ::= 
+  field classElementList
+| method classElementList
+| empty
+;
+
+field ::=
+  IDENTIFIER COLON type SEMICOLON
+| IDENTIFIER COLON type ASSIGN expr SEMICOLON
+;
+
+method ::=
+  IDENTIFIER LPAR formals RPAR COLON type block
+;
+
+type ::=
+  TYPE_IDENTIFIER
+|  INT32
+|  BOOL
+|  STRING
+|  UNIT
+;
+
+formals ::=
+  formal
+| formal COMMA formals
+| empty
+;
+
+formal ::=
+  IDENTIFIER COLON type
+;
+
+block ::=
+  LBRACE expr exprList RBRACE           {:System.out.println("Block");:}
+;
+
+exprList ::=
+  SEMICOLON expr exprList
+| empty
+;
+
+expr ::=
+  IF expr THEN expr elseExpr
+| WHILE expr DO expr
+| LET IDENTIFIER COLON type IN expr
+| LET IDENTIFIER COLON type ASSIGN expr IN expr
+| IDENTIFIER ASSIGN expr
+| NOT expr
+| expr AND expr
+| expr EQUAL expr
+| expr LOWER expr
+| expr LOWER_EQUAL expr
+| expr PLUS expr
+| expr MINUS expr
+| expr TIMES expr
+| expr DIV expr
+| expr POW expr
+| MINUS expr
+| ISNULL expr
+| IDENTIFIER LPAR args RPAR
+| expr DOT IDENTIFIER LPAR args RPAR
+| NEW TYPE_IDENTIFIER
+| IDENTIFIER
+| literal
+| LPAR RPAR
+| LPAR expr RPAR
+| block
+;
+
+elseExpr ::=
+  ELSE expr
+| empty
+;
+
+args ::=
+  expr argList
+| empty
+;
+
+argList ::=
+  COMMA expr
+| empty
+;
+
+literal ::=
+  INT_LITERAL
+| STRING_LITERAL
+| booleanLiteral
+;
+
+booleanLiteral ::=
+  TRUE
+| FALSE
+;
+
+empty ::= ;

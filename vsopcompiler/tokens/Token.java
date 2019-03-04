@@ -53,7 +53,7 @@ public class Token{
         //Others
         INT_LITERAL(null, LITERAL, "integer-literal", sym.INT_LITERAL),
         STRING_LITERAL(null, LITERAL, "string-literal", sym.STRING_LITERAL),
-        IDENTIFIER(null, ID, "object-identifier", sym.IDENTIDIER),
+        IDENTIFIER(null, ID, "object-identifier", sym.IDENTIFIER),
         TYPE_IDENTIFIER(null, ID, "type-identifier", sym.TYPE_IDENTIFIER);
 
         private String stringValue;

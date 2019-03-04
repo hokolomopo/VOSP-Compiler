@@ -10,6 +10,8 @@ public class VSOPScanner implements Scanner {
     VSOPLexer lexer;
     ComplexSymbolFactory sf;
 
+    private Symbol prev;
+
     public VSOPScanner(VSOPLexer lexer, ComplexSymbolFactory sf){
         this.lexer = lexer;
         this.sf = sf;
@@ -25,7 +27,11 @@ public class VSOPScanner implements Scanner {
     }
 
     private Symbol toSymbol(Token t){
-        return sf.newSymbol(t.getTokenType().toString(), t.getTokenType().getSymbolValue(), new ComplexSymbolFactory.Location(t.getLine(),  t.getColumn()),
-                new ComplexSymbolFactory.Location(t.getLine(),t.getColumn()+t.getLength()), t.getValue());
+        Symbol s = sf.newSymbol(t.getTokenType().toString(),
+                            t.getTokenType().getSymbolValue(),
+                            new ComplexSymbolFactory.Location("Line/Col", t.getLine(),  t.getColumn()),
+                            new ComplexSymbolFactory.Location("Line/Col", t.getLine(),t.getColumn()+t.getLength()),
+                            t.getValue());
+        return s;
     }
 }
