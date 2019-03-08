@@ -1,11 +1,3 @@
-// this is an (* example
-
-commentaire mono-ligne valide ou erreur car (* terminé par EOF ? (commentaires imbriqués)
-
-à test avec la plateforme
-
--------------------------------------------------------------------------------------------------------------------------------------
-
 dans l'exemple on a 2,5 comme position du début du keyword string, mais si on utilise des \t, ils sont comptés comme un seul caractère
 et ça fait donc 2,2 : problème ?
 
@@ -30,7 +22,3 @@ Gestion des erreurs : "will be prefixed" => peut-on rajouter quelque chose de pl
 		      \x+*/ renvoie une erreur ? Ou seulement \xghijklmnopqrstuvxyz
 
 Oui
-
--------------------------------------------------------------------------------------------------------------------------------------
-
-Comment créer un exécutable en java ?

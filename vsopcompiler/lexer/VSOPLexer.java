@@ -255,6 +255,7 @@ public class VSOPLexer {
   private int zzFinalHighSurrogate = 0;
 
   /* user code: */
+<<<<<<< Updated upstream:vsopcompiler/lexer/VSOPLexer.java
   StringBuffer string = new StringBuffer();
 
   HashMap<String, Tokens> keywordsMap = Token.Tokens.getKeywordsHashMap();
@@ -265,6 +266,18 @@ public class VSOPLexer {
   int commentLevel = 0;
   int line;
   int column;
+=======
+  StringBuffer string = new StringBuffer();
+
+  HashMap<String, Tokens> keywordsMap = Token.Tokens.getKeywordsHashMap();
+  HashMap<String, Tokens> operatorsMap = Token.Tokens.getOperatorsHashMap();
+
+  Stack<int[]> commentStack = new Stack<int[]>();
+
+  int commentLevel = 0;
+  int line;
+  int column;
+>>>>>>> Stashed changes:vsopcompiler/VSOPLexer.java
 
 
   /**

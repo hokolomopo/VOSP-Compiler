@@ -24,7 +24,7 @@ import java.util.Stack;
   HashMap<String, Tokens> keywordsMap = Token.Tokens.getKeywordsHashMap();
   HashMap<String, Tokens> operatorsMap = Token.Tokens.getOperatorsHashMap();
 
-  Stack<int[]> commentStack = new Stack();
+  Stack<int[]> commentStack = new Stack<int[]>();
 
   int commentLevel = 0;
   int line;
@@ -98,12 +98,12 @@ escapedChar = \\b | \\t | \\n | \\r | \\\" | \\\\ | \\x
   {forbiddenInString}            {throw new LexerError("Illegal symbol < " + yytext() + ">  in string", yyline + 1, yycolumn + 1);}
   <<EOF>>                        {throw new LexerError("EOF in string", line+ 1, column+ 1);}
   \\{lineTerminator}(" " | \t)*  { /* ignore */ }
-  {escapedChar}                  { string.append( yytext() ); } //TODO modifier l'action pour écrire des \x0a etc
+  {escapedChar}                  { string.append( yytext() ); }
   \\[^]                          {throw new LexerError("Invalid escape sequence: <" + yytext() + ">", yyline + 1, yycolumn + 1);}
   [^]                            { string.append( yytext() ); }
 }
 
-<COMMENT>{//TODO error line in comment inside comment
+<COMMENT>{
   "(*"                             { commentLevel++; commentStack.push(new int[]{yyline, yycolumn});}
   "*)"                             { if(commentLevel == 1) yybegin(YYINITIAL);
                                         else commentLevel--; commentStack.pop();}
