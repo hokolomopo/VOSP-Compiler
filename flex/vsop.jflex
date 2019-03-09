@@ -1,4 +1,5 @@
 /* JFlex file for VSOP language */
+package lexer;
 import exceptions.LexerError;
 import java.util.HashMap;
 import tokens.Token.Tokens;

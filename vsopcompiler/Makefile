@@ -1,8 +1,7 @@
 install-tools:
 
 vsopc:
-	javac *.java
-	jar -cmf manifest.mf vsopc.jar .
+	javac -cp .:../libs/java-cup-11b-runtime.jar *.java
 	chmod +x vsopc
 
 .PHONY: vsopc

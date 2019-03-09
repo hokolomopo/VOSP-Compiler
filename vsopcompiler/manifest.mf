@@ -1,1 +1,1 @@
-Main-class: lexerMain
+Main-class: vsopc

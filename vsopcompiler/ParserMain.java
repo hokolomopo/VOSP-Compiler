@@ -39,6 +39,5 @@ public class ParserMain {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 }
