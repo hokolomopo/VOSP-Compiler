@@ -12,7 +12,7 @@ public class ClassElementList {
 		this.methods = cel.methods;
 	}
 
-	public ClassItem(ClassElementList cel, Method m) {
+	public ClassElementList(ClassElementList cel, Method m) {
 		this.fields = cel.fields;
 		this.methods.add(m);
 		this.methods = cel.methods;

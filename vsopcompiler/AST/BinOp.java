@@ -5,7 +5,7 @@ public class BinOp extends Expr {
 	private Expr lhs;
 	private Expr rhs;
 
-	public UnOp(String name, Expr lhs, Expr rhs) {
+	public BinOp(String name, Expr lhs, Expr rhs) {
 		this.name = name;
 		this.lhs = lhs;
 		this.rhs = rhs;

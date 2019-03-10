@@ -3,7 +3,7 @@ package AST;
 public class Id extends Expr {
 	private String name;
 
-	public Call(String name) {
+	public Id(String name) {
 		this.name = name;
 	}
 

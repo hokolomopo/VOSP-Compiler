@@ -4,7 +4,7 @@ public class Assign extends Expr {
 	private String name;
 	private Expr expr;
 
-	public Let(String name, Expr expr) {
+	public Assign(String name, Expr expr) {
 		this.name = name;
 		this.expr = expr;
 	}
