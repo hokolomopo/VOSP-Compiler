@@ -11,6 +11,7 @@ public interface sym {
   public static final int TYPE_IDENTIFIER = 40;
   public static final int POW = 32;
   public static final int STRING_LITERAL = 38;
+  public static final int UMINUS = 42;
   public static final int INT32 = 11;
   public static final int UNIT = 19;
   public static final int LOWER = 35;
@@ -92,7 +93,8 @@ public interface sym {
   "STRING_LITERAL",
   "IDENTIFIER",
   "TYPE_IDENTIFIER",
-  "INT_LITERAL"
+  "INT_LITERAL",
+  "UMINUS"
   };
 }
 

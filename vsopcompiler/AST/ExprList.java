@@ -2,7 +2,7 @@ package AST;
 
 import java.util.ArrayList;
 
-public class ExprList {
+public class ExprList extends Expr {
 	private ArrayList<Expr> expressions;
 
 	public ExprList(ExprList el, Expr e) {

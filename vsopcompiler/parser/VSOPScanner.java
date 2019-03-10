@@ -31,7 +31,7 @@ public class VSOPScanner implements Scanner {
                             t.getTokenType().getSymbolValue(),
                             new ComplexSymbolFactory.Location("Line/Col", t.getLine(),  t.getColumn()),
                             new ComplexSymbolFactory.Location("Line/Col", t.getLine(),t.getColumn()+t.getLength()),
-                            t.getValue());
+                            t);
         return s;
     }
 }
