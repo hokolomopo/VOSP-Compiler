@@ -634,7 +634,7 @@ class CUP$VSOPParser$actions {
 		int clleft = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()).left;
 		int clright = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()).right;
 		ClassList cl = (ClassList)((java_cup.runtime.Symbol) CUP$VSOPParser$stack.peek()).value;
-		 cl.print(); 
+		 cl.print(); System.out.print("\n"); 
               CUP$VSOPParser$result = parser.getSymbolFactory().newSymbol("program",0, ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()), ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()), RESULT);
             }
           return CUP$VSOPParser$result;

@@ -16,5 +16,6 @@ public class Call extends Expr {
 		objExpr.print();
 		System.out.print("," + methodName + ",");
 		argList.print();
+		System.out.print(")");
 	}
 }

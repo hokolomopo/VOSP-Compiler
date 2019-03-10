@@ -1,5 +1,3 @@
-slide 132 lecture 3 pour les if then else
-
 On peut faire des classes vides en java
 
 J'ai enlevé le () car il est déjà géré par la liste d'arguments vide
