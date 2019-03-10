@@ -2,7 +2,7 @@ package AST;
 
 import java.util.ArrayList;
 
-public class ClassList {
+public class ClassList extends ASTNode {
 	private ArrayList<ClassItem> classes;
 
 	public ClassList(ClassList cl, ClassItem ci) {
@@ -14,15 +14,20 @@ public class ClassList {
 		this.classes = new ArrayList<ClassItem>();
 	}
 
-	public void print() {
+	@Override
+	public void print(int tabLevel, boolean doTab) {
+		if(doTab)
+			System.out.print(getTab(tabLevel));
 		System.out.print("[");
 		int i;
 		if (classes.size() > 0) {
 			for (i = 0; i < classes.size() - 1; i++) {
-				classes.get(i).print();
+				System.out.println();
+				classes.get(i).print(tabLevel + 1, true);
 				System.out.print(",");
 			}
-			classes.get(i).print();
+			System.out.println();
+			classes.get(i).print(tabLevel + 1, true);
 		}
 		System.out.print("]");
 	}

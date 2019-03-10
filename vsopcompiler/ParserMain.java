@@ -35,7 +35,7 @@ public class ParserMain {
         parser.init(scanner, symbolFactory);
 
         try {
-            parser.debug_parse();
+            parser.parse();
         } catch (Exception e) {
             e.printStackTrace();
         }

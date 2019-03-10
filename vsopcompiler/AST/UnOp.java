@@ -9,9 +9,13 @@ public class UnOp extends Expr {
 		this.expr = expr;
 	}
 
-	public void print() {
+	@Override
+	public void print(int tabLevel, boolean doTab) {
+		if(doTab)
+			System.out.print(getTab(tabLevel));
+
 		System.out.print("UnOp(" + name + ",");
-		expr.print();
+		expr.print(tabLevel, false);
 		System.out.print(")");
 	}
 }

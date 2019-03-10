@@ -9,9 +9,13 @@ public class Assign extends Expr {
 		this.expr = expr;
 	}
 
-	public void print() {
+	@Override
+	public void print(int tabLevel, boolean doTab) {
+		if(doTab)
+			System.out.print(getTab(tabLevel));
 		System.out.print("Assign(" + name + ",");
-		expr.print();
+
+		expr.print(tabLevel, false);
 		System.out.print(")");
 	}
 }

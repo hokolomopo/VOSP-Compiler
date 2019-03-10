@@ -1,6 +1,6 @@
 package AST;
 
-public class Field {
+public class Field extends ASTNode {
 	private String name;
 	private Type type;
 	private Expr initExpr;
@@ -17,12 +17,16 @@ public class Field {
 		this.initExpr = initExpr;
 	}
 
-	public void print() {
+	@Override
+	public void print(int tabLevel, boolean doTab) {
+		if(doTab)
+			System.out.print(getTab(tabLevel));
 		System.out.print("Field(" + name + ",");
-		type.print();
+
+		type.print(tabLevel, false);
 		if (initExpr != null) {
 			System.out.print(",");
-			initExpr.print();
+			initExpr.print(tabLevel, false);
 		}
 		System.out.print(")");
 	}

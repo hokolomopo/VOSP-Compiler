@@ -14,15 +14,28 @@ public class ExprList extends Expr {
 		this.expressions = new ArrayList<Expr>();
 	}
 
-	public void print() {
+	@Override
+	public void print(int tabLevel, boolean doTab) {
+		if(doTab)
+			System.out.print(getTab(tabLevel));
 		System.out.print("[");
+
+		if(expressions.size() > 0)
+			System.out.println();
+
 		int i;
 		if (expressions.size() > 0) {
 			for (i = 0; i < expressions.size() - 1; i++) {
-				expressions.get(i).print();
+				expressions.get(i).print(tabLevel + 1, true);
 				System.out.print(",");
+				System.out.println();
 			}
-			expressions.get(i).print();
+			expressions.get(i).print(tabLevel + 1, true);
+		}
+
+		if(expressions.size() > 0) {
+			System.out.println();
+			System.out.print(getTab(tabLevel));
 		}
 		System.out.print("]");
 	}

@@ -11,11 +11,15 @@ public class BinOp extends Expr {
 		this.rhs = rhs;
 	}
 
-	public void print() {
+	@Override
+	public void print(int tabLevel, boolean doTab) {
+		if(doTab)
+			System.out.print(getTab(tabLevel));
 		System.out.print("BinOp(" + name + ",");
-		lhs.print();
+
+		lhs.print(tabLevel, false);
 		System.out.print(",");
-		rhs.print();
+		rhs.print(tabLevel, false);
 		System.out.print(")");
 	}
 }

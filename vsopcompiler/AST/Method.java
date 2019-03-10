@@ -2,7 +2,7 @@ package AST;
 
 import java.util.ArrayList;
 
-public class Method {
+public class Method extends ASTNode {
 	private String name;
 	private FormalList formals;
 	private Type retType;
@@ -15,13 +15,18 @@ public class Method {
 		this.block = block;
 	}
 
-	public void print() {
+	@Override
+	public void print(int tabLevel, boolean doTab) {
+		if(doTab)
+			System.out.print(getTab(tabLevel));
+
 		System.out.print("Method(" + name + ",");
-		formals.print();
+		formals.print(tabLevel, false);
 		System.out.print(",");
-		retType.print();
+		retType.print(tabLevel, false);
 		System.out.print(",");
-		block.print();
+		System.out.println();
+		block.print(tabLevel + 1, true);
 		System.out.print(")");
 	}
 }

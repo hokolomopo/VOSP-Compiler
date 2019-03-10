@@ -1,6 +1,6 @@
 package AST;
 
-public class Formal {
+public class Formal extends ASTNode{
 	private String name;
 	private Type type;
 
@@ -9,8 +9,11 @@ public class Formal {
 		this.type = type;
 	}
 
-	public void print() {
+	@Override
+	public void print(int tabLevel, boolean doTab) {
+		if(doTab)
+			System.out.print(getTab(tabLevel));
 		System.out.print(name + ":");
-		type.print();
+		type.print(tabLevel, false);
 	}
 }

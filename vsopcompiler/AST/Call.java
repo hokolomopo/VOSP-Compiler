@@ -11,11 +11,20 @@ public class Call extends Expr {
 		this.argList = argList;
 	}
 
-	public void print() {
+	@Override
+	public void print(int tabLevel, boolean doTab) {
+		if(doTab)
+			System.out.print(getTab(tabLevel));
+		else {
+			tabLevel++;
+			System.out.println();
+			System.out.print(getTab(tabLevel));
+		}
+
 		System.out.print("Call(");
-		objExpr.print();
+		objExpr.print(tabLevel, false);
 		System.out.print("," + methodName + ",");
-		argList.print();
+		argList.print(tabLevel, false);
 		System.out.print(")");
 	}
 }

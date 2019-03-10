@@ -1,6 +1,6 @@
 package AST;
 
-public class ClassItem {
+public class ClassItem extends ASTNode{
 	private String name;
 	private String parentName;
 	private ClassElementList cel;
@@ -17,9 +17,13 @@ public class ClassItem {
 		this.cel = cel;
 	}
 
-	public void print() {
+	@Override
+	public void print(int tabLevel, boolean doTab) {
+		if(doTab)
+			System.out.print(getTab(tabLevel));
 		System.out.print("Class(" + name + "," + parentName + ",");
-		cel.print();
+
+		cel.print(tabLevel +1, true);
 		System.out.print(")");
 	}
 }

@@ -7,7 +7,11 @@ public class Id extends Expr {
 		this.name = name;
 	}
 
-	public void print() {
+	@Override
+	public void print(int tabLevel, boolean doTab) {
+		if(doTab)
+			System.out.print(getTab(tabLevel));
+
 		System.out.print(name);
 	}
 }

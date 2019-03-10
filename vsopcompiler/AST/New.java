@@ -7,7 +7,11 @@ public class New extends Expr {
 		this.typeName = typeName;
 	}
 
-	public void print() {
+	@Override
+	public void print(int tabLevel, boolean doTab) {
+
+		if(doTab)
+			System.out.print(getTab(tabLevel));
 		System.out.print("New(" + typeName + ")");
 	}
 }

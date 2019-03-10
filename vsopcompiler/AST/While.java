@@ -9,11 +9,21 @@ public class While extends Expr {
 		this.bodyExpr = bodyExpr;
 	}
 
-	public void print() {
+	@Override
+	public void print(int tabLevel, boolean doTab) {
+		if(doTab)
+			System.out.print(getTab(tabLevel));
+		else {
+			tabLevel++;
+			System.out.println();
+			System.out.print(getTab(tabLevel));
+		}
+
 		System.out.print("While(");
-		condExpr.print();
+		condExpr.print(tabLevel, false);
 		System.out.print(",");
-		bodyExpr.print();
+		System.out.println();
+		bodyExpr.print(tabLevel + 1, true);
 		System.out.print(")");
 	}
 }

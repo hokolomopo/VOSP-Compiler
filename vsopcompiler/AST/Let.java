@@ -20,15 +20,19 @@ public class Let extends Expr {
 		this.initExpr = initExpr;
 	}
 
-	public void print() {
+	@Override
+	public void print(int tabLevel, boolean doTab) {
+		if(doTab)
+			System.out.print(getTab(tabLevel));
+
 		System.out.print("Let(" + name + ",");
-		type.print();
+		type.print(tabLevel, false);
 		if (initExpr != null) {
 			System.out.print(",");
-			initExpr.print();
+			initExpr.print(tabLevel, false);
 		}
 		System.out.print(",");
-		scopeExpr.print();
+		scopeExpr.print(tabLevel, false);
 		System.out.print(")");
 	}
 }

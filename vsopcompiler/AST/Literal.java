@@ -7,7 +7,11 @@ public class Literal extends Expr {
 		this.value = value;
 	}
 
-	public void print() {
+	@Override
+	public void print(int tabLevel, boolean doTab) {
+		if(doTab)
+			System.out.print(getTab(tabLevel));
+
 		System.out.print(value);
 	}
 }
