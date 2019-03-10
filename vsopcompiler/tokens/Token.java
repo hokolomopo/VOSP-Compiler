@@ -100,6 +100,10 @@ public class Token{
         public int getSymbolValue() {
             return symbolValue;
         }
+
+        public String getStringValue() {
+            return stringValue;
+        }
     }
 
     private Tokens tokenType;
@@ -121,7 +125,7 @@ public class Token{
     }
 
     /**
-     * Convert printable escape sequences to their printable symbols in the string
+     * Convert printable escape sequences to their corresponding symbols in the string
      *
      * @param str the string
      * @return the string with escape sequences converted

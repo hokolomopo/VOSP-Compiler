@@ -10,11 +10,15 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
+import tests.ImEmptyBro;
+
 public class vsopc {
 
     public static void main(String[] args) {
 
     	if (args.length < 2) {
+    		ImEmptyBro hello = new ImEmptyBro();
+    		System.out.println("this is an empty class: " + hello.toString());
             System.err.println("Wrong Arguments :\n1) -lex for lexer usage, -parser for parser usage\n2) path to the file to parse.");
             System.exit(-1);
         }

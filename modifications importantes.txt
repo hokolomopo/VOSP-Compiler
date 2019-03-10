@@ -1,1 +1,0 @@
-1234564error est censé renvoyer une erreur et pas 1234564 (10-base number) suivi de error (identifier)
