@@ -1,0 +1,4 @@
+#!/bin/sh
+cp -r libs vsopcompiler
+tar cfJ vsopcompiler.tar.xz vsopcompiler/libs/* vsopcompiler/*.java vsopcompiler/manifest.mf vsopcompiler/vsopc vsopcompiler/tokens/*.java vsopcompiler/exceptions/*.java vsopcompiler/AST/*.java vsopcompiler/parser/*.java vsopcompiler/lexer/*.java vsopcompiler/Makefile
+rm -rf vsopcompiler/libs

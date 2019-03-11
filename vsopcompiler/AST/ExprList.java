@@ -6,7 +6,10 @@ public class ExprList extends Expr {
 	private ArrayList<Expr> expressions;
 
 	public ExprList(ExprList el, Expr e) {
-		this.expressions = el.expressions;
+		if(el == null)
+			this.expressions = new ArrayList<>();
+		else
+			this.expressions = el.expressions;
 		this.expressions.add(e);
 	}
 
@@ -16,6 +19,12 @@ public class ExprList extends Expr {
 
 	@Override
 	public void print(int tabLevel, boolean doTab) {
+	    //Just print an expression if there is only 1 expression in the list
+	    if(expressions.size() == 1){
+	        expressions.get(0).print(tabLevel, doTab);
+	        return;
+        }
+
 		if(doTab)
 			System.out.print(getTab(tabLevel));
 		System.out.print("[");

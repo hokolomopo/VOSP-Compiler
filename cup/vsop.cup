@@ -3,12 +3,36 @@ import tokens.Token;
 import lexer.VSOPLexer;
 import java_cup.runtime.ComplexSymbolFactory.Location;
 import AST.*;
+import exceptions.ParserError;
+import java.util.List;
 
 parser code {:
     // Connect this parser to a scanner!
     Scanner s;
     ComplexSymbolFactory sf;
+    ASTNode abstractTree;
+
     public void init(Scanner s, ComplexSymbolFactory sf){ this.s=s; this.sf = sf;}
+
+    public ASTNode getTree(){return abstractTree;}
+
+    public void report_error(String message, Object info) {
+        if (info instanceof ComplexSymbolFactory.ComplexSymbol) {
+
+          ComplexSymbolFactory.ComplexSymbol s = (ComplexSymbolFactory.ComplexSymbol)info;
+
+          //Return previous token if current has no indication of location. Should only happens on EOF.
+          if(s.xleft == null || s.xright == null){
+              s = ((VSOPScanner)this.s).getPrev();
+          }
+          List expected = expected_token_ids();
+
+          throw new ParserError(s, expected, s.xleft.getLine(), s.xleft.getColumn());
+
+          //throw new ParserError(s.xleft.getLine(), s.xleft.getColumn());
+        }
+    }
+
 
 :}
 
@@ -23,7 +47,7 @@ terminal Token      STRING_LITERAL, IDENTIFIER, TYPE_IDENTIFIER, INT_LITERAL;
 terminal            UMINUS;
 
 /* Non terminals */
-non terminal                          program;
+non terminal ClassList                program;
 non terminal ClassList                classList;
 non terminal ClassItem                classItem;
 non terminal ClassElementList         classBody, classElementList;
@@ -52,7 +76,7 @@ start with program;
 
 /* The grammar rules */
 program ::=
-  classList:cl    {: cl.print(); System.out.print("\n"); :}
+  classList:cl    {: abstractTree = cl; :}
 ;
 
 classList ::= 
@@ -165,7 +189,7 @@ unmatched ::=
 ;
 
 simpleExpr ::=  //TODO check if while etc
-  IDENTIFIER:id LPAR args:ar RPAR                               {: RESULT = new Call(new Literal("self"), id.getValue(), ar); :}
+  IDENTIFIER:id LPAR args:ar RPAR                               {: RESULT = new Call(new Id("self"), id.getValue(), ar); :}
 | NEW TYPE_IDENTIFIER:ti                                        {: RESULT = new New(ti.getValue()); :}
 | IDENTIFIER:id                                                 {: RESULT = new Id(id.getValue()); :}
 | literal:li                                                    {: RESULT = li; :}
@@ -184,14 +208,14 @@ argList ::=
 ;
 
 literal ::=
-  INT_LITERAL:il         {: RESULT = new Literal(il.getValue()); :}
-| STRING_LITERAL:sl      {: RESULT = new Literal(sl.getValue()); :}
+  INT_LITERAL:il         {: RESULT = new LiteralInteger(il.getValue()); :}
+| STRING_LITERAL:sl      {: RESULT = new LiteralString(sl.getValue()); :}
 | booleanLiteral:bl      {: RESULT = bl; :}
 ;
 
 booleanLiteral ::=
-  TRUE:bl       {: RESULT = new Literal(bl.getTokenType().getStringValue()); :}
-| FALSE:bl      {: RESULT = new Literal(bl.getTokenType().getStringValue()); :}
+  TRUE:bl       {: RESULT = new LiteralBoolean(bl.getTokenType().getStringValue()); :}
+| FALSE:bl      {: RESULT = new LiteralBoolean(bl.getTokenType().getStringValue()); :}
 ;
 
 empty ::= ;

@@ -1,4 +1,6 @@
+import AST.ASTNode;
 import exceptions.LexerError;
+import exceptions.ParserError;
 import java_cup.runtime.ComplexSymbolFactory;
 import java_cup.runtime.SymbolFactory;
 import lexer.VSOPLexer;
@@ -66,10 +68,17 @@ public class vsopc {
 
             try {
                 parser.parse();
+                ASTNode tree = parser.getTree();
+                tree.print();
+                System.out.println();
+
+            } catch (ParserError e) {
+                System.err.println(fileName + ":" + e.getMessage());
+                System.exit(-1);
             } catch (Exception e) {
                 e.printStackTrace();
+                System.exit(-1);
             }
-            System.exit(0);
     	}
     }
 

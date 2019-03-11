@@ -1,6 +1,10 @@
+import AST.ASTNode;
 import exceptions.LexerError;
+import exceptions.ParserError;
 import java_cup.runtime.ComplexSymbolFactory;
+import java_cup.runtime.Symbol;
 import java_cup.runtime.SymbolFactory;
+import jdk.nashorn.internal.runtime.ParserException;
 import lexer.VSOPLexer;
 import parser.VSOPParser;
 import parser.VSOPScanner;
@@ -36,8 +40,15 @@ public class ParserMain {
 
         try {
             parser.parse();
+            ASTNode tree = parser.getTree();
+            tree.print();
+            System.out.println();
+        } catch (ParserError e) {
+            System.err.println(fileName + ":" + e.getMessage());
+            System.exit(-1);
         } catch (Exception e) {
             e.printStackTrace();
+            System.exit(-1);
         }
     }
 }

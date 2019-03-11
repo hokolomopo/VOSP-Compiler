@@ -93,6 +93,13 @@ public class Token{
             return map;
         }
 
+        public static Tokens fromValue(int value){
+            for (Tokens t : Tokens.values())
+                if(t.getSymbolValue() == value)
+                    return t;
+            return null;
+        }
+
         public String getName() {
             return name;
         }

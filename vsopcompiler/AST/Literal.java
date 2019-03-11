@@ -1,7 +1,7 @@
 package AST;
 
-public class Literal extends Expr {
-	private String value;
+public abstract class Literal extends Expr {
+	protected String value;
 
 	public Literal(String value) {
 		this.value = value;

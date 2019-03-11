@@ -10,6 +10,8 @@ import tokens.Token;
 import lexer.VSOPLexer;
 import java_cup.runtime.ComplexSymbolFactory.Location;
 import AST.*;
+import exceptions.ParserError;
+import java.util.List;
 import java_cup.runtime.XMLElement;
 
 /** CUP v0.11b 20160615 (GIT 4ac7450) generated parser.
@@ -585,7 +587,29 @@ public class VSOPParser extends java_cup.runtime.lr_parser {
     // Connect this parser to a scanner!
     Scanner s;
     ComplexSymbolFactory sf;
+    ASTNode abstractTree;
+
     public void init(Scanner s, ComplexSymbolFactory sf){ this.s=s; this.sf = sf;}
+
+    public ASTNode getTree(){return abstractTree;}
+
+    public void report_error(String message, Object info) {
+        if (info instanceof ComplexSymbolFactory.ComplexSymbol) {
+
+          ComplexSymbolFactory.ComplexSymbol s = (ComplexSymbolFactory.ComplexSymbol)info;
+
+          //Return previous token if current has no indication of location. Should only happens on EOF.
+          if(s.xleft == null || s.xright == null){
+              s = ((VSOPScanner)this.s).getPrev();
+          }
+          List expected = expected_token_ids();
+
+          throw new ParserError(s, expected, s.xleft.getLine(), s.xleft.getColumn());
+
+          //throw new ParserError(s.xleft.getLine(), s.xleft.getColumn());
+        }
+    }
+
 
 
 
@@ -619,7 +643,7 @@ class CUP$VSOPParser$actions {
               Object RESULT =null;
 		int start_valleft = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-1)).left;
 		int start_valright = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-1)).right;
-		Object start_val = (Object)((java_cup.runtime.Symbol) CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-1)).value;
+		ClassList start_val = (ClassList)((java_cup.runtime.Symbol) CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-1)).value;
 		RESULT = start_val;
               CUP$VSOPParser$result = parser.getSymbolFactory().newSymbol("$START",0, ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-1)), ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()), RESULT);
             }
@@ -630,11 +654,11 @@ class CUP$VSOPParser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 1: // program ::= classList 
             {
-              Object RESULT =null;
+              ClassList RESULT =null;
 		int clleft = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()).left;
 		int clright = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()).right;
 		ClassList cl = (ClassList)((java_cup.runtime.Symbol) CUP$VSOPParser$stack.peek()).value;
-		 cl.print(); System.out.print("\n"); 
+		 abstractTree = cl; 
               CUP$VSOPParser$result = parser.getSymbolFactory().newSymbol("program",0, ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()), ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()), RESULT);
             }
           return CUP$VSOPParser$result;
@@ -1636,7 +1660,7 @@ class CUP$VSOPParser$actions {
 		int arleft = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-1)).left;
 		int arright = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-1)).right;
 		ArgList ar = (ArgList)((java_cup.runtime.Symbol) CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-1)).value;
-		 RESULT = new Call(new Literal("self"), id.getValue(), ar); 
+		 RESULT = new Call(new Id("self"), id.getValue(), ar); 
               CUP$VSOPParser$result = parser.getSymbolFactory().newSymbol("simpleExpr",16, ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-3)), ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()), RESULT);
             }
           return CUP$VSOPParser$result;
@@ -1756,7 +1780,7 @@ class CUP$VSOPParser$actions {
 		int illeft = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()).left;
 		int ilright = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()).right;
 		Token il = (Token)((java_cup.runtime.Symbol) CUP$VSOPParser$stack.peek()).value;
-		 RESULT = new Literal(il.getValue()); 
+		 RESULT = new LiteralInteger(il.getValue()); 
               CUP$VSOPParser$result = parser.getSymbolFactory().newSymbol("literal",17, ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()), ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()), RESULT);
             }
           return CUP$VSOPParser$result;
@@ -1768,7 +1792,7 @@ class CUP$VSOPParser$actions {
 		int slleft = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()).left;
 		int slright = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()).right;
 		Token sl = (Token)((java_cup.runtime.Symbol) CUP$VSOPParser$stack.peek()).value;
-		 RESULT = new Literal(sl.getValue()); 
+		 RESULT = new LiteralString(sl.getValue()); 
               CUP$VSOPParser$result = parser.getSymbolFactory().newSymbol("literal",17, ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()), ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()), RESULT);
             }
           return CUP$VSOPParser$result;
@@ -1792,7 +1816,7 @@ class CUP$VSOPParser$actions {
 		int blleft = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()).left;
 		int blright = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()).right;
 		Token bl = (Token)((java_cup.runtime.Symbol) CUP$VSOPParser$stack.peek()).value;
-		 RESULT = new Literal(bl.getTokenType().getStringValue()); 
+		 RESULT = new LiteralBoolean(bl.getTokenType().getStringValue()); 
               CUP$VSOPParser$result = parser.getSymbolFactory().newSymbol("booleanLiteral",18, ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()), ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()), RESULT);
             }
           return CUP$VSOPParser$result;
@@ -1804,7 +1828,7 @@ class CUP$VSOPParser$actions {
 		int blleft = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()).left;
 		int blright = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()).right;
 		Token bl = (Token)((java_cup.runtime.Symbol) CUP$VSOPParser$stack.peek()).value;
-		 RESULT = new Literal(bl.getTokenType().getStringValue()); 
+		 RESULT = new LiteralBoolean(bl.getTokenType().getStringValue()); 
               CUP$VSOPParser$result = parser.getSymbolFactory().newSymbol("booleanLiteral",18, ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()), ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()), RESULT);
             }
           return CUP$VSOPParser$result;
