@@ -1,6 +1,2 @@
-class C {
-    f(c : bool) : int32 { head <- hd
-                          		tail <- tl;
-                          		self
-                          		}
+Class (* should be class *) C {
 }

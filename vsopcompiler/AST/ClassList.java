@@ -10,8 +10,9 @@ public class ClassList extends ASTNode {
 		this.classes.add(ci);
 	}
 
-	public ClassList() {
+	public ClassList(ClassItem ci) {
 		this.classes = new ArrayList<ClassItem>();
+		this.classes.add(ci);
 	}
 
 	@Override

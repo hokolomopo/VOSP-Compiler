@@ -32,11 +32,14 @@ public class ParserError extends Error {
         s.append(" expected Symbols are [");
 
         for(Integer i : expected){
+            System.out.println(i);
             Token.Tokens t = Token.Tokens.fromValue(i);
             s.append(t.toString() + ", ");
         }
-        s.deleteCharAt(s.length() - 1);
-        s.deleteCharAt(s.length() - 1);
+        if (expected.size() > 0) {
+            s.deleteCharAt(s.length() - 1);
+            s.deleteCharAt(s.length() - 1);
+        }
         s.append("]");
 
         this.message = s.toString();
