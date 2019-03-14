@@ -1,14 +1,14 @@
 package AST;
 
+import java.util.ArrayList;
+
 public class Field extends ASTNode {
 	private String name;
 	private Type type;
 	private Expr initExpr;
 
 	public Field(String name, Type type) {
-		this.name = name;
-		this.type = type;
-		this.initExpr = null;
+		this(name, type, null);
 	}
 
 	public Field(String name, Type type, Expr initExpr) {

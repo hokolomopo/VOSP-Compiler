@@ -1,5 +1,7 @@
 package AST;
 
+import java.util.ArrayList;
+
 public class Call extends Expr {
 	private Expr objExpr;
 	private String methodName;
@@ -9,6 +11,10 @@ public class Call extends Expr {
 		this.objExpr = objExpr;
 		this.methodName = methodName;
 		this.argList = argList;
+
+		this.children = new ArrayList<>();
+		this.children.add(objExpr);
+		this.children.add(argList);
 	}
 
 	@Override

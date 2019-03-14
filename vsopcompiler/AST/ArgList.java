@@ -8,6 +8,8 @@ public class ArgList extends ASTNode{
 	public ArgList(ArgList al, Expr e) {
 		this.args = al.args;
 		this.args.add(e);
+
+		this.children = new ArrayList<>(args);
 	}
 
 	public ArgList() {

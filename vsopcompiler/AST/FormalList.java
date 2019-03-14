@@ -8,6 +8,8 @@ public class FormalList extends ASTNode{
 	public FormalList(FormalList fl, Formal f) {
 		this.formals = fl.formals;
 		this.formals.add(f);
+
+		this.children = new ArrayList<>(this.formals);
 	}
 
 	public FormalList() {

@@ -30,6 +30,7 @@ public class vsopc {
             System.exit(-1);
         }
 
+        //TODO use compiler class
     	if (args[0].equals("-lex")) {
             VSOPLexer lexer = new VSOPLexer(reader);
 

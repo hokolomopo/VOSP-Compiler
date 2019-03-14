@@ -1,5 +1,7 @@
 package AST;
 
+import java.util.ArrayList;
+
 public class BinOp extends Expr {
 	private String name;
 	private Expr lhs;
@@ -9,6 +11,11 @@ public class BinOp extends Expr {
 		this.name = name;
 		this.lhs = lhs;
 		this.rhs = rhs;
+
+		this.children = new ArrayList<>();
+		this.children.add(lhs);
+		this.children.add(rhs);
+
 	}
 
 	@Override

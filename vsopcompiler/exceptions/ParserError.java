@@ -17,8 +17,9 @@ public class ParserError extends Error {
     }
 
     public ParserError(String errorMessage, int line, int column){
-        super(errorMessage);
+        super();
 
+        this.message = errorMessage;
         this.column = column;
         this.line = line;
     }
@@ -32,7 +33,6 @@ public class ParserError extends Error {
         s.append(" expected Symbols are [");
 
         for(Integer i : expected){
-            System.out.println(i);
             Token.Tokens t = Token.Tokens.fromValue(i);
             s.append(t.toString() + ", ");
         }
@@ -51,7 +51,7 @@ public class ParserError extends Error {
     public String getMessage(){
         if(message == null)
             return line + ":" + column + ": syntax error";
-        return line + ":" + column + ": syntax error " + message;
+        return line + ":" + column + ": syntax error :" + message;
     }
 
 }

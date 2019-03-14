@@ -11,6 +11,8 @@ public class ExprList extends Expr {
 		else
 			this.expressions = el.expressions;
 		this.expressions.add(e);
+
+		this.children = new ArrayList<>(this.expressions);
 	}
 
 	public ExprList() {

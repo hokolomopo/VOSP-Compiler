@@ -13,6 +13,10 @@ public class Method extends ASTNode {
 		this.formals = formals;
 		this.retType = retType;
 		this.block = block;
+
+		this.children = new ArrayList<>();
+		this.children.add(block);
+		this.children.add(formals);
 	}
 
 	@Override

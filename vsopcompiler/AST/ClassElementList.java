@@ -1,6 +1,9 @@
 package AST;
 
+import com.sun.istack.internal.NotNull;
+
 import java.util.ArrayList;
+import java.util.List;
 
 public class ClassElementList extends ASTNode {
 	private ArrayList<Field> fields;
@@ -10,17 +13,34 @@ public class ClassElementList extends ASTNode {
 		this.fields = cel.fields;
 		this.fields.add(f);
 		this.methods = cel.methods;
+
+		this.children = new ArrayList<>();
+		this.children.addAll(fields);
+		this.children.addAll(methods);
 	}
 
 	public ClassElementList(ClassElementList cel, Method m) {
 		this.fields = cel.fields;
 		this.methods = cel.methods;
 		this.methods.add(m);
+
+		this.children = new ArrayList<>();
+		this.children.addAll(fields);
+		this.children.addAll(methods);
+	}
+
+	public ClassElementList(@NotNull List<Field> fields,@NotNull List<Method> methods) {
+		this.fields = new ArrayList<>(fields);
+		this.methods = new ArrayList<>(methods);
+
+		this.children = new ArrayList<>();
+		this.children.addAll(fields);
+		this.children.addAll(methods);
 	}
 
 	public ClassElementList() {
-		fields = new ArrayList<Field>();
-		methods = new ArrayList<Method>();
+		fields = new ArrayList<>();
+		methods = new ArrayList<>();
 	}
 
 	@Override

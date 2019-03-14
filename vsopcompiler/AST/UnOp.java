@@ -1,5 +1,7 @@
 package AST;
 
+import java.util.ArrayList;
+
 public class UnOp extends Expr {
 	private String name;
 	private Expr expr;
@@ -7,6 +9,9 @@ public class UnOp extends Expr {
 	public UnOp(String name, Expr expr) {
 		this.name = name;
 		this.expr = expr;
+
+		this.children = new ArrayList<>();
+		this.children.add(expr);
 	}
 
 	@Override

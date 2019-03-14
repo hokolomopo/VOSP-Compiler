@@ -1,20 +1,27 @@
 package AST;
 
+import java.util.ArrayList;
+
 public class If extends Expr {
 	private Expr condExpr;
 	private Expr thenExpr;
 	private Expr elseExpr;
 
 	public If(Expr condExpr, Expr thenExpr) {
-		this.condExpr = condExpr;
-		this.thenExpr = thenExpr;
-		this.elseExpr = null;
+		this(condExpr, thenExpr, null);
 	}
 
 	public If(Expr condExpr, Expr thenExpr, Expr elseExpr) {
 		this.condExpr = condExpr;
 		this.thenExpr = thenExpr;
 		this.elseExpr = elseExpr;
+
+		this.children = new ArrayList<>();
+		this.children.add(condExpr);
+		this.children.add(thenExpr);
+
+		if(elseExpr != null)
+			this.children.add(elseExpr);
 	}
 
 

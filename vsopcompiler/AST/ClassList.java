@@ -6,13 +6,19 @@ public class ClassList extends ASTNode {
 	private ArrayList<ClassItem> classes;
 
 	public ClassList(ClassList cl, ClassItem ci) {
-		this.classes = cl.classes;
-		this.classes.add(ci);
+		if(cl == null)
+			this.classes = new ArrayList<>();
+		else
+			this.classes = cl.classes;
+
+		if(ci != null)
+			this.classes.add(ci);
+
+		this.children = new ArrayList<>(this.classes);
 	}
 
 	public ClassList(ClassItem ci) {
-		this.classes = new ArrayList<ClassItem>();
-		this.classes.add(ci);
+		this(null, ci);
 	}
 
 	@Override
