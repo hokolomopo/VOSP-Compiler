@@ -9,7 +9,6 @@ import syntax.SyntaxAnalyzer;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.ArrayList;
 
 public class TestMain {
     public static void main(String[] args) {

@@ -1,7 +1,5 @@
 package AST;
 
-import java.util.ArrayList;
-
 public class Field extends ASTNode {
 	private String name;
 	private Type type;

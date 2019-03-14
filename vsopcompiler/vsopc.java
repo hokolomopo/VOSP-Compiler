@@ -2,7 +2,6 @@ import AST.ASTNode;
 import exceptions.LexerError;
 import exceptions.ParserError;
 import java_cup.runtime.ComplexSymbolFactory;
-import java_cup.runtime.SymbolFactory;
 import lexer.VSOPLexer;
 import parser.VSOPParser;
 import parser.VSOPScanner;

@@ -1,10 +1,5 @@
 package exceptions;
 
-import java_cup.runtime.ComplexSymbolFactory;
-import tokens.Token;
-
-import java.util.List;
-
 public class SemanticError extends Exception {
     private int column, line;
     private String message;

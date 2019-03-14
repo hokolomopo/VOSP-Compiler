@@ -1,8 +1,6 @@
 package AST;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 
 public class ClassItem extends ASTNode{
 	private String name;

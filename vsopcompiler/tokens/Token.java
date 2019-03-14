@@ -1,10 +1,10 @@
 package tokens;
 
 import exceptions.LexerError;
+import parser.sym;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import parser.sym;
 
 import static tokens.TokenType.*;
 

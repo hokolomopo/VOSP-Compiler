@@ -5,8 +5,6 @@ import exceptions.LexerError;
 import exceptions.ParserError;
 import java_cup.runtime.ComplexSymbolFactory;
 import lexer.VSOPLexer;
-import parser.VSOPParser;
-import parser.VSOPScanner;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;

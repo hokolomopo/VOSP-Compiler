@@ -5,14 +5,13 @@
 
 package parser;
 
-import java_cup.runtime.*;
-import tokens.Token;
-import lexer.VSOPLexer;
-import java_cup.runtime.ComplexSymbolFactory.Location;
 import AST.*;
 import exceptions.ParserError;
+import java_cup.runtime.ComplexSymbolFactory;
+import java_cup.runtime.Scanner;
+import tokens.Token;
+
 import java.util.List;
-import java_cup.runtime.XMLElement;
 
 /** CUP v0.11b 20160615 (GIT 4ac7450) generated parser.
   */

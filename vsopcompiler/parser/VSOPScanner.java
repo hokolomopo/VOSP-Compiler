@@ -1,10 +1,10 @@
 package parser;
 
 import java_cup.runtime.ComplexSymbolFactory;
+import java_cup.runtime.Scanner;
 import java_cup.runtime.Symbol;
 import lexer.VSOPLexer;
 import tokens.Token;
-import java_cup.runtime.Scanner;
 
 public class VSOPScanner implements Scanner {
     VSOPLexer lexer;

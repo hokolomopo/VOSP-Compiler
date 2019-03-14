@@ -4,13 +4,6 @@ import AST.ASTNode;
 import AST.ClassItem;
 import parser.Compiler;
 
-import java_cup.runtime.ComplexSymbolFactory;
-import lexer.VSOPLexer;
-import parser.VSOPParser;
-import parser.VSOPScanner;
-
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 
