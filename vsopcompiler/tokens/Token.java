@@ -49,6 +49,7 @@ public class Token{
         LOWER("<", SYMBOL, "lower", sym.LOWER),
         LOWER_EQUAL("<=", SYMBOL, "lower-equal", sym.LOWER_EQUAL),
         ASSIGN("<-", SYMBOL, "assign", sym.ASSIGN),
+        EOF(null, SYMBOL, sym.EOF),
 
         //Others
         INT_LITERAL(null, LITERAL, "integer-literal", sym.INT_LITERAL),
