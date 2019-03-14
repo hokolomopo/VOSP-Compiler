@@ -23,6 +23,7 @@ public class ClassItem extends ASTNode{
 			System.out.print(getTab(tabLevel));
 		System.out.print("Class(" + name + "," + parentName + ",");
 
+		System.out.println();
 		cel.print(tabLevel +1, true);
 		System.out.print(")");
 	}

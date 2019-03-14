@@ -20,23 +20,16 @@ public class FormalList extends ASTNode{
 			System.out.print(getTab(tabLevel));
 		System.out.print("[");
 
-		if(formals.size() > 0)
-			System.out.println();
 
 		int i;
 		if (formals.size() > 0) {
 			for (i = 0; i < formals.size() - 1; i++) {
-				formals.get(i).print(tabLevel + 1, true);
+				formals.get(i).print(tabLevel, false);
 				System.out.print(",");
-				System.out.println();
 			}
-			formals.get(i).print(tabLevel + 1, true);
+			formals.get(i).print(tabLevel, false);
 		}
 
-		if(formals.size() > 0){
-			System.out.println();
-			System.out.print(getTab(tabLevel));
-		}
 		System.out.print("]");
 	}
 }

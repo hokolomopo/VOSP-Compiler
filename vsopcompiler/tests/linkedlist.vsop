@@ -14,7 +14,7 @@ class Cons extends List {
 
 	init(hd : int32, tl : List) : Cons {
 		head <- hd;
-		tail <- tl
+		tail <- tl;
 		self
 	}
 

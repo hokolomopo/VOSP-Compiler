@@ -25,25 +25,23 @@ public class ClassElementList extends ASTNode {
 
 	@Override
 	public void print(int tabLevel, boolean doTab) {
-
-		System.out.println();
-		System.out.print(getTab(tabLevel));
+		if(doTab)
+			System.out.print(getTab(tabLevel));
 
 		System.out.print("[");
 		int i;
 		if (fields.size() > 0) {
-			for (i = 0; i < fields.size() - 1; i++) {
-				System.out.println();
-				fields.get(i).print(tabLevel + 1, true);
-				System.out.print(",");
-			}
-			System.out.println();
-			fields.get(i).print(tabLevel + 1, true);
-		}
+			for (i = 0; i < fields.size(); i++) {
+				if(i == 0)
+					fields.get(i).print(tabLevel, false, true);
+				else
+					fields.get(i).print(tabLevel, true);
 
-		if (fields.size() > 0){
-			System.out.println();
-			System.out.print(getTab(tabLevel));
+				if(i < fields.size() - 1) {
+					System.out.print(",");
+					System.out.println();
+				}
+			}
 		}
 
 		System.out.print("],");
@@ -51,19 +49,19 @@ public class ClassElementList extends ASTNode {
 		System.out.print(getTab(tabLevel) + "[");
 
 		if (methods.size() > 0) {
-			for (i = 0; i < methods.size() - 1; i++) {
-				System.out.println();
-				methods.get(i).print(tabLevel + 1, true);
-				System.out.print(",");
+			for (i = 0; i < methods.size(); i++) {
+				if(i == 0)
+					methods.get(i).print(tabLevel, false, true);
+				else
+					methods.get(i).print(tabLevel, true);
+
+				if(i < methods.size() - 1) {
+					System.out.print(",");
+					System.out.println();
+				}
 			}
-			System.out.println();
-			methods.get(i).print(tabLevel + 1, true);
 		}
 
-		if (methods.size() > 0){
-			System.out.println();
-			System.out.print(getTab(tabLevel));
-		}
 
 		System.out.print("]");
 	}

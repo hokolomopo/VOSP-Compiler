@@ -21,13 +21,16 @@ public class ClassList extends ASTNode {
 		System.out.print("[");
 		int i;
 		if (classes.size() > 0) {
-			for (i = 0; i < classes.size() - 1; i++) {
-				System.out.println();
-				classes.get(i).print(tabLevel + 1, true);
-				System.out.print(",");
+			for (i = 0; i < classes.size(); i++) {
+				if(i == 0)
+					classes.get(i).print(tabLevel, false, true);
+				else
+					classes.get(i).print(tabLevel, true, false);
+				if(i < classes.size() - 1) {
+					System.out.print(",");
+					System.out.println();
+				}
 			}
-			System.out.println();
-			classes.get(i).print(tabLevel + 1, true);
 		}
 		System.out.print("]");
 	}

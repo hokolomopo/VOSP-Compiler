@@ -21,22 +21,13 @@ public class ArgList extends ASTNode{
 
 		System.out.print("[");
 
-		if(args.size() > 0)
-			System.out.println();
-
 		int i;
 		if (args.size() > 0) {
 			for (i = 0; i < args.size() - 1; i++) {
-				args.get(i).print(tabLevel + 1, true);
+				args.get(i).print(tabLevel, false);
 				System.out.print(",");
-				System.out.println();
 			}
-			args.get(i).print(tabLevel + 1, true);
-		}
-
-		if(args.size() > 0){
-			System.out.println();
-			System.out.print(getTab(tabLevel));
+			args.get(i).print(tabLevel, false);
 		}
 
 		System.out.print("]");
