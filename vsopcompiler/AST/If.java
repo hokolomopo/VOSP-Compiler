@@ -17,15 +17,6 @@ public class If extends Expr {
 		this.elseExpr = elseExpr;
 	}
 
-	@Override
-	public void print(int tabLevel, boolean doTab, boolean first) {
-		if (!first){
-			System.out.println();
-			print(tabLevel, true);
-			return;
-		}
-		print(tabLevel, doTab);
-	}
 
 	@Override
 	public void print(int tabLevel, boolean doTab) {
@@ -33,14 +24,14 @@ public class If extends Expr {
 			System.out.print(getTab(tabLevel));
 
 		System.out.print("If(");
-		condExpr.print(tabLevel, false, false);
+		condExpr.print(tabLevel, false);
 		System.out.print(",");
 		System.out.println();
-		thenExpr.print(tabLevel + 1, true, true);
+		thenExpr.print(tabLevel + 1, true);
 		if (elseExpr != null) {
 			System.out.print(",");
 			System.out.println();
-			elseExpr.print(tabLevel + 1, true, true);
+			elseExpr.print(tabLevel + 1, true);
 		}
 		System.out.print(")");
 	}

@@ -21,7 +21,7 @@ public class ExprList extends Expr {
 	public void print(int tabLevel, boolean doTab) {
 	    //Just print an expression if there is only 1 expression in the list
 	    if(expressions.size() == 1){
-	        expressions.get(0).print(tabLevel, doTab, true);
+	        expressions.get(0).print(tabLevel, doTab);
 	        return;
         }
 
@@ -33,9 +33,9 @@ public class ExprList extends Expr {
 		if (expressions.size() > 0) {
 			for (i = 0; i < expressions.size(); i++) {
 				if(i == 0)
-					expressions.get(i).print(tabLevel, false, true);
+					expressions.get(i).print(tabLevel, false);
 				else
-					expressions.get(i).print(tabLevel, true, true);
+					expressions.get(i).print(tabLevel, true);
 
 				if(i < expressions.size() - 1) {
 					System.out.print(",");

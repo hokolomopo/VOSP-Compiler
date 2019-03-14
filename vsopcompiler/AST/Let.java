@@ -21,16 +21,6 @@ public class Let extends Expr {
 	}
 
 	@Override
-	public void print(int tabLevel, boolean doTab, boolean first) {
-		if (!first){
-			System.out.println();
-			print(tabLevel, true);
-			return;
-		}
-		print(tabLevel, doTab);
-	}
-
-	@Override
 	public void print(int tabLevel, boolean doTab) {
 		if(doTab)
 			System.out.print(getTab(tabLevel));

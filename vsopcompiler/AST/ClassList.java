@@ -24,9 +24,9 @@ public class ClassList extends ASTNode {
 		if (classes.size() > 0) {
 			for (i = 0; i < classes.size(); i++) {
 				if(i == 0)
-					classes.get(i).print(tabLevel, false, true);
+					classes.get(i).print(tabLevel, false);
 				else
-					classes.get(i).print(tabLevel, true, false);
+					classes.get(i).print(tabLevel, true);
 				if(i < classes.size() - 1) {
 					System.out.print(",");
 					System.out.println();
