@@ -33,7 +33,7 @@ public class ClassElementList extends ASTNode {
 		if (fields.size() > 0) {
 			for (i = 0; i < fields.size(); i++) {
 				if(i == 0)
-					fields.get(i).print(tabLevel, false, true);
+					fields.get(i).print(tabLevel, false);
 				else
 					fields.get(i).print(tabLevel, true);
 
@@ -51,7 +51,7 @@ public class ClassElementList extends ASTNode {
 		if (methods.size() > 0) {
 			for (i = 0; i < methods.size(); i++) {
 				if(i == 0)
-					methods.get(i).print(tabLevel, false, true);
+					methods.get(i).print(tabLevel, false);
 				else
 					methods.get(i).print(tabLevel, true);
 
