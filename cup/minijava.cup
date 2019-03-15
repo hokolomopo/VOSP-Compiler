@@ -8,7 +8,7 @@ import java.io.*;
 
 import javax.xml.transform.*;
 import javax.xml.transform.stream.*;
-parser code {:
+be.compiler.parser code {:
   public VSOPParser(Lexer lex, ComplexSymbolFactory sf) {
     super(lex,sf);
   }
@@ -16,17 +16,17 @@ parser code {:
       // initialize the symbol factory
       ComplexSymbolFactory csf = new ComplexSymbolFactory();
       // create a buffering scanner wrapper
-      ScannerBuffer lexer = new ScannerBuffer(new Lexer(new BufferedReader(new FileReader(args[0])),csf));
+      ScannerBuffer be.vsop.lexer = new ScannerBuffer(new Lexer(new BufferedReader(new FileReader(args[0])),csf));
       // start parsing
-      Parser p = new Parser(lexer,csf);
+      Parser p = new Parser(be.vsop.lexer,csf);
       XMLElement e = (XMLElement)p.parse().value;
       // create XML output file 
       XMLOutputFactory outFactory = XMLOutputFactory.newInstance();
       XMLStreamWriter sw = outFactory.createXMLStreamWriter(new FileOutputStream(args[1]));
       // dump XML output to the file
-      XMLElement.dump(lexer,sw,e,"expr","stmt");
+      XMLElement.dump(be.vsop.lexer,sw,e,"expr","stmt");
 
-       // transform the parse tree into an AST and a rendered HTML version
+       // transform the parse tree into an be.vsop.AST and a rendered HTML version
       Transformer transformer = TransformerFactory.newInstance()
 	    .newTransformer(new StreamSource(new File("tree.xsl")));
       Source text = new StreamSource(new File(args[1]));

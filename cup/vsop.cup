@@ -1,13 +1,14 @@
 import java_cup.runtime.*;
-import tokens.Token;
-import lexer.VSOPLexer;
+import be.vsop.tokens.Token;
+import be.vsop.lexer.VSOPLexer;
 import java_cup.runtime.ComplexSymbolFactory.Location;
-import AST.*;
-import exceptions.ParserError;
+import be.vsop.AST.*;
+
+import be.vsop.exceptions.ParserException;
 import java.util.List;
 
 parser code {:
-    // Connect this parser to a scanner!
+    // Connect this be.vsop.parser to a scanner!
     Scanner s;
     ComplexSymbolFactory sf;
     ASTNode abstractTree;
@@ -27,7 +28,7 @@ parser code {:
           }
           List<Integer> expected = expected_token_ids();
 
-          throw new ParserError(s, expected, s.xleft.getLine(), s.xleft.getColumn());
+          throw new ParserException(s, expected, s.xleft.getLine(), s.xleft.getColumn());
 
           //throw new ParserError(s.xleft.getLine(), s.xleft.getColumn());
         }
@@ -40,7 +41,7 @@ parser code {:
 init with {: :};
 scan with {: return s.next_token(); :};
 
-/* Terminals (tokens returned by the scanner). */
+/* Terminals (be.vsopens returned by the scanner). */
 terminal Token      AND, BOOL, CLASS, DO, ELSE, EXTENDS, FALSE, IF, IN, INT32, ISNULL, LET, NEW, NOT, STRING, THEN, TRUE, UNIT, WHILE;
 terminal Token      LBRACE, RBRACE, LPAR, RPAR, COLON, SEMICOLON, COMMA, PLUS, MINUS, TIMES, DIV, POW, DOT, EQUAL, LOWER, LOWER_EQUAL, ASSIGN;
 terminal Token      STRING_LITERAL, IDENTIFIER, TYPE_IDENTIFIER, INT_LITERAL;
@@ -54,11 +55,12 @@ non terminal ClassElementList         classBody, classElementList;
 non terminal FormalList               formalList, formals;
 non terminal Field                    field;
 non terminal Method                   method;
-non terminal Type                     type;
+non terminal Type                     type, classType;
 non terminal Formal                   formal;
 non terminal ExprList                 block, exprList;
 non terminal Expr                     expr, literal, booleanLiteral;
 non terminal ArgList                  args, argList;
+non terminal Id                       identifier;
 non terminal empty;
 
 /* Precedences */
@@ -86,8 +88,8 @@ classList ::=
 ;
 
 classItem ::= 
-  CLASS TYPE_IDENTIFIER:ti classBody:cel                                      {: RESULT = new ClassItem(ti.getValue(), cel); :}
-| CLASS TYPE_IDENTIFIER:ti EXTENDS TYPE_IDENTIFIER:ti_parent classBody:cel    {: RESULT = new ClassItem(ti.getValue(), ti_parent.getValue(), cel); :}
+  CLASS classType:ti classBody:cel                                      {: RESULT = new ClassItem(ti, cel); :}
+| CLASS classType:ti EXTENDS classType:ti_parent classBody:cel    {: RESULT = new ClassItem(ti, ti_parent, cel); :}
 ;
 
 classBody ::= 
@@ -101,20 +103,24 @@ classElementList ::=
 ;
 
 field ::=
-  IDENTIFIER:id COLON type:ty SEMICOLON                   {: RESULT = new Field(id.getValue(), ty); :}
-| IDENTIFIER:id COLON type:ty ASSIGN expr:val SEMICOLON   {: RESULT = new Field(id.getValue(), ty, val); :}
+  identifier:id COLON type:ty SEMICOLON                   {: RESULT = new Field(id, ty); :}
+| identifier:id COLON type:ty ASSIGN expr:val SEMICOLON   {: RESULT = new Field(id, ty, val); :}
 ;
 
 method ::=
-  IDENTIFIER:id LPAR formals:fo RPAR COLON type:ty block:b    {: RESULT = new Method(id.getValue(), fo, ty, b); :}
+  identifier:id LPAR formals:fo RPAR COLON type:ty block:b    {: RESULT = new Method(id, fo, ty, b); :}
 ;
 
 type ::=
-  TYPE_IDENTIFIER:ti      {: RESULT = new Type(ti.getValue()); :}
-|  INT32                  {: RESULT = new Type("int32"); :}
-|  BOOL                   {: RESULT = new Type("bool"); :}
-|  STRING                 {: RESULT = new Type("string"); :}
-|  UNIT                   {: RESULT = new Type("unit"); :}
+  classType:ty            {: RESULT = ty; :}
+|  INT32:ti                  {: RESULT = new Type("int32", ti.getLine(), ti.getColumn()); :}
+|  BOOL:ti                   {: RESULT = new Type("bool", ti.getLine(), ti.getColumn()); :}
+|  STRING:ti                 {: RESULT = new Type("string", ti.getLine(), ti.getColumn()); :}
+|  UNIT:ti                   {: RESULT = new Type("unit", ti.getLine(), ti.getColumn()); :}
+;
+
+classType ::=
+  TYPE_IDENTIFIER:ti      {: RESULT = new Type(ti.getValue(), ti.getLine(), ti.getColumn()); :}
 ;
 
 formals ::=
@@ -128,7 +134,7 @@ formalList ::=
 ;
 
 formal ::=
-  IDENTIFIER:id COLON type:ty      {: RESULT = new Formal(id.getValue(), ty); :}
+  identifier:id COLON type:ty      {: RESULT = new Formal(id, ty); :}
 ;
 
 block ::=
@@ -144,9 +150,9 @@ expr ::=
   IF expr:e1 THEN expr:e2                                                 {: RESULT = new If(e1, e2); :}
 | IF expr:e1 THEN expr:e2 ELSE expr:e3                            {: RESULT = new If(e1, e2, e3); :}
 | WHILE expr:e1 DO expr:e2                                      {: RESULT = new While(e1, e2); :}
-| LET IDENTIFIER:id COLON type:ty IN expr:e                          {: RESULT = new Let(id.getValue(), ty, e); :}
-| LET IDENTIFIER:id COLON type:ty ASSIGN expr:e1 IN expr:e2     {: RESULT = new Let(id.getValue(), ty, e1, e2); :}
-| IDENTIFIER:id ASSIGN expr:e                                        {: RESULT = new Assign(id.getValue(), e); :}
+| LET identifier:id COLON type:ty IN expr:e                          {: RESULT = new Let(id, ty, e); :}
+| LET identifier:id COLON type:ty ASSIGN expr:e1 IN expr:e2     {: RESULT = new Let(id, ty, e1, e2); :}
+| identifier:id ASSIGN expr:e                                        {: RESULT = new Assign(id, e); :}
 | NOT:kw expr:e                                                      {: RESULT = new UnOp(kw.getTokenType().getStringValue(), e); :}
 | MINUS:kw expr:e                                                    {: RESULT = new UnOp(kw.getTokenType().getStringValue(), e); :}%prec UMINUS
 | ISNULL:kw expr:e                                                   {: RESULT = new UnOp(kw.getTokenType().getStringValue(), e); :}
@@ -159,11 +165,11 @@ expr ::=
 | expr:e1 TIMES:kw expr:e2                                      {: RESULT = new BinOp(kw.getTokenType().getStringValue(), e1, e2); :}
 | expr:e1 DIV:kw expr:e2                                        {: RESULT = new BinOp(kw.getTokenType().getStringValue(), e1, e2); :}
 | expr:e1 POW:kw expr:e2                                        {: RESULT = new BinOp(kw.getTokenType().getStringValue(), e1, e2); :}
-| expr:e DOT IDENTIFIER:id LPAR args:ar RPAR                         {: RESULT = new Call(e, id.getValue(), ar); :}
-| IDENTIFIER:id LPAR args:ar RPAR                               {: RESULT = new Call(new Id("self"), id.getValue(), ar); :}
+| expr:e DOT identifier:id LPAR args:ar RPAR                         {: RESULT = new Call(e, id, ar); :}
+| identifier:id LPAR args:ar RPAR                               {: RESULT = new Call(new Id("self", id.getLine(), id.getColumn()), id, ar, true); :}
 | LPAR RPAR                                                     {: RESULT = new Null(); :}
-| NEW TYPE_IDENTIFIER:ti                                        {: RESULT = new New(ti.getValue()); :}
-| IDENTIFIER:id                                                 {: RESULT = new Id(id.getValue()); :}
+| NEW classType:ti                                        {: RESULT = new New(ti); :}
+| identifier:id                                                 {: RESULT = id; :}
 | literal:li                                                    {: RESULT = li; :}
 | LPAR expr:e RPAR                                              {: RESULT = e; :}
 | block:b                                                       {: RESULT = b; :}
@@ -188,6 +194,10 @@ literal ::=
 booleanLiteral ::=
   TRUE:bl       {: RESULT = new LiteralBoolean(bl.getTokenType().getStringValue()); :}
 | FALSE:bl      {: RESULT = new LiteralBoolean(bl.getTokenType().getStringValue()); :}
+;
+
+identifier ::=
+IDENTIFIER:id       {: RESULT = new Id(id.getValue(), id.getLine(), id.getColumn()); :}
 ;
 
 empty ::= ;

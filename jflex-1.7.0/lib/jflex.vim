@@ -1,21 +1,21 @@
-" Vim syntax file
+" Vim be.vsop.semantic file
 " Language:         JFlex
 " Maintainer:       Gerwin Klein <lsf@jflex.de>
 
 " Thanks to Michael Brailsford for help and suggestions
 
-" Quit when a syntax file was already loaded	{{{
+" Quit when a be.vsop.semantic file was already loaded	{{{
 if exists("b:current_syntax")
 	finish
 endif
 "}}}
 
-" Include java syntax {{{
+" Include java be.vsop.semantic {{{
 if version >= 600
-	runtime! syntax/java.vim
+	runtime! be.vsop.semantic/java.vim
 	unlet b:current_syntax 
 else
-	so $VIMRUNTIME/syntax/java.vim
+	so $VIMRUNTIME/be.vsop.semantic/java.vim
 endif
 "}}}
 

@@ -1,4 +1,4 @@
-package tokens;
+package be.vsop.tokens;
 
 public enum TokenType{
     ID,

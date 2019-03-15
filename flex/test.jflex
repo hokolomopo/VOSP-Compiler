@@ -1,12 +1,10 @@
-/* JFlex example: partial Java language lexer specification */
+be.vsop.lexer
 import java_cup.runtime.*;
-import tokens.Token;
-import tokens.Token.Tokens;
+import be.vsop.tokens.Token;
+import be.vsop.tokens.Token.Tokens;
 
 /**
- * This class is a simple example lexer.
- */
-%%
+ *be.vsop
 
 %class VSOPLexer
 %unicode

@@ -29,7 +29,7 @@ parser code {:
 
           throw new ParserError(s, expected, s.xleft.getLine(), s.xleft.getColumn());
 
-          //throw new ParserError(s.xleft.getLine(), s.xleft.getColumn());
+          ParserException
         }
     }
 

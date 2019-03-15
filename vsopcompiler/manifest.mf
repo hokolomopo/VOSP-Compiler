@@ -1,1 +1,1 @@
-Main-class: vsopc
+Main-class: be.vsop.vsopc

@@ -1,4 +1,4 @@
-import tokens.Token;
+import be.vsop.tokens.Token;
 
 import java.io.FileReader;
 import java.io.IOException;

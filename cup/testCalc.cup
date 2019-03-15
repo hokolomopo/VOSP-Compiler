@@ -4,7 +4,7 @@ import lexer.VSOPLexer;
 import java_cup.runtime.ComplexSymbolFactory.Location;
 
 parser code {:
-    // Connect this parser to a scanner!
+    be.vsop.parser
     Scanner s;
     ComplexSymbolFactory sf;
     public void init(Scanner s, ComplexSymbolFactory sf){ this.s=s; this.sf = sf;}

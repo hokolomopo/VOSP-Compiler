@@ -1,15 +1,8 @@
 /* JFlex file for VSOP language */
-package lexer;
-import exceptions.LexerError;
-import java.util.HashMap;
-import tokens.Token.Tokens;
-import tokens.Token;
-import java.util.Stack;
+package be.vsop.lexer;
 
 /**
- * This class is a lexer for the VSOP language.
- */
-%%
+ *be.vsop
 
 %class VSOPLexer
 %unicode

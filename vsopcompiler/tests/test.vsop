@@ -13,13 +13,17 @@ class Cons extends List {
 	tail : List;
 
 	init(hd : int32, tl : List) : Cons {
-		head <- hd;
+		hed <- hd;
 		tail <- tl;
 		self
 	}
 
-	head() : int32 { head }
-	isNil() : bool { false }
+	head() : int32 { 
+		head;
+		isil()
+	}
+
+	isNil() : bool { while false do tai }
 	length() : int32 { 1 + tail.length() }
 }
 
@@ -28,7 +32,7 @@ class Main extends IO {
 		let xs : List <- (new Cons).init(0, (new Cons).init(
 		1, (new Cons).init(
 		2, new Nil)))
-		in print("List has length ").printInt32(xs.length()).print("\n");
+		in prit("List has length ").printInt32(xs.length()).print("\n");
 		0
 	}
 }
@@ -37,4 +41,5 @@ class Nil extends A {}
 
 class A extends B {}
 class B extends A {}
+class C extends D {}
 

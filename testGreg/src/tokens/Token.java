@@ -1,8 +1,8 @@
-package tokens;
+package be.vsop.tokens;
 
 import java.util.HashMap;
 
-import static tokens.TokenType.*;
+import static be.vsop.tokens.TokenType.*;
 
 public class Token{
     public enum Tokens {
