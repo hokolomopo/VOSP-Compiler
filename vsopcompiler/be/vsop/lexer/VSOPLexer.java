@@ -2,16 +2,14 @@
 
 /* JFlex file for VSOP language */
 package be.vsop.lexer;
-
 import be.vsop.exceptions.LexerException;
-import be.vsop.tokens.Token;
-import be.vsop.tokens.Token.Tokens;
-
 import java.util.HashMap;
+import be.vsop.tokens.Token.Tokens;
+import be.vsop.tokens.Token;
 import java.util.Stack;
 
 /**
- * This class is a be.vsop.lexer for the VSOP language.
+ * This class is a lexer for the VSOP language.
  */
 
 public class VSOPLexer {
@@ -459,7 +457,7 @@ public class VSOPLexer {
    * If this method is called, something is seriously wrong
    * (e.g. a JFlex bug producing a faulty scanner etc.).
    *
-   * Usual be.vsop.semantic/scanner level error handling should be done
+   * Usual syntax/scanner level error handling should be done
    * in error fallback rules.
    *
    * @param   errorCode  the code of the errormessage to display

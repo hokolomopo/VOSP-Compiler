@@ -19,7 +19,7 @@ public class vsopc {
     public static void main(String[] args) {
 
     	if (args.length < 2) {
-            System.err.println("Wrong Arguments :\n1) -lex for be.vsop.lexer usage, -be.vsop.parser for be.vsop.parser usage\n2) path to the file to parse.");
+            System.err.println("Wrong Arguments :\n1) -lex for lexer usage, -parse for parser usage\n2) path to the file to parse.");
             System.exit(-1);
         }
     	
@@ -61,7 +61,7 @@ public class vsopc {
             System.exit(0);
     	}
     	
-    	if (args[0].contentEquals("-parse")) {
+    	if (args[0].equals("-parse")) {
             VSOPLexer lexer = new VSOPLexer(reader);
             ComplexSymbolFactory symbolFactory = new ComplexSymbolFactory();
 
