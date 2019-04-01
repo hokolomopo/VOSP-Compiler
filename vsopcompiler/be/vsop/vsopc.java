@@ -32,7 +32,8 @@ public class vsopc {
             System.exit(-1);
         }
 
-        //TODO use Compiler class
+        Compiler compiler = new Compiler(fileName);
+
     	if (args[0].equals("-lex")) {
             VSOPLexer lexer = new VSOPLexer(reader);
 
@@ -62,37 +63,12 @@ public class vsopc {
     	}
     	
     	if (args[0].contentEquals("-parse")) {
-            VSOPLexer lexer = new VSOPLexer(reader);
-            ComplexSymbolFactory symbolFactory = new ComplexSymbolFactory();
-
-            VSOPScanner scanner = new VSOPScanner(lexer, symbolFactory);
-            VSOPParser parser = new VSOPParser(scanner, symbolFactory);
-            parser.init(scanner, symbolFactory);
-
-            try {
-                parser.parse();
-                ASTNode tree = parser.getTree();
-                tree.print();
-                System.out.println();
-
-            } catch (ParserException e) {
-                System.err.println(fileName + ":" + e.getMessage());
-                System.exit(-1);
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.exit(-1);
-            }
+            compiler.buildAST();
+            compiler.getAST().print();
     	}
 
-    	else{
-    	    //TODO : faire un vrai truc
-            fileName = "tests/test.vsop";
-            Compiler compiler = new Compiler(fileName);
-            Program program = compiler.getAST();
-            program.print();
-            System.out.println();
-            compiler.doSemanticAnalysis(program);
-
+    	else if(args[0].contentEquals("-check")){
+            compiler.doSemanticAnalysis();
         }
     }
 
