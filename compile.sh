@@ -12,20 +12,21 @@ compileJava(){
 }
 if (($# < 1))
 then
+	echo "No argument given : recompiling everything. Use 'lex' to compile lexer, 'parse' to compile parser, 'java' to compile classes in vsopcompiler."
 	# compile everything
 	compileLexer
 	compileParser
 	compileJava
 else
-	if (($1 == "lex"))
+	if test "$1" = "lex"
 	then
 		compileLexer
 	fi
-	if (($1 == "parse"))
+	if test "$1" = "parse"
 	then
 		compileParser
 	fi
-	if (($1 == "java"))
+	if test "$1" = "java"
 	then
 		compileJava
 	fi
