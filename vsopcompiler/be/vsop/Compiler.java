@@ -1,5 +1,6 @@
 package be.vsop;
 
+import be.vsop.AST.ASTNode;
 import be.vsop.AST.ClassList;
 import be.vsop.AST.Program;
 import be.vsop.exceptions.LexerException;
@@ -23,7 +24,7 @@ public class Compiler {
         this.fileName = fileName;
     }
 
-    public Program getAST(){
+    public Program buildAST(){
         FileReader reader = null;
         try {
             reader = new FileReader(fileName);
@@ -57,7 +58,8 @@ public class Compiler {
 
         ClassList l = (ClassList) parser.getTree();
 
-        return new Program(l);
+        this.program = new Program(l);
+        return this.program;
     }
 
     public void doSemanticAnalysis(Program program){
@@ -67,16 +69,23 @@ public class Compiler {
 
     public void doSemanticAnalysis(){
         if(this.program == null)
-            this.program = (Program)getAST();
+            this.program = (Program) buildAST();
+
+        program.print();
 
         SyntaxAnalyzer sa = new SyntaxAnalyzer(program);
         sa.analyze();
+
 
         if(sa.hasError()) {
             for (SemanticException e : sa.getErrors())
                 System.err.println(fileName + ":" + e.getMessage());
             System.exit(-1);
         }
+    }
+
+    public Program getAST(){
+        return program;
     }
 
 }

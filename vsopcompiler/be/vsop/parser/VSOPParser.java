@@ -432,15 +432,13 @@ public class VSOPParser extends java_cup.runtime.lr_parser {
 
           ComplexSymbolFactory.ComplexSymbol s = (ComplexSymbolFactory.ComplexSymbol)info;
 
-          //Return previous token if current has no indication of location. Should only happens on EOF.
+          // Return previous token if current has no indication of location. Should only happen on EOF.
           if(s.xleft == null || s.xright == null){
               s = ((VSOPScanner)this.s).getPrev();
           }
           List<Integer> expected = expected_token_ids();
 
           throw new ParserException(s, expected, s.xleft.getLine(), s.xleft.getColumn());
-
-          //throw new ParserError(s.xleft.getLine(), s.xleft.getColumn());
         }
     }
 

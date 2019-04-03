@@ -35,7 +35,7 @@ public class LanguageSpecs {
         private ClassItem parseClass() {
 
             Compiler compiler = new Compiler(fileName);
-            ASTNode tree = compiler.getAST();
+            ASTNode tree = compiler.buildAST();
 
             ArrayList<ASTNode> list = tree.getChildren();
 

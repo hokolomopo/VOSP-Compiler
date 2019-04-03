@@ -18,12 +18,12 @@ public class vsopc {
 
     public static void main(String[] args) {
 
-    	if (args.length < 2) {
-            System.err.println("Wrong Arguments :\n1) -lex for lexer usage, -parse for parser usage\n2) path to the file to parse.");
+        if (args.length < 2) {
+            System.err.println("Wrong Arguments :\n1) -lex for be.vsop.lexer usage, -be.vsop.parser for be.vsop.parser usage\n2) path to the file to parse.");
             System.exit(-1);
         }
-    	
-    	String fileName = args[1];
+
+        String fileName = args[1];
         FileReader reader = null;
         try {
             reader = new FileReader(fileName);
@@ -32,8 +32,9 @@ public class vsopc {
             System.exit(-1);
         }
 
-        //TODO use Compiler class
-    	if (args[0].equals("-lex")) {
+        Compiler compiler = new Compiler(fileName);
+
+        if (args[0].equals("-lex")) {
             VSOPLexer lexer = new VSOPLexer(reader);
 
             try {
@@ -59,40 +60,15 @@ public class vsopc {
                 System.exit(-1);
             }
             System.exit(0);
-    	}
-    	
-    	if (args[0].equals("-parse")) {
-            VSOPLexer lexer = new VSOPLexer(reader);
-            ComplexSymbolFactory symbolFactory = new ComplexSymbolFactory();
+        }
 
-            VSOPScanner scanner = new VSOPScanner(lexer, symbolFactory);
-            VSOPParser parser = new VSOPParser(scanner, symbolFactory);
-            parser.init(scanner, symbolFactory);
+        if (args[0].contentEquals("-parse")) {
+            compiler.buildAST();
+            compiler.getAST().print();
+        }
 
-            try {
-                parser.parse();
-                ASTNode tree = parser.getTree();
-                tree.print();
-                System.out.println();
-
-            } catch (ParserException e) {
-                System.err.println(fileName + ":" + e.getMessage());
-                System.exit(-1);
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.exit(-1);
-            }
-    	}
-
-    	else{
-    	    //TODO : faire un vrai truc
-            fileName = "tests/test.vsop";
-            Compiler compiler = new Compiler(fileName);
-            Program program = compiler.getAST();
-            program.print();
-            System.out.println();
-            compiler.doSemanticAnalysis(program);
-
+        else if(args[0].contentEquals("-check")){
+            compiler.doSemanticAnalysis();
         }
     }
 

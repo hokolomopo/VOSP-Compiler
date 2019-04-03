@@ -1,2 +1,2 @@
 #!/bin/bash
-tar cfJ vsopcompiler.tar.xz vsopcompiler/*
+tar --exclude='*.class' -cJf vsopcompiler.tar.xz vsopcompiler/*
