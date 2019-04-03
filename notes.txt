@@ -1,3 +1,0 @@
-On peut faire des classes vides en java
-
-J'ai enlevé le () car il est déjà géré par la liste d'arguments vide

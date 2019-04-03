@@ -18,12 +18,12 @@ public class vsopc {
 
     public static void main(String[] args) {
 
-    	if (args.length < 2) {
+        if (args.length < 2) {
             System.err.println("Wrong Arguments :\n1) -lex for be.vsop.lexer usage, -be.vsop.parser for be.vsop.parser usage\n2) path to the file to parse.");
             System.exit(-1);
         }
-    	
-    	String fileName = args[1];
+
+        String fileName = args[1];
         FileReader reader = null;
         try {
             reader = new FileReader(fileName);
@@ -34,7 +34,7 @@ public class vsopc {
 
         Compiler compiler = new Compiler(fileName);
 
-    	if (args[0].equals("-lex")) {
+        if (args[0].equals("-lex")) {
             VSOPLexer lexer = new VSOPLexer(reader);
 
             try {
@@ -60,14 +60,14 @@ public class vsopc {
                 System.exit(-1);
             }
             System.exit(0);
-    	}
-    	
-    	if (args[0].contentEquals("-parse")) {
+        }
+
+        if (args[0].contentEquals("-parse")) {
             compiler.buildAST();
             compiler.getAST().print();
-    	}
+        }
 
-    	else if(args[0].contentEquals("-check")){
+        else if(args[0].contentEquals("-check")){
             compiler.doSemanticAnalysis();
         }
     }

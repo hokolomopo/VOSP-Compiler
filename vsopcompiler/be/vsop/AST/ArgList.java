@@ -13,7 +13,7 @@ public class ArgList extends ASTNode{
 	}
 
 	public ArgList() {
-		this.args = new ArrayList<Expr>();
+		this.args = new ArrayList<>();
 	}
 
 	@Override

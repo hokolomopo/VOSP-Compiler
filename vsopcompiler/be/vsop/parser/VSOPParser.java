@@ -5,13 +5,14 @@
 
 package be.vsop.parser;
 
+import java_cup.runtime.*;
+import be.vsop.tokens.Token;
+import be.vsop.lexer.VSOPLexer;
+import java_cup.runtime.ComplexSymbolFactory.Location;
 import be.vsop.AST.*;
 import be.vsop.exceptions.ParserException;
-import be.vsop.tokens.Token;
-import java_cup.runtime.ComplexSymbolFactory;
-import java_cup.runtime.Scanner;
-
 import java.util.List;
+import java_cup.runtime.XMLElement;
 
 /** CUP v0.11b 20160615 (GIT 4ac7450) generated parser.
   */
@@ -431,15 +432,13 @@ public class VSOPParser extends java_cup.runtime.lr_parser {
 
           ComplexSymbolFactory.ComplexSymbol s = (ComplexSymbolFactory.ComplexSymbol)info;
 
-          //Return previous token if current has no indication of location. Should only happens on EOF.
+          // Return previous token if current has no indication of location. Should only happen on EOF.
           if(s.xleft == null || s.xright == null){
               s = ((VSOPScanner)this.s).getPrev();
           }
           List<Integer> expected = expected_token_ids();
 
           throw new ParserException(s, expected, s.xleft.getLine(), s.xleft.getColumn());
-
-          //throw new ParserError(s.xleft.getLine(), s.xleft.getColumn());
         }
     }
 

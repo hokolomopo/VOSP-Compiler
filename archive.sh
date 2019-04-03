@@ -1,8 +1,2 @@
-#!/bin/sh
-fileName=vsopcompiler.tar.xz
-cp -r language vsopcompiler
-cd vsopcompiler
-tar cfJ $fileName *
-cd ..
-cp  vsopcompiler/$fileName .
-rm vsopcompiler/$fileName
+#!/bin/bash
+tar --exclude='*.class' -cJf vsopcompiler.tar.xz vsopcompiler/*

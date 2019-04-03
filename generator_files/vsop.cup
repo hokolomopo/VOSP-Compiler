@@ -22,15 +22,13 @@ parser code {:
 
           ComplexSymbolFactory.ComplexSymbol s = (ComplexSymbolFactory.ComplexSymbol)info;
 
-          //Return previous token if current has no indication of location. Should only happens on EOF.
+          // Return previous token if current has no indication of location. Should only happen on EOF.
           if(s.xleft == null || s.xright == null){
               s = ((VSOPScanner)this.s).getPrev();
           }
           List<Integer> expected = expected_token_ids();
 
           throw new ParserException(s, expected, s.xleft.getLine(), s.xleft.getColumn());
-
-          //throw new ParserError(s.xleft.getLine(), s.xleft.getColumn());
         }
     }
 
@@ -41,7 +39,7 @@ parser code {:
 init with {: :};
 scan with {: return s.next_token(); :};
 
-/* Terminals (be.vsopens returned by the scanner). */
+/* Terminals (be.vsop.tokens returned by the scanner). */
 terminal Token      AND, BOOL, CLASS, DO, ELSE, EXTENDS, FALSE, IF, IN, INT32, ISNULL, LET, NEW, NOT, STRING, THEN, TRUE, UNIT, WHILE;
 terminal Token      LBRACE, RBRACE, LPAR, RPAR, COLON, SEMICOLON, COMMA, PLUS, MINUS, TIMES, DIV, POW, DOT, EQUAL, LOWER, LOWER_EQUAL, ASSIGN;
 terminal Token      STRING_LITERAL, IDENTIFIER, TYPE_IDENTIFIER, INT_LITERAL;
@@ -89,7 +87,7 @@ classList ::=
 
 classItem ::= 
   CLASS classType:ti classBody:cel                                      {: RESULT = new ClassItem(ti, cel); :}
-| CLASS classType:ti EXTENDS classType:ti_parent classBody:cel    {: RESULT = new ClassItem(ti, ti_parent, cel); :}
+| CLASS classType:ti EXTENDS classType:ti_parent classBody:cel          {: RESULT = new ClassItem(ti, ti_parent, cel); :}
 ;
 
 classBody ::= 
@@ -112,7 +110,7 @@ method ::=
 ;
 
 type ::=
-  classType:ty            {: RESULT = ty; :}
+  classType:ty               {: RESULT = ty; :}
 |  INT32:ti                  {: RESULT = new Type("int32", ti.getLine(), ti.getColumn()); :}
 |  BOOL:ti                   {: RESULT = new Type("bool", ti.getLine(), ti.getColumn()); :}
 |  STRING:ti                 {: RESULT = new Type("string", ti.getLine(), ti.getColumn()); :}
@@ -148,31 +146,31 @@ exprList ::=
 
 expr ::=
   IF expr:e1 THEN expr:e2                                                 {: RESULT = new If(e1, e2); :}
-| IF expr:e1 THEN expr:e2 ELSE expr:e3                            {: RESULT = new If(e1, e2, e3); :}
-| WHILE expr:e1 DO expr:e2                                      {: RESULT = new While(e1, e2); :}
-| LET identifier:id COLON type:ty IN expr:e                          {: RESULT = new Let(id, ty, e); :}
-| LET identifier:id COLON type:ty ASSIGN expr:e1 IN expr:e2     {: RESULT = new Let(id, ty, e1, e2); :}
-| identifier:id ASSIGN expr:e                                        {: RESULT = new Assign(id, e); :}
-| NOT:kw expr:e                                                      {: RESULT = new UnOp(kw.getTokenType().getStringValue(), e); :}
-| MINUS:kw expr:e                                                    {: RESULT = new UnOp(kw.getTokenType().getStringValue(), e); :}%prec UMINUS
-| ISNULL:kw expr:e                                                   {: RESULT = new UnOp(kw.getTokenType().getStringValue(), e); :}
-| expr:e1 AND:kw expr:e2                                        {: RESULT = new BinOp(kw.getTokenType().getStringValue(), e1, e2); :}
-| expr:e1 EQUAL:kw expr:e2                                      {: RESULT = new BinOp(kw.getTokenType().getStringValue(), e1, e2); :}
-| expr:e1 LOWER:kw expr:e2                                      {: RESULT = new BinOp(kw.getTokenType().getStringValue(), e1, e2); :}
-| expr:e1 LOWER_EQUAL:kw expr:e2                                {: RESULT = new BinOp(kw.getTokenType().getStringValue(), e1, e2); :}
-| expr:e1 PLUS:kw expr:e2                                       {: RESULT = new BinOp(kw.getTokenType().getStringValue(), e1, e2); :}
-| expr:e1 MINUS:kw expr:e2                                      {: RESULT = new BinOp(kw.getTokenType().getStringValue(), e1, e2); :}
-| expr:e1 TIMES:kw expr:e2                                      {: RESULT = new BinOp(kw.getTokenType().getStringValue(), e1, e2); :}
-| expr:e1 DIV:kw expr:e2                                        {: RESULT = new BinOp(kw.getTokenType().getStringValue(), e1, e2); :}
-| expr:e1 POW:kw expr:e2                                        {: RESULT = new BinOp(kw.getTokenType().getStringValue(), e1, e2); :}
-| expr:e DOT identifier:id LPAR args:ar RPAR                         {: RESULT = new Call(e, id, ar); :}
-| identifier:id LPAR args:ar RPAR                               {: RESULT = new Call(new Id("self", id.getLine(), id.getColumn()), id, ar, true); :}
-| LPAR RPAR                                                     {: RESULT = new Null(); :}
-| NEW classType:ti                                        {: RESULT = new New(ti); :}
-| identifier:id                                                 {: RESULT = id; :}
-| literal:li                                                    {: RESULT = li; :}
-| LPAR expr:e RPAR                                              {: RESULT = e; :}
-| block:b                                                       {: RESULT = b; :}
+| IF expr:e1 THEN expr:e2 ELSE expr:e3                                    {: RESULT = new If(e1, e2, e3); :}
+| WHILE expr:e1 DO expr:e2                                                {: RESULT = new While(e1, e2); :}
+| LET identifier:id COLON type:ty IN expr:e                               {: RESULT = new Let(id, ty, e); :}
+| LET identifier:id COLON type:ty ASSIGN expr:e1 IN expr:e2               {: RESULT = new Let(id, ty, e1, e2); :}
+| identifier:id ASSIGN expr:e                                             {: RESULT = new Assign(id, e); :}
+| NOT:kw expr:e                                                           {: RESULT = new UnOp(kw.getTokenType().getStringValue(), e); :}
+| MINUS:kw expr:e                                                         {: RESULT = new UnOp(kw.getTokenType().getStringValue(), e); :}%prec UMINUS
+| ISNULL:kw expr:e                                                        {: RESULT = new UnOp(kw.getTokenType().getStringValue(), e); :}
+| expr:e1 AND:kw expr:e2                                                  {: RESULT = new BinOp(kw.getTokenType().getStringValue(), e1, e2); :}
+| expr:e1 EQUAL:kw expr:e2                                                {: RESULT = new BinOp(kw.getTokenType().getStringValue(), e1, e2); :}
+| expr:e1 LOWER:kw expr:e2                                                {: RESULT = new BinOp(kw.getTokenType().getStringValue(), e1, e2); :}
+| expr:e1 LOWER_EQUAL:kw expr:e2                                          {: RESULT = new BinOp(kw.getTokenType().getStringValue(), e1, e2); :}
+| expr:e1 PLUS:kw expr:e2                                                 {: RESULT = new BinOp(kw.getTokenType().getStringValue(), e1, e2); :}
+| expr:e1 MINUS:kw expr:e2                                                {: RESULT = new BinOp(kw.getTokenType().getStringValue(), e1, e2); :}
+| expr:e1 TIMES:kw expr:e2                                                {: RESULT = new BinOp(kw.getTokenType().getStringValue(), e1, e2); :}
+| expr:e1 DIV:kw expr:e2                                                  {: RESULT = new BinOp(kw.getTokenType().getStringValue(), e1, e2); :}
+| expr:e1 POW:kw expr:e2                                                  {: RESULT = new BinOp(kw.getTokenType().getStringValue(), e1, e2); :}
+| expr:e DOT identifier:id LPAR args:ar RPAR                              {: RESULT = new Call(e, id, ar); :}
+| identifier:id LPAR args:ar RPAR                                         {: RESULT = new Call(new Id("self", id.getLine(), id.getColumn()), id, ar, true); :}
+| LPAR RPAR                                                               {: RESULT = new Null(); :}
+| NEW classType:ti                                                        {: RESULT = new New(ti); :}
+| identifier:id                                                           {: RESULT = id; :}
+| literal:li                                                              {: RESULT = li; :}
+| LPAR expr:e RPAR                                                        {: RESULT = e; :}
+| block:b                                                                 {: RESULT = b; :}
 ;
 
 args ::=
