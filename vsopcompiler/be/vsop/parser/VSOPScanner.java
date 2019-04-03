@@ -7,9 +7,9 @@ import java_cup.runtime.Scanner;
 import java_cup.runtime.Symbol;
 
 public class VSOPScanner implements Scanner {
-    VSOPLexer lexer;
-    ComplexSymbolFactory sf;
-    ComplexSymbolFactory.ComplexSymbol prev;
+    private VSOPLexer lexer;
+    private ComplexSymbolFactory sf;
+    private ComplexSymbolFactory.ComplexSymbol prev;
 
     public VSOPScanner(VSOPLexer lexer, ComplexSymbolFactory sf){
         this.lexer = lexer;
@@ -27,15 +27,14 @@ public class VSOPScanner implements Scanner {
     }
 
     private Symbol toSymbol(Token t){
-        Symbol s = sf.newSymbol(t.getTokenType().toString(),
+        return sf.newSymbol(t.getTokenType().toString(),
                             t.getTokenType().getSymbolValue(),
                             new ComplexSymbolFactory.Location("Line/Col", t.getLine(),  t.getColumn()),
                             new ComplexSymbolFactory.Location("Line/Col", t.getLine(),t.getColumn()+t.getLength()),
                             t);
-        return s;
     }
 
-    public ComplexSymbolFactory.ComplexSymbol getPrev() {
+    ComplexSymbolFactory.ComplexSymbol getPrev() {
         return prev;
     }
 }

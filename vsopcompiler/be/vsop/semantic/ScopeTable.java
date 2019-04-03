@@ -68,7 +68,7 @@ public class ScopeTable {
         return c;
     }
 
-    public HashMap<String, ClassItem> getClassTable() {
+    HashMap<String, ClassItem> getClassTable() {
         return classTable;
     }
 

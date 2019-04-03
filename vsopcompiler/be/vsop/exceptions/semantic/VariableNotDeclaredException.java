@@ -1,9 +1,9 @@
 package be.vsop.exceptions.semantic;
 
 public class VariableNotDeclaredException extends SemanticException {
-    public VariableNotDeclaredException(String varableName, int line, int column) {
+    public VariableNotDeclaredException(String variableName, int line, int column) {
         super(line, column);
 
-        this.message = "Variable " +  varableName + " not declared";
+        this.message = "Variable " +  variableName + " not declared";
     }
 }

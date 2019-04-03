@@ -47,7 +47,7 @@ public class LanguageSpecs {
         }
     }
 
-    public static ClassList getLanguageClasses(){
+    static ClassList getLanguageClasses(){
         ArrayList<ClassItem> items = new ArrayList<>();
 
         for(DefaultClasses d : DefaultClasses.values())
@@ -56,7 +56,7 @@ public class LanguageSpecs {
         return new ClassList(items);
     }
 
-    public static boolean isDefaultClass(String className){
+    static boolean isDefaultClass(String className){
         for(DefaultClasses d : DefaultClasses.values())
             if(d.name.equals(className))
                 return true;

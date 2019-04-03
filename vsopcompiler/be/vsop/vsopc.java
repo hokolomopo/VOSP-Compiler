@@ -1,14 +1,8 @@
 package be.vsop;
 
-import be.vsop.AST.ASTNode;
-import be.vsop.AST.Program;
 import be.vsop.exceptions.LexerException;
-import be.vsop.exceptions.ParserException;
 import be.vsop.lexer.VSOPLexer;
-import be.vsop.parser.VSOPParser;
-import be.vsop.parser.VSOPScanner;
 import be.vsop.tokens.Token;
-import java_cup.runtime.ComplexSymbolFactory;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -68,7 +62,7 @@ public class vsopc {
         }
 
         else if(args[0].contentEquals("-check")){
-            compiler.doSemanticAnalysis();
+            compiler.doSemanticAnalysis(null);
         }
     }
 

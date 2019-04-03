@@ -1,9 +1,9 @@
 package be.vsop.AST;
 
 public abstract class Literal extends Expr {
-	protected String value;
+	String value;
 
-	public Literal(String value) {
+	Literal(String value) {
 		this.value = value;
 	}
 

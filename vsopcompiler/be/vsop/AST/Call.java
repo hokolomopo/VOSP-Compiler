@@ -40,6 +40,7 @@ public class Call extends Expr {
 				errorList.add(new MethodNotDeclaredException(methodId.getName(), line, column));
 		}
 		else{
+			System.out.println("STILL TODO : Call.java");
 			//TODO : need to have the type of the class objExpr to get the methods of this class
 		}
 

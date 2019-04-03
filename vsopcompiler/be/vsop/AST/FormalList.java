@@ -35,7 +35,7 @@ public class FormalList extends ASTNode{
 		System.out.print("]");
 	}
 
-	public ArrayList<Formal> getFormals() {
+	ArrayList<Formal> getFormals() {
 		return formals;
 	}
 }

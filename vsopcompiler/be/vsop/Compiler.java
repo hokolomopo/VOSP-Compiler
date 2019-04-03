@@ -1,6 +1,5 @@
 package be.vsop;
 
-import be.vsop.AST.ASTNode;
 import be.vsop.AST.ClassList;
 import be.vsop.AST.Program;
 import be.vsop.exceptions.LexerException;
@@ -62,20 +61,17 @@ public class Compiler {
         return this.program;
     }
 
-    public void doSemanticAnalysis(Program program){
-        this.program = program;
-        this.doSemanticAnalysis();
-    }
-
-    public void doSemanticAnalysis(){
-        if(this.program == null)
-            this.program = (Program) buildAST();
-
-        program.print();
-
-        SyntaxAnalyzer sa = new SyntaxAnalyzer(program);
+    void doSemanticAnalysis(Program program) {
+        if (program == null) {
+            if (this.program == null) {
+                this.program = buildAST();
+            }
+        } else {
+            this.program = program;
+        }
+        this.program.print();
+        SyntaxAnalyzer sa = new SyntaxAnalyzer(this.program);
         sa.analyze();
-
 
         if(sa.hasError()) {
             for (SemanticException e : sa.getErrors())

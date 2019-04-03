@@ -36,16 +36,14 @@ public class SyntaxAnalyzer {
         program.updateClassTable(scopeTable, errors);
 
         //Check for cycles
-        scopeTable.getClassTable().forEach((name, classItem) -> {
-            checkForCycle(classItem, new HashSet<>());
-        });
+        scopeTable.getClassTable().forEach((name, classItem) -> checkForCycle(classItem, new HashSet<>()));
     }
 
     /**
      * Check for inheritance cycles in class declaration in the ScopeTable field.
      *
      * @param current the class where we are checking for cycles
-     * @param visited the already visoted children of this class
+     * @param visited the already visited children of this class
      */
     private void checkForCycle(ClassItem current, HashSet<String> visited){
         //Report error if we find a cycle

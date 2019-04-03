@@ -147,7 +147,7 @@ public class Token{
         ArrayList<Integer> foundCodes = new ArrayList<>();
         try {
 
-            //Find occurences of "\x" in string, and save the escape value found
+            //Find occurrences of "\x" in string, and save the escape value found
             for(i = 0;i < str.length();i++){
                 curr = str.charAt(i);
 

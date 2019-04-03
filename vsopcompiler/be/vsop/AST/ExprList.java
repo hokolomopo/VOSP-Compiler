@@ -16,7 +16,7 @@ public class ExprList extends Expr {
 	}
 
 	public ExprList() {
-		this.expressions = new ArrayList<Expr>();
+		this.expressions = new ArrayList<>();
 	}
 
 	@Override

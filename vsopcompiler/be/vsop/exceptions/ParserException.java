@@ -29,12 +29,12 @@ public class ParserException extends Error {
         super();
 
         StringBuilder s = new StringBuilder();
-        s.append("Symbol found is : " + current.getName());
+        s.append("Symbol found is : ").append(current.getName());
         s.append(" expected Symbols are [");
 
         for(Integer i : expected){
             Token.Tokens t = Token.Tokens.fromValue(i);
-            s.append(t.toString() + ", ");
+            s.append(t.toString()).append(", ");
         }
         if (expected.size() > 0) {
             s.deleteCharAt(s.length() - 1);
