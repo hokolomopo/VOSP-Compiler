@@ -4,6 +4,8 @@ public class SemanticException extends Exception {
     protected int column, line;
     protected String message;
 
+    public SemanticException() { super(); }
+
     public SemanticException(int line, int column){
         super();
 

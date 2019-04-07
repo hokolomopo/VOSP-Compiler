@@ -97,7 +97,7 @@ escapedChar = \\b | \\t | \\n | \\r | \\\" | \\\\ | \\x
   \"                             { yybegin(YYINITIAL); string.append("\"");
                                      return new Token(Tokens.STRING_LITERAL, string.toString(), line + 1, column + 1);}
   {forbiddenInString}            {throw new LexerException("Illegal symbol < " + yytext() + ">  in string", yyline + 1, yycolumn + 1);}
-  <<EOF>>                        {throw new LexerException("EOF in string", line+ 1, column+ 1);}
+  <<EOF>>                        {throw new LexerException("Unclosed string", line+ 1, column+ 1);}
   \\{lineTerminator}(" " | \t)*  { /* ignore */ }
   {escapedChar}                  { string.append( yytext() ); }
   \\[^]                          {throw new LexerException("Invalid escape sequence: <" + yytext() + ">", yyline + 1, yycolumn + 1);}
@@ -108,7 +108,7 @@ escapedChar = \\b | \\t | \\n | \\r | \\\" | \\\\ | \\x
   "(*"                             { commentLevel++; commentStack.push(new int[]{yyline, yycolumn});}
   "*)"                             { if(commentLevel == 1) yybegin(YYINITIAL);
                                         else commentLevel--; commentStack.pop();}
-  <<EOF>>                          { int[] lineCol = commentStack.pop(); throw new LexerException("EOF in comment", lineCol[0] + 1, lineCol[1] + 1); }
+  <<EOF>>                          { int[] lineCol = commentStack.pop(); throw new LexerException("Unclosed comment", lineCol[0] + 1, lineCol[1] + 1); }
   [^]                              { /* ignore */ }
 }
 

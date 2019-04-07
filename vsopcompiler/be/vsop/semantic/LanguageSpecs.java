@@ -29,11 +29,6 @@ public class LanguageSpecs {
         }
 
         private ClassItem getClassItem(){
-            return parseClass();
-        }
-
-        private ClassItem parseClass() {
-
             Compiler compiler = new Compiler(fileName);
             ASTNode tree = compiler.buildAST();
 

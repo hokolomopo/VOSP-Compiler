@@ -1,45 +1,20 @@
-class List {
-	isNil() : bool { true }
-	length() : int32 { 0 }
+class MyClass {
+    s : string <- "One\n\x32[33;mTwo and \
+                   three\r\n";
+    i : int32 <-  27-0x1b;
 }
 
+class A extends B { (* a useless comment *) }
 
-(* Nil is nothing more than a glorified alias to List *)
-class Nil extends List {}
+class B extends C { (* a useless comment *) }
 
+class C extends D { (* a useless comment *) }
 
-class Cons extends List {
-	head : int32;
-	tail : List;
+class D { (* a usefull comment: 42 *) }
 
-	init(hd : int32, tl : List) : Cons {
-		hed <- hd;
-		tail <- tl;
-		self
-	}
+class E extends A { (* another useful comment: 1 *) }
 
-	head() : int32 { 
-		head;
-		isil()
-	}
+class F extends E { msg : string; number: int32; object: Object; self: string;}
 
-	isNil() : bool { while false do tai }
-	length() : int32 { 1 + tail.length() }
-}
-
-class Main extends IO {
-	main() : int32 {
-		let xs : List <- (new Cons).init(0, (new Cons).init(
-		1, (new Cons).init(
-		2, new Nil)))
-		in prit("List has length ").printInt32(xs.length()).print("\n");
-		0
-	}
-}
-
-class Nil extends A {}
-
-class A extends B {}
-class B extends A {}
-class C extends D {}
+class MyIO extends IO { (* a very very useful comment: 0 *) }
 

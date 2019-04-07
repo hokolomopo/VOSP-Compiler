@@ -55,9 +55,7 @@ public class Compiler {
             System.exit(-1);
         }
 
-        ClassList l = (ClassList) parser.getTree();
-
-        this.program = new Program(l);
+        this.program = new Program((ClassList) parser.getTree());
         return this.program;
     }
 
@@ -69,7 +67,6 @@ public class Compiler {
         } else {
             this.program = program;
         }
-        this.program.print();
         SyntaxAnalyzer sa = new SyntaxAnalyzer(this.program);
         sa.analyze();
 

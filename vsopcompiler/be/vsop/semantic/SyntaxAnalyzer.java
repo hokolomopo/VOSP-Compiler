@@ -24,8 +24,6 @@ public class SyntaxAnalyzer {
         this.buildClassTable();
         program.updateClassItems(scopeTable, errors);
         program.checkScope(scopeTable, errors);
-
-        int x = 3;
     }
 
     private void buildClassTable(){
@@ -35,8 +33,15 @@ public class SyntaxAnalyzer {
         program.addClassList(classList);
         program.updateClassTable(scopeTable, errors);
 
-        //Check for cycles
-        scopeTable.getClassTable().forEach((name, classItem) -> checkForCycle(classItem, new HashSet<>()));
+        //Check for cycles and extended but not declared classes
+        HashSet<ClassItem> involvedInCycle = new HashSet<>();
+        HashSet<String> extendedButNotDeclared = new HashSet<>();
+        scopeTable.getClassTable().forEach((name, classItem) -> {
+            if (! involvedInCycle.contains(classItem)) {
+                // ArrayList to retain order : error message easier to read
+                checkForCycle(classItem, new ArrayList<>(), involvedInCycle, extendedButNotDeclared);
+            }
+        });
     }
 
     /**
@@ -44,11 +49,20 @@ public class SyntaxAnalyzer {
      *
      * @param current the class where we are checking for cycles
      * @param visited the already visited children of this class
+     * @param involvedInCycle the classes that have already been discovered as being in a cycle
+     * @param extendedButNotDeclared the classes that have already been discovered as being used (extended) but not declared
      */
-    private void checkForCycle(ClassItem current, HashSet<String> visited){
+    private void checkForCycle(ClassItem current, ArrayList<ClassItem> visited,
+                               HashSet<ClassItem> involvedInCycle, HashSet<String> extendedButNotDeclared) {
         //Report error if we find a cycle
-        if(visited.contains(current.getName()))
-            this.errors.add(new CyclicInheritanceException(current.getName(), current.getLine(), current.getColumn()));
+        if(visited.contains(current)) {
+            // We want to only print the classes that are indeed involved in the cycle.
+            // For instance if A extends B, B extends A and C extends B, we exclude C from the print.
+            if (visited.get(0).equals(current)) {
+                this.errors.add(new CyclicInheritanceException(visited));
+                involvedInCycle.addAll(visited);
+            }
+        }
 
         else {
             //Stop if the class is a class defined by the language itself (like Object)
@@ -56,15 +70,19 @@ public class SyntaxAnalyzer {
                 return;
 
             //Add the current class to the visited one
-            visited.add(current.getName());
+            visited.add(current);
 
             //Check for cycle in the parent of the class
             ClassItem parent = this.scopeTable.getClassTable().get(current.getParentName());
 
-            if(parent == null)
-                this.errors.add(new ClassNotDeclaredException(current.getParentName(), current.getLine(), current.getColumn()));
+            if(parent == null) {
+                if (! extendedButNotDeclared.contains(current.getParentName())) {
+                    this.errors.add(new ClassNotDeclaredException(current.getParentName(), current.getLine(), current.getColumn()));
+                    extendedButNotDeclared.add(current.getParentName());
+                }
+            }
             else
-                checkForCycle(this.scopeTable.getClassTable().get(current.getParentName()), visited);
+                checkForCycle(this.scopeTable.getClassTable().get(current.getParentName()), visited, involvedInCycle, extendedButNotDeclared);
         }
     }
 

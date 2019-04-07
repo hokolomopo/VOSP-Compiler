@@ -5,17 +5,6 @@ import java.util.ArrayList;
 public class Program extends ASTNode{
     private ArrayList<ClassList> classLists;
 
-    public Program() {
-        classLists = new ArrayList<>();
-        this.children = new ArrayList<>(classLists);
-    }
-
-    public Program(ArrayList<ClassList> classLists) {
-        this.classLists = classLists;
-
-        this.children = new ArrayList<>(classLists);
-    }
-
     public Program(ClassList classList) {
         this.classLists = new ArrayList<>();
         this.classLists.add(classList);

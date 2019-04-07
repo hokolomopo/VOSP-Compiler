@@ -636,11 +636,11 @@ public class VSOPLexer {
         zzAtEOF = true;
             switch (zzLexicalState) {
             case STRING: {
-              throw new LexerException("EOF in string", line+ 1, column+ 1);
+              throw new LexerException("Unclosed string", line+ 1, column+ 1);
             }  // fall though
             case 41: break;
             case COMMENT: {
-              int[] lineCol = commentStack.pop(); throw new LexerException("EOF in comment", lineCol[0] + 1, lineCol[1] + 1);
+              int[] lineCol = commentStack.pop(); throw new LexerException("Unclosed comment", lineCol[0] + 1, lineCol[1] + 1);
             }  // fall though
             case 42: break;
             case HEXA_LITERAL: {
