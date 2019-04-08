@@ -1,5 +1,8 @@
 package be.vsop.AST;
 
+import be.vsop.exceptions.semantic.SemanticException;
+import be.vsop.semantic.ScopeTable;
+
 import java.util.ArrayList;
 
 public class Formal extends ASTNode{
@@ -12,6 +15,15 @@ public class Formal extends ASTNode{
 
 		this.children = new ArrayList<>();
 		this.children.add(type);
+	}
+
+	@Override
+	public void fillScopeTable(ScopeTable scopeTable, ArrayList<SemanticException> errorList) {
+		this.scopeTable = scopeTable;
+		scopeTable.addVariable(this);
+		if(children != null)
+			for(ASTNode node : children)
+				node.fillScopeTable(scopeTable, errorList);
 	}
 
 	@Override

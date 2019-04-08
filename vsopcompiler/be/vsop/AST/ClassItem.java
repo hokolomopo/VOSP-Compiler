@@ -5,6 +5,7 @@ import be.vsop.exceptions.semantic.SemanticException;
 import be.vsop.semantic.ScopeTable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ClassItem extends ASTNode{
 	private Type type;
@@ -16,9 +17,13 @@ public class ClassItem extends ASTNode{
 	}
 
 	public ClassItem(Type type, Type parentType, ClassElementList cel) {
-		super(type.getLine(), type.getColumn());
+		this.scopeTable = new ScopeTable();
 		this.type = type;
-		this.parentType = parentType;
+		if (type.getName().equals("Object")) {
+			this.parentType = null;
+		} else {
+			this.parentType = parentType;
+		}
 		this.cel = cel;
 
 		this.children = new ArrayList<>();
@@ -29,33 +34,31 @@ public class ClassItem extends ASTNode{
 	}
 
 	@Override
-	public void updateClassTable(ScopeTable scopeTable, ArrayList<SemanticException> errorList) {
-		this.scopeTable = scopeTable;
-		if(scopeTable.lookupClass(type.getName()) != null)
+	public void updateClassTable(HashMap<String, ClassItem> classTable, ArrayList<SemanticException> errorList) {
+		this.classTable = classTable;
+		if(classTable.containsKey(type.getName())) {
 			errorList.add(new ClassAlreadyDeclaredException(type.getName(), line, column));
-		else
-			scopeTable.addClass(this);
+		} else {
+			classTable.put(type.getName(), this);
+		}
+		if(children != null)
+			for(ASTNode node : children)
+				node.updateClassTable(classTable, errorList);
 	}
 
 	@Override
-	public void updateClassItems(ScopeTable scopeTable, ArrayList<SemanticException> errorList) {
-		//Create new ScopeTable for this class because every class has it's own scope
-		this.scopeTable = new ScopeTable(scopeTable);
-
+	public void fillScopeTable(ScopeTable scopeTable, ArrayList<SemanticException> errorList) {
+		if (parentType != null) {
+			ScopeTable parentTable = classTable.get(getParentName()).scopeTable;
+			this.scopeTable.setParent(parentTable);
+		}
 		//Add self field
 		Formal self = new Formal(new Id("self"), type);
 		this.scopeTable.addVariable(self);
 
-		//Update table with Methods and fields
 		if(children != null)
 			for(ASTNode node : children)
-				node.updateClassItems(this.scopeTable, errorList);
-
-	}
-
-	@Override
-	public void checkScope(ScopeTable scopeTable, ArrayList<SemanticException> errorList){
-		super.checkScope(this.scopeTable, errorList);
+				node.fillScopeTable(this.scopeTable, errorList);
 	}
 
 	@Override

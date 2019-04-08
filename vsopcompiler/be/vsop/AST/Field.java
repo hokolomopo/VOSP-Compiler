@@ -29,14 +29,22 @@ public class Field extends ASTNode {
 	}
 
 	@Override
-	public void updateClassItems(ScopeTable scopeTable, ArrayList<SemanticException> errorList) {
+	public void fillScopeTable(ScopeTable scopeTable, ArrayList<SemanticException> errorList) {
 		this.scopeTable = scopeTable;
-		if(scopeTable.lookupVariable(id.getName()) != null)
-			errorList.add(new VariableAlreadyDeclaredException(id.getName(), line, column));
-		else
-			scopeTable.addVariable(new Formal(id, type));
+		Formal previousDeclaration = scopeTable.lookupVariable(id.getName(), true);
+		if(previousDeclaration != null) {
+			errorList.add(new VariableAlreadyDeclaredException(id.getName(), line, column,
+					previousDeclaration.line, previousDeclaration.column));
+		} else {
+			Formal newDeclaration = new Formal(id, type);
+			newDeclaration.line = line;
+			newDeclaration.column = column;
+			scopeTable.addVariable(newDeclaration);
+		}
+		if(children != null)
+			for(ASTNode node : children)
+				node.fillScopeTable(scopeTable, errorList);
 	}
-
 
 	@Override
 	public void print(int tabLevel, boolean doTab) {

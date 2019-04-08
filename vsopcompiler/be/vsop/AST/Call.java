@@ -2,7 +2,6 @@ package be.vsop.AST;
 
 import be.vsop.exceptions.semantic.MethodNotDeclaredException;
 import be.vsop.exceptions.semantic.SemanticException;
-import be.vsop.semantic.ScopeTable;
 
 import java.util.ArrayList;
 
@@ -18,15 +17,10 @@ public class Call extends Expr {
     private boolean onSelf;
 
     public Call(Expr objExpr, Id methodId, ArgList argList) {
-        this(objExpr, methodId, argList, false);
-    }
-
-    public Call(Expr objExpr, Id methodId, ArgList argList, boolean onSelf) {
-        super(methodId.getLine(), methodId.getColumn());
         this.objExpr = objExpr;
         this.methodId = methodId;
         this.argList = argList;
-        this.onSelf = onSelf;
+        this.onSelf = true;
 
         this.children = new ArrayList<>();
         this.children.add(objExpr);
@@ -34,7 +28,7 @@ public class Call extends Expr {
     }
 
 
-    public void checkScope(ScopeTable scopeTable, ArrayList<SemanticException> errorList){
+    public void checkScope(ArrayList<SemanticException> errorList){
         if(onSelf) {
             if (scopeTable.lookupMethod(methodId.getName()) == null)
                 errorList.add(new MethodNotDeclaredException(methodId.getName(), line, column));
@@ -44,7 +38,7 @@ public class Call extends Expr {
             //TODO : need to have the type of the class objExpr to get the methods of this class
         }
 
-        super.checkScope(scopeTable, errorList);
+        super.checkScope(errorList);
     }
 
     @Override

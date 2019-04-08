@@ -13,6 +13,7 @@ public class Method extends ASTNode {
 	private ExprList block;
 
 	public Method(Id id, FormalList formals, Type retType, ExprList block) {
+		this.scopeTable = new ScopeTable();
 		this.id = id;
 		this.formals = formals;
 		this.retType = retType;
@@ -25,26 +26,23 @@ public class Method extends ASTNode {
 	}
 
 	@Override
-	public void updateClassItems(ScopeTable scopeTable, ArrayList<SemanticException> errorList) {
-		this.scopeTable = scopeTable;
-		if(scopeTable.lookupMethod(id.getName()) != null)
+	public void fillScopeTable(ScopeTable scopeTable, ArrayList<SemanticException> errorList) {
+		this.scopeTable.setParent(scopeTable);
+		if (scopeTable.lookupMethod(id.getName()) != null) {
 			errorList.add(new MethodAlreadyDeclaredException(id.getName(), line, column));
-		else
+		} else {
 			scopeTable.addMethod(this);
+		}
+		if(children != null)
+			for(ASTNode node : children)
+				node.fillScopeTable(this.scopeTable, errorList);
 	}
 
 	@Override
-	public void checkScope(ScopeTable scopeTable, ArrayList<SemanticException> errorList){
-		this.scopeTable = scopeTable;
-
-		formals.checkScope(scopeTable, errorList);
-		retType.checkScope(scopeTable, errorList);
-
-		ScopeTable table = new ScopeTable(scopeTable);
-		for(Formal f : formals.getFormals())
-			table.addVariable(f);
-
-		block.checkScope(table, errorList);
+	public void checkScope(ArrayList<SemanticException> errorList){
+		//TODO can a formal argument be named self ? + maybe need a more general implementation
+		formals.checkAllDifferent(errorList);
+		super.checkScope(errorList);
 	}
 
 

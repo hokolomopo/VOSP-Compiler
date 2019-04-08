@@ -20,9 +20,4 @@ public class Program extends ASTNode{
         }
     }
 
-    public void addClassList(ClassList classList){
-        this.classLists.add(classList);
-        this.children.add(classList);
-    }
-
 }

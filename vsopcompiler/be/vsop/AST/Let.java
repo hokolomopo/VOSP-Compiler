@@ -15,6 +15,7 @@ public class Let extends Expr {
 	}
 
 	public Let(Id id, Type type, Expr initExpr, Expr scopeExpr) {
+		this.scopeTable = new ScopeTable();
 		this.formal = new Formal(id, type);
 		this.scopeExpr = scopeExpr;
 		this.initExpr = initExpr;
@@ -26,17 +27,21 @@ public class Let extends Expr {
 	}
 
 	@Override
-	public void checkScope(ScopeTable scopeTable, ArrayList<SemanticException> errorList){
-		this.scopeTable = scopeTable;
-		formal.checkScope(scopeTable, errorList);
+	public void fillScopeTable(ScopeTable scopeTable, ArrayList<SemanticException> errorList) {
+		this.scopeTable.setParent(scopeTable);
+		if (children != null) {
+			for (ASTNode node : children) {
+				node.fillScopeTable(this.scopeTable, errorList);
+			}
+		}
+	}
 
+	@Override
+	public void checkScope(ArrayList<SemanticException> errorList){
+		formal.checkScope(errorList);
 		if(initExpr != null)
-			initExpr.checkScope(scopeTable, errorList);
-
-		ScopeTable table = new ScopeTable(scopeTable);
-		table.addVariable(formal);
-
-		formal.checkScope(table, errorList);
+			initExpr.checkScope(errorList);
+		scopeExpr.checkScope(errorList);
 	}
 
 

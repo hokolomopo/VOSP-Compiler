@@ -5,15 +5,14 @@ import be.vsop.AST.ClassItem;
 
 public class CyclicInheritanceException extends SemanticException {
     public CyclicInheritanceException(ArrayList<ClassItem> inCycle) {
-        super();
-        this.line = inCycle.get(0).getLine();
-        this.column = inCycle.get(0).getColumn();
+        this.line = inCycle.get(0).line;
+        this.column = inCycle.get(0).column;
 
         StringBuilder msg = new StringBuilder();
         msg.append("Cyclic inheritance: ");
         for (ClassItem classItem : inCycle) {
             msg.append("class ").append(classItem.getName()).append(" extends ").append(classItem.getParentName());
-            msg.append(" (").append(classItem.getLine()).append(":").append(classItem.getColumn()).append("); ");
+            msg.append(" (").append(classItem.line).append(":").append(classItem.column).append("); ");
         }
         msg.setLength(msg.length() - 2);
 

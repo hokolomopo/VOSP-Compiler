@@ -11,20 +11,14 @@ public class New extends Expr {
 
 	public New(Type type) {
 		this.type = type;
+		children = new ArrayList<>();
+		children.add(this.type);
 	}
 
 	@Override
 	public void print(int tabLevel, boolean doTab) {
-
 		if(doTab)
 			System.out.print(getTab(tabLevel));
 		System.out.print("New(" + type.getName() + ")");
 	}
-
-	@Override
-	public void checkScope(ScopeTable scopeTable, ArrayList<SemanticException> errorList){
-		if(scopeTable.lookupClass(type.getName()) == null)
-			errorList.add(new ClassNotDeclaredException(type.getName(), line, column));
-	}
-
 }

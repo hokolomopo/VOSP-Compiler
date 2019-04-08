@@ -4,42 +4,38 @@ import be.vsop.exceptions.semantic.SemanticException;
 import be.vsop.semantic.ScopeTable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public abstract class ASTNode {
 
-    //TODO put column/line in constructor to report semantic error #FUN (or create constructor from cup.Symbol)
-    protected int line = 0;
-    protected int column = 0;
+    // Public so that the parser can set them without having to implement dedicated constructors each time
+    public int line = 0;
+    public int column = 0;
 
     protected ArrayList<ASTNode> children;
     protected ScopeTable scopeTable;
+    protected HashMap<String, ClassItem> classTable;
 
     protected ASTNode(){}
 
-    protected ASTNode(int line, int column){
-        this.line = line;
-        this.column = column;
+    public void updateClassTable(HashMap<String, ClassItem> classTable, ArrayList<SemanticException> errorList) {
+        this.classTable = classTable;
+        if(children != null)
+            for(ASTNode node : children)
+                node.updateClassTable(classTable, errorList);
     }
 
-    public void updateClassTable(ScopeTable scopeTable, ArrayList<SemanticException> errorList){
+    public void fillScopeTable(ScopeTable scopeTable, ArrayList<SemanticException> errorList){
         this.scopeTable = scopeTable;
         if(children != null)
             for(ASTNode node : children)
-                node.updateClassTable(scopeTable, errorList);
+                node.fillScopeTable(scopeTable, errorList);
     }
 
-    public void updateClassItems(ScopeTable scopeTable, ArrayList<SemanticException> errorList){
-        this.scopeTable = scopeTable;
+    public void checkScope(ArrayList<SemanticException> errorList){
         if(children != null)
             for(ASTNode node : children)
-                node.updateClassItems(scopeTable, errorList);
-    }
-
-    public void checkScope(ScopeTable scopeTable, ArrayList<SemanticException> errorList){
-        this.scopeTable = scopeTable;
-        if(children != null)
-            for(ASTNode node : children)
-                node.checkScope(scopeTable, errorList);
+                node.checkScope(errorList);
     }
 
 
@@ -51,14 +47,6 @@ public abstract class ASTNode {
         for(int i = 0;i < tabLevel;i++)
             s.append('\t');
         return s.toString();
-    }
-
-    public int getLine() {
-        return line;
-    }
-
-    public int getColumn() {
-        return column;
     }
 
     public ArrayList<ASTNode> getChildren() {

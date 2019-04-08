@@ -1,19 +1,18 @@
 package be.vsop.semantic;
 
 import be.vsop.AST.ClassItem;
-import be.vsop.AST.ClassList;
 import be.vsop.AST.Program;
 import be.vsop.exceptions.semantic.ClassNotDeclaredException;
 import be.vsop.exceptions.semantic.CyclicInheritanceException;
 import be.vsop.exceptions.semantic.SemanticException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 public class SyntaxAnalyzer {
-
     private Program program;
-    private ScopeTable scopeTable = new ScopeTable();
+    private HashMap<String, ClassItem> classTable;
     private ArrayList<SemanticException> errors = new ArrayList<>();
 
     public SyntaxAnalyzer(Program program) {
@@ -21,27 +20,23 @@ public class SyntaxAnalyzer {
     }
 
     public void analyze(){
-        this.buildClassTable();
-        program.updateClassItems(scopeTable, errors);
-        program.checkScope(scopeTable, errors);
-    }
-
-    private void buildClassTable(){
         //Create the class table
-        ClassList classList = LanguageSpecs.getLanguageClasses();
-
-        program.addClassList(classList);
-        program.updateClassTable(scopeTable, errors);
+        LanguageSpecs languageSpecs = new LanguageSpecs();
+        classTable = languageSpecs.getLanguageClassTable();
+        program.updateClassTable(classTable, errors);
 
         //Check for cycles and extended but not declared classes
         HashSet<ClassItem> involvedInCycle = new HashSet<>();
         HashSet<String> extendedButNotDeclared = new HashSet<>();
-        scopeTable.getClassTable().forEach((name, classItem) -> {
+        classTable.forEach((name, classItem) -> {
             if (! involvedInCycle.contains(classItem)) {
                 // ArrayList to retain order : error message easier to read
                 checkForCycle(classItem, new ArrayList<>(), involvedInCycle, extendedButNotDeclared);
             }
         });
+
+        program.fillScopeTable(null, errors);
+        program.checkScope(errors);
     }
 
     /**
@@ -65,24 +60,24 @@ public class SyntaxAnalyzer {
         }
 
         else {
-            //Stop if the class is a class defined by the language itself (like Object)
-            if(LanguageSpecs.isDefaultClass(current.getName()))
+            // Stop if current class is a default one, otherwise pointer exception because object has no parent
+            if (LanguageSpecs.isDefaultClass(current.getName())) {
                 return;
-
+            }
             //Add the current class to the visited one
             visited.add(current);
 
             //Check for cycle in the parent of the class
-            ClassItem parent = this.scopeTable.getClassTable().get(current.getParentName());
+            ClassItem parent = classTable.get(current.getParentName());
 
             if(parent == null) {
                 if (! extendedButNotDeclared.contains(current.getParentName())) {
-                    this.errors.add(new ClassNotDeclaredException(current.getParentName(), current.getLine(), current.getColumn()));
+                    this.errors.add(new ClassNotDeclaredException(current.getParentName(), current.line, current.column));
                     extendedButNotDeclared.add(current.getParentName());
                 }
             }
             else
-                checkForCycle(this.scopeTable.getClassTable().get(current.getParentName()), visited, involvedInCycle, extendedButNotDeclared);
+                checkForCycle(parent, visited, involvedInCycle, extendedButNotDeclared);
         }
     }
 

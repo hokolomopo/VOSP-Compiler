@@ -1,1 +1,1 @@
-class Object {}
+class Object {theMostUselessVariableOfTheWorldExceptToTestOurCompilerNowTryToHaveTheSameName : string <- "lmao"; }

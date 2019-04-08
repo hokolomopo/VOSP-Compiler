@@ -13,11 +13,6 @@ public class Id extends Expr {
 		this.name = name;
 	}
 
-	public Id(String name, int line, int column) {
-		super(line, column);
-		this.name = name;
-	}
-
 	@Override
 	public void print(int tabLevel, boolean doTab) {
 		if(doTab)
@@ -27,7 +22,7 @@ public class Id extends Expr {
 	}
 
 	@Override
-	public void checkScope(ScopeTable scopeTable, ArrayList<SemanticException> errorList){
+	public void checkScope(ArrayList<SemanticException> errorList){
 		if(scopeTable.lookupVariable(name) == null)
 			errorList.add(new VariableNotDeclaredException(name, line, column));
 	}

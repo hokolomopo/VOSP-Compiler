@@ -60,6 +60,7 @@ public class Compiler {
     }
 
     void doSemanticAnalysis(Program program) {
+        //TODO do we really need the argument
         if (program == null) {
             if (this.program == null) {
                 this.program = buildAST();
@@ -75,6 +76,8 @@ public class Compiler {
                 System.err.println(fileName + ":" + e.getMessage());
             System.exit(-1);
         }
+        //TODO this should not print IO
+        this.program.print();
     }
 
     public Program getAST(){

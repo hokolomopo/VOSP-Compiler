@@ -57,8 +57,8 @@ public class vsopc {
         }
 
         if (args[0].contentEquals("-parse")) {
-            // TODO improve errors : for instance if a className does not start with an uppercase letter we get :
-            // TODO tests/test.vsop:7:7: be.vsop.semantic error :Symbol found is : IDENTIFIER expected Symbols are []
+            /*TODO improve errors : for instance if a className does not start with an uppercase letter we get :
+             * tests/test.vsop:7:7: be.vsop.semantic error :Symbol found is : IDENTIFIER expected Symbols are [] */
             compiler.buildAST().print();
         }
 

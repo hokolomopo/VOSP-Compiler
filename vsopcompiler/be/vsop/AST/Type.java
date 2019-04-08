@@ -3,7 +3,6 @@ package be.vsop.AST;
 import be.vsop.exceptions.semantic.ClassNotDeclaredException;
 import be.vsop.exceptions.semantic.SemanticException;
 import be.vsop.exceptions.semantic.TypeNotValidException;
-import be.vsop.semantic.ScopeTable;
 
 import java.util.ArrayList;
 
@@ -14,19 +13,14 @@ public class Type extends ASTNode{
 		this.name = name;
 	}
 
-	public Type(String name, int line, int column) {
-		super(line, column);
-		this.name = name;
-	}
-
 	@Override
-	public void checkScope(ScopeTable scopeTable, ArrayList<SemanticException> errorList){
-		this.scopeTable = scopeTable;
+	public void checkScope(ArrayList<SemanticException> errorList){
 		if(Character.isUpperCase(name.charAt(0))) {
-			if (scopeTable.lookupClass(name) == null)
+			if (!classTable.containsKey(name))
 				errorList.add(new ClassNotDeclaredException(name, line, column));
 		}
 		else{
+			//TODO isn't it useless ? a parser error will be raised before getting here
 			if (scopeTable.lookupType(name) == null)
 				errorList.add(new TypeNotValidException(name, line, column));
 		}

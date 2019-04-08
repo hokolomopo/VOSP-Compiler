@@ -4,17 +4,16 @@ class MyClass {
     i : int32 <-  27-0x1b;
 }
 
+class B { something : string; (* *) }
+
 class A extends B { (* a useless comment *) }
 
-class B extends C { (* a useless comment *) }
+class F { msg : string; number: int32; object: Object; }
 
-class C extends D { (* a useless comment *) }
+class MyIO extends D { cout: C <- "bjr";
+                        print3 : D <- "a";
+                        print3(msg: string, cout: D, blue: bool, myself : int32) : bool { (* a comment *) count; true } }
 
-class D { (* a usefull comment: 42 *) }
+class C { (* *) }
 
-class E extends A { (* another useful comment: 1 *) }
-
-class F extends E { msg : string; number: int32; object: Object; self: string;}
-
-class MyIO extends IO { (* a very very useful comment: 0 *) }
-
+class D extends IO { count : int32 <- 0b000111; }

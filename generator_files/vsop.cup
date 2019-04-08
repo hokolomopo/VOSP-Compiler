@@ -86,8 +86,8 @@ classList ::=
 ;
 
 classItem ::= 
-  CLASS classType:ti classBody:cel                                      {: RESULT = new ClassItem(ti, cel); :}
-| CLASS classType:ti EXTENDS classType:ti_parent classBody:cel          {: RESULT = new ClassItem(ti, ti_parent, cel); :}
+  CLASS classType:ti classBody:cel                                      {: RESULT = new ClassItem(ti, cel); RESULT.line = ti.line; RESULT.column = ti.column; :}
+| CLASS classType:ti EXTENDS classType:ti_parent classBody:cel          {: RESULT = new ClassItem(ti, ti_parent, cel); RESULT.line = ti.line; RESULT.column = ti.column; :}
 ;
 
 classBody ::= 
@@ -101,24 +101,24 @@ classElementList ::=
 ;
 
 field ::=
-  identifier:id COLON type:ty SEMICOLON                   {: RESULT = new Field(id, ty); :}
-| identifier:id COLON type:ty ASSIGN expr:val SEMICOLON   {: RESULT = new Field(id, ty, val); :}
+  identifier:id COLON type:ty SEMICOLON                   {: RESULT = new Field(id, ty); RESULT.line = id.line; RESULT.column = id.column; :}
+| identifier:id COLON type:ty ASSIGN expr:val SEMICOLON   {: RESULT = new Field(id, ty, val); RESULT.line = id.line; RESULT.column = id.column; :}
 ;
 
 method ::=
-  identifier:id LPAR formals:fo RPAR COLON type:ty block:b    {: RESULT = new Method(id, fo, ty, b); :}
+  identifier:id LPAR formals:fo RPAR COLON type:ty block:b    {: RESULT = new Method(id, fo, ty, b); RESULT.line = id.line; RESULT.column = id.column; :}
 ;
 
 type ::=
   classType:ty               {: RESULT = ty; :}
-|  INT32:ti                  {: RESULT = new Type("int32", ti.getLine(), ti.getColumn()); :}
-|  BOOL:ti                   {: RESULT = new Type("bool", ti.getLine(), ti.getColumn()); :}
-|  STRING:ti                 {: RESULT = new Type("string", ti.getLine(), ti.getColumn()); :}
-|  UNIT:ti                   {: RESULT = new Type("unit", ti.getLine(), ti.getColumn()); :}
+|  INT32:ti                  {: RESULT = new Type("int32"); RESULT.line = ti.getLine(); RESULT.column = ti.getColumn(); :}
+|  BOOL:ti                   {: RESULT = new Type("bool"); RESULT.line = ti.getLine(); RESULT.column = ti.getColumn(); :}
+|  STRING:ti                 {: RESULT = new Type("string"); RESULT.line = ti.getLine(); RESULT.column = ti.getColumn(); :}
+|  UNIT:ti                   {: RESULT = new Type("unit"); RESULT.line = ti.getLine(); RESULT.column = ti.getColumn(); :}
 ;
 
 classType ::=
-  TYPE_IDENTIFIER:ti      {: RESULT = new Type(ti.getValue(), ti.getLine(), ti.getColumn()); :}
+  TYPE_IDENTIFIER:ti      {: RESULT = new Type(ti.getValue()); RESULT.line = ti.getLine(); RESULT.column = ti.getColumn(); :}
 ;
 
 formals ::=
@@ -132,7 +132,7 @@ formalList ::=
 ;
 
 formal ::=
-  identifier:id COLON type:ty      {: RESULT = new Formal(id, ty); :}
+  identifier:id COLON type:ty      {: RESULT = new Formal(id, ty); RESULT.line = id.line; RESULT.column = id.column; :}
 ;
 
 block ::=
@@ -145,11 +145,11 @@ exprList ::=
 ;
 
 expr ::=
-  IF expr:e1 THEN expr:e2                                                 {: RESULT = new If(e1, e2); :}
-| IF expr:e1 THEN expr:e2 ELSE expr:e3                                    {: RESULT = new If(e1, e2, e3); :}
-| WHILE expr:e1 DO expr:e2                                                {: RESULT = new While(e1, e2); :}
-| LET identifier:id COLON type:ty IN expr:e                               {: RESULT = new Let(id, ty, e); :}
-| LET identifier:id COLON type:ty ASSIGN expr:e1 IN expr:e2               {: RESULT = new Let(id, ty, e1, e2); :}
+  IF:i expr:e1 THEN expr:e2                                               {: RESULT = new If(e1, e2); RESULT.line = i.getLine(); RESULT.column = i.getColumn(); :}
+| IF:i expr:e1 THEN expr:e2 ELSE expr:e3                                  {: RESULT = new If(e1, e2, e3); RESULT.line = i.getLine(); RESULT.column = i.getColumn(); :}
+| WHILE:w expr:e1 DO expr:e2                                              {: RESULT = new While(e1, e2); RESULT.line = w.getLine(); RESULT.column = w.getColumn(); :}
+| LET:l identifier:id COLON type:ty IN expr:e                             {: RESULT = new Let(id, ty, e); RESULT.line = l.getLine(); RESULT.column = l.getColumn(); :}
+| LET:l identifier:id COLON type:ty ASSIGN expr:e1 IN expr:e2             {: RESULT = new Let(id, ty, e1, e2); RESULT.line = l.getLine(); RESULT.column = l.getColumn(); :}
 | identifier:id ASSIGN expr:e                                             {: RESULT = new Assign(id, e); :}
 | NOT:kw expr:e                                                           {: RESULT = new UnOp(kw.getTokenType().getStringValue(), e); :}
 | MINUS:kw expr:e                                                         {: RESULT = new UnOp(kw.getTokenType().getStringValue(), e); :}%prec UMINUS
@@ -164,7 +164,7 @@ expr ::=
 | expr:e1 DIV:kw expr:e2                                                  {: RESULT = new BinOp(kw.getTokenType().getStringValue(), e1, e2); :}
 | expr:e1 POW:kw expr:e2                                                  {: RESULT = new BinOp(kw.getTokenType().getStringValue(), e1, e2); :}
 | expr:e DOT identifier:id LPAR args:ar RPAR                              {: RESULT = new Call(e, id, ar); :}
-| identifier:id LPAR args:ar RPAR                                         {: RESULT = new Call(new Id("self", id.getLine(), id.getColumn()), id, ar, true); :}
+| identifier:id LPAR args:ar RPAR                                         {: RESULT = new Call(new Id("self"), id, ar); :}
 | LPAR RPAR                                                               {: RESULT = new Null(); :}
 | NEW classType:ti                                                        {: RESULT = new New(ti); :}
 | identifier:id                                                           {: RESULT = id; :}
@@ -195,7 +195,7 @@ booleanLiteral ::=
 ;
 
 identifier ::=
-IDENTIFIER:id       {: RESULT = new Id(id.getValue(), id.getLine(), id.getColumn()); :}
+IDENTIFIER:id       {: RESULT = new Id(id.getValue()); RESULT.line = id.getLine(); RESULT.column = id.getColumn(); :}
 ;
 
 empty ::= ;

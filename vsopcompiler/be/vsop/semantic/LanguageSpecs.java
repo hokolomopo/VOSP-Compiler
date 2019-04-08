@@ -2,11 +2,10 @@ package be.vsop.semantic;
 
 import be.vsop.AST.ASTNode;
 import be.vsop.AST.ClassItem;
-import be.vsop.AST.ClassList;
 import be.vsop.AST.Type;
 import be.vsop.Compiler;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class LanguageSpecs {
     public static final Type[] DEFAULT_TYPES = new Type[]{
@@ -15,6 +14,7 @@ public class LanguageSpecs {
             new Type("int32"),
             new Type("unit")
     };
+    private HashMap<String, ClassItem> classTable;
 
     private enum DefaultClasses{
         OBJECT("Object","language/Object.vsop"),
@@ -27,28 +27,26 @@ public class LanguageSpecs {
             this.name = name;
             this.fileName = fileName;
         }
+    }
 
-        private ClassItem getClassItem(){
-            Compiler compiler = new Compiler(fileName);
-            ASTNode tree = compiler.buildAST();
-
-            ArrayList<ASTNode> list = tree.getChildren();
-
-            return (ClassItem) list.get(0).getChildren().get(0);
-        }
-
-        public String getName() {
-            return name;
+    LanguageSpecs() {
+        classTable = new HashMap<>();
+        Compiler compiler;
+        ASTNode tree;
+        ClassItem curItem;
+        for(DefaultClasses d : DefaultClasses.values()) {
+            compiler = new Compiler(d.fileName);
+            tree = compiler.buildAST();
+            curItem = (ClassItem) tree.getChildren().get(0).getChildren().get(0);
+            // We assume that there is no error in the default files. If there is, putting null here
+            // will trigger an exception, differentiating in this way errors in input files from errors in default files.
+            curItem.updateClassTable(classTable, null);
+            curItem.fillScopeTable(null, null);
         }
     }
 
-    static ClassList getLanguageClasses(){
-        ArrayList<ClassItem> items = new ArrayList<>();
-
-        for(DefaultClasses d : DefaultClasses.values())
-            items.add(d.getClassItem());
-
-        return new ClassList(items);
+    HashMap<String, ClassItem> getLanguageClassTable() {
+        return classTable;
     }
 
     static boolean isDefaultClass(String className){
