@@ -1,19 +1,26 @@
+class Main extends B {
+    
+}
+
 class MyClass {
     s : string <- "One\n\x32[33;mTwo and \
                    three\r\n";
     i : int32 <-  27-0x1b;
 }
 
-class B { something : string; (* *) }
+class B { something : string; (* *)
+          main() : int32 {nothing <- ""} }
 
-class A extends B { (* a useless comment *) }
+class A extends B { (* a useless comment *) aField : A; }
 
-class F { msg : string; number: int32; object: Object; }
+class F { msg : string; number: int32; object: Object; 
+          bjr(msg: string) : bool {"a"} }
 
-class MyIO extends D { cout: C <- "bjr";
-                        print3 : D <- "a";
+class MyIO extends D { print3 : string <- "a";
+                        print2(msg: string, self: bool) : bool {let msg : bool <- true in {"a"} }
                         print3(msg: string, cout: D, blue: bool, myself : int32) : bool { (* a comment *) count; true } }
 
-class C { (* *) }
+class CDEF { (* *) }
 
-class D extends IO { count : int32 <- 0b000111; }
+class D { count : int32 <- 0b000111;
+                     print3(msg: string, cout: D, blue: bool, myself : int32) : bool { (* a comment *) count; true }  }

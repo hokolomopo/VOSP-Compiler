@@ -1,6 +1,7 @@
 package be.vsop.AST;
 
 import be.vsop.exceptions.semantic.ClassAlreadyDeclaredException;
+import be.vsop.exceptions.semantic.MainException;
 import be.vsop.exceptions.semantic.SemanticException;
 import be.vsop.semantic.ScopeTable;
 
@@ -36,8 +37,10 @@ public class ClassItem extends ASTNode{
 	@Override
 	public void updateClassTable(HashMap<String, ClassItem> classTable, ArrayList<SemanticException> errorList) {
 		this.classTable = classTable;
-		if(classTable.containsKey(type.getName())) {
-			errorList.add(new ClassAlreadyDeclaredException(type.getName(), line, column));
+		ClassItem previousDeclaration = classTable.get(type.getName());
+		if(previousDeclaration != null) {
+			errorList.add(new ClassAlreadyDeclaredException(type.getName(),
+					line, column, previousDeclaration.line, previousDeclaration.column));
 		} else {
 			classTable.put(type.getName(), this);
 		}
@@ -62,6 +65,22 @@ public class ClassItem extends ASTNode{
 	}
 
 	@Override
+	public void checkScope(ArrayList<SemanticException> errorList) {
+		//TODO what if the Main class has no main() method, but extends another class which has a main method?
+		// simply a matter of putting "local scope only" or not in lookupMethod arguments.
+		if (getName().equals("Main")) {
+			Method mainMethod = scopeTable.lookupMethod("main");
+			if (mainMethod == null) {
+				errorList.add(new MainException("The class \"Main\" should contain a \"main\" method", 0, 0));
+			} else if (mainMethod.nbArguments() != 0 || !mainMethod.returnType().equals("int32")) {
+				errorList.add(new MainException("The class \"Main\" should have no arguments and return an int32",
+						mainMethod.line, mainMethod.column));
+			}
+		}
+		super.checkScope(errorList);
+	}
+
+	@Override
 	public void print(int tabLevel, boolean doTab) {
 		if(doTab)
 			System.out.print(getTab(tabLevel));
@@ -80,4 +99,7 @@ public class ClassItem extends ASTNode{
 		return type.getName();
 	}
 
+	public int parentNameColumn() {
+		return column + getName().length() + " extends ".length();
+	}
 }

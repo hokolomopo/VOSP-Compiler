@@ -41,4 +41,8 @@ public class Formal extends ASTNode{
 	public Type getType() {
 		return type;
 	}
+
+	boolean sameType(Formal other) {
+		return this.type.getName().equals(other.type.getName());
+	}
 }

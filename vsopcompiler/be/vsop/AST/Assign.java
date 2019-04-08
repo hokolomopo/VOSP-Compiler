@@ -1,5 +1,8 @@
 package be.vsop.AST;
 
+import be.vsop.exceptions.semantic.InvalidAssignException;
+import be.vsop.exceptions.semantic.SemanticException;
+
 import java.util.ArrayList;
 
 public class Assign extends Expr {
@@ -12,6 +15,14 @@ public class Assign extends Expr {
 
 		this.children = new ArrayList<>();
 		this.children.add(expr);
+	}
+
+	@Override
+	public void checkScope(ArrayList<SemanticException> errorList) {
+		if (id.getName().equals("self")) {
+			errorList.add(new InvalidAssignException(line, column));
+		}
+		super.checkScope(errorList);
 	}
 
 	@Override

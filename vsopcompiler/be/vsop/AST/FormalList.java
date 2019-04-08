@@ -57,4 +57,12 @@ public class FormalList extends ASTNode{
             }
         }
     }
+
+    int size() {
+        return formals.size();
+    }
+
+    Formal get(int index) {
+        return formals.get(index);
+    }
 }

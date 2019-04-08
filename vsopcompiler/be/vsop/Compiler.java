@@ -76,7 +76,6 @@ public class Compiler {
                 System.err.println(fileName + ":" + e.getMessage());
             System.exit(-1);
         }
-        //TODO this should not print IO
         this.program.print();
     }
 

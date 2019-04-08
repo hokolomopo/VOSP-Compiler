@@ -150,7 +150,7 @@ expr ::=
 | WHILE:w expr:e1 DO expr:e2                                              {: RESULT = new While(e1, e2); RESULT.line = w.getLine(); RESULT.column = w.getColumn(); :}
 | LET:l identifier:id COLON type:ty IN expr:e                             {: RESULT = new Let(id, ty, e); RESULT.line = l.getLine(); RESULT.column = l.getColumn(); :}
 | LET:l identifier:id COLON type:ty ASSIGN expr:e1 IN expr:e2             {: RESULT = new Let(id, ty, e1, e2); RESULT.line = l.getLine(); RESULT.column = l.getColumn(); :}
-| identifier:id ASSIGN expr:e                                             {: RESULT = new Assign(id, e); :}
+| identifier:id ASSIGN:a expr:e                                           {: RESULT = new Assign(id, e); RESULT.line = a.getLine(); RESULT.column = a.getColumn(); :}
 | NOT:kw expr:e                                                           {: RESULT = new UnOp(kw.getTokenType().getStringValue(), e); :}
 | MINUS:kw expr:e                                                         {: RESULT = new UnOp(kw.getTokenType().getStringValue(), e); :}%prec UMINUS
 | ISNULL:kw expr:e                                                        {: RESULT = new UnOp(kw.getTokenType().getStringValue(), e); :}

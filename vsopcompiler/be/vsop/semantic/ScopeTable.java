@@ -3,6 +3,7 @@ package be.vsop.semantic;
 import be.vsop.AST.Formal;
 import be.vsop.AST.Method;
 import be.vsop.AST.Type;
+import com.sun.javaws.exceptions.InvalidArgumentException;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,10 +21,6 @@ public class ScopeTable {
         typeTable = new HashMap<>(Collections.unmodifiableMap(map));
     }
 
-    public ScopeTable(ScopeTable parent) {
-        this.parent = parent;
-    }
-
     public ScopeTable() {
     }
 
@@ -31,34 +28,56 @@ public class ScopeTable {
         this.methodTable.put(method.getName(), method);
     }
 
-    public Method lookupMethod(String name){
-        Method method = methodTable.get(name);
+    public Method lookupMethod(String name, String scope) {
+        // Much easier to debug if we put a typo in the argument
+        if (!scope.equals("local scope only") && !scope.equals("outer scope only") && !scope.equals("everywhere")) {
+            throw new IllegalArgumentException("unknown scope argument");
+        }
+        Method method = null;
+        if (!scope.equals("outer scope only")) {
+            method = methodTable.get(name);
+        }
 
-        if(method == null && parent != null)
-            method = this.parent.lookupMethod(name);
+        if(method == null && parent != null && !scope.equals("local scope only"))
+            method = this.parent.lookupMethod(name, "everywhere");
 
         return method;
+    }
+
+    public Method lookupMethod(String name){
+        return lookupMethod(name, "everywhere");
     }
 
     public void addVariable(Formal var){
         this.variableTable.put(var.getName(), var);
     }
 
-    public Formal lookupVariable(String name, boolean inScope) {
-        Formal var = variableTable.get(name);
+    public Formal lookupVariable(String name, String scope) {
+        // Much easier to debug if we put a typo in the argument
+        if (!scope.equals("local scope only") && !scope.equals("outer scope only") && !scope.equals("everywhere")) {
+            throw new IllegalArgumentException("unknown scope argument");
+        }
+        Formal var = null;
+        if (!scope.equals("outer scope only")) {
+            var = variableTable.get(name);
+        }
 
-        if(var == null && parent != null && !inScope)
-            var = this.parent.lookupVariable(name);
+        if(var == null && parent != null && !scope.equals("local scope only"))
+            var = this.parent.lookupVariable(name, "everywhere");
 
         return var;
     }
 
     public Formal lookupVariable(String name){
-        return lookupVariable(name, false);
+        return lookupVariable(name, "everywhere");
     }
 
     public Type lookupType(String name){
         return typeTable.get(name);
+    }
+
+    public ScopeTable getParent() {
+        return parent;
     }
 
     public void setParent(ScopeTable parent) { this.parent = parent; }

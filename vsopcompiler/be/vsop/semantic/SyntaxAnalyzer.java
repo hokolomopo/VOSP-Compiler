@@ -5,6 +5,7 @@ import be.vsop.AST.Program;
 import be.vsop.exceptions.semantic.ClassNotDeclaredException;
 import be.vsop.exceptions.semantic.CyclicInheritanceException;
 import be.vsop.exceptions.semantic.SemanticException;
+import be.vsop.exceptions.semantic.MainException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,8 +36,13 @@ public class SyntaxAnalyzer {
             }
         });
 
-        program.fillScopeTable(null, errors);
-        program.checkScope(errors);
+        if (!classTable.containsKey("Main")) {
+            errors.add(new MainException("Input file should contain a Main class", 0, 0));
+        }
+        if (errors.size() == 0) {
+            program.fillScopeTable(null, errors);
+            program.checkScope(errors);
+        }
     }
 
     /**
@@ -72,7 +78,7 @@ public class SyntaxAnalyzer {
 
             if(parent == null) {
                 if (! extendedButNotDeclared.contains(current.getParentName())) {
-                    this.errors.add(new ClassNotDeclaredException(current.getParentName(), current.line, current.column));
+                    this.errors.add(new ClassNotDeclaredException(current.getParentName(), current.line, current.parentNameColumn()));
                     extendedButNotDeclared.add(current.getParentName());
                 }
             }

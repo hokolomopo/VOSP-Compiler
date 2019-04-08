@@ -1,5 +1,6 @@
 package be.vsop.AST;
 
+import be.vsop.exceptions.semantic.InvalidOverrideException;
 import be.vsop.exceptions.semantic.MethodAlreadyDeclaredException;
 import be.vsop.exceptions.semantic.SemanticException;
 import be.vsop.semantic.ScopeTable;
@@ -28,8 +29,12 @@ public class Method extends ASTNode {
 	@Override
 	public void fillScopeTable(ScopeTable scopeTable, ArrayList<SemanticException> errorList) {
 		this.scopeTable.setParent(scopeTable);
-		if (scopeTable.lookupMethod(id.getName()) != null) {
-			errorList.add(new MethodAlreadyDeclaredException(id.getName(), line, column));
+		// If two methods are defined in different scopes, it may not yet be added in the tables,
+		// thus we only check local scope for now.
+		Method previousDeclaration = scopeTable.lookupMethod(getName(), "local scope only");
+		if (previousDeclaration != null) {
+			errorList.add(new MethodAlreadyDeclaredException(getName(),
+					line, column, previousDeclaration.line, previousDeclaration.column));
 		} else {
 			scopeTable.addMethod(this);
 		}
@@ -40,6 +45,32 @@ public class Method extends ASTNode {
 
 	@Override
 	public void checkScope(ArrayList<SemanticException> errorList){
+		Method previousDeclaration = scopeTable.getParent().lookupMethod(getName(), "outer scope only");
+		if (previousDeclaration != null) {
+			if (previousDeclaration.formals.size() != this.formals.size()) {
+				errorList.add(new InvalidOverrideException(getName(),
+						line, column, previousDeclaration.line, previousDeclaration.column, "different number of arguments"));
+			} else {
+				StringBuilder messageEnd = new StringBuilder("argument(s) ");
+				boolean invalid = false;
+				for (int i = 0; i < formals.size(); i++) {
+					if (!formals.get(i).sameType(previousDeclaration.formals.get(i))) {
+						invalid = true;
+						messageEnd.append(i).append(", ");
+					}
+				}
+				if (!retType.getName().equals(previousDeclaration.retType.getName())) {
+					invalid = true;
+					messageEnd.append("return, ");
+				}
+				if (invalid) {
+					messageEnd.setLength(messageEnd.length() - 2);
+					messageEnd.append(" differ(s) in type");
+					errorList.add(new InvalidOverrideException(getName(),
+							line, column, previousDeclaration.line, previousDeclaration.column, messageEnd.toString()));
+				}
+			}
+		}
 		//TODO can a formal argument be named self ? + maybe need a more general implementation
 		formals.checkAllDifferent(errorList);
 		super.checkScope(errorList);
@@ -63,5 +94,13 @@ public class Method extends ASTNode {
 
 	public String getName() {
 		return id.getName();
+	}
+
+	int nbArguments() {
+		return formals.size();
+	}
+	
+	String returnType() {
+		return retType.getName();
 	}
 }

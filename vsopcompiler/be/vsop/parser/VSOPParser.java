@@ -943,10 +943,13 @@ class CUP$VSOPParser$actions {
 		int idleft = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-2)).left;
 		int idright = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-2)).right;
 		Id id = (Id)((java_cup.runtime.Symbol) CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-2)).value;
+		int aleft = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-1)).left;
+		int aright = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-1)).right;
+		Token a = (Token)((java_cup.runtime.Symbol) CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-1)).value;
 		int eleft = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()).left;
 		int eright = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()).right;
 		Expr e = (Expr)((java_cup.runtime.Symbol) CUP$VSOPParser$stack.peek()).value;
-		 RESULT = new Assign(id, e); 
+		 RESULT = new Assign(id, e); RESULT.line = a.getLine(); RESULT.column = a.getColumn(); 
               CUP$VSOPParser$result = parser.getSymbolFactory().newSymbol("expr",14, ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-2)), ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()), RESULT);
             }
           return CUP$VSOPParser$result;
@@ -1186,8 +1189,7 @@ class CUP$VSOPParser$actions {
 		int arleft = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-1)).left;
 		int arright = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-1)).right;
 		ArgList ar = (ArgList)((java_cup.runtime.Symbol) CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-1)).value;
-		 Id selfId = new Id("self"); selfId.line = id.line; selfId.column = id.column;
-                                                                             RESULT = new Call(selfId, id, ar); 
+		 RESULT = new Call(new Id("self"), id, ar); 
               CUP$VSOPParser$result = parser.getSymbolFactory().newSymbol("expr",14, ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-3)), ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()), RESULT);
             }
           return CUP$VSOPParser$result;

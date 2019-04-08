@@ -31,7 +31,10 @@ public class Field extends ASTNode {
 	@Override
 	public void fillScopeTable(ScopeTable scopeTable, ArrayList<SemanticException> errorList) {
 		this.scopeTable = scopeTable;
-		Formal previousDeclaration = scopeTable.lookupVariable(id.getName(), true);
+		// We need to check here if the variable is already defined in local scope, even if we will
+		// later do the same check with the outer scope, because we can't do a lookup in local scope after
+		// having added the Field : the Field would find itself.
+		Formal previousDeclaration = scopeTable.lookupVariable(id.getName(), "local scope only");
 		if(previousDeclaration != null) {
 			errorList.add(new VariableAlreadyDeclaredException(id.getName(), line, column,
 					previousDeclaration.line, previousDeclaration.column));
@@ -44,6 +47,16 @@ public class Field extends ASTNode {
 		if(children != null)
 			for(ASTNode node : children)
 				node.fillScopeTable(scopeTable, errorList);
+	}
+
+	@Override
+	public void checkScope(ArrayList<SemanticException> errorList) {
+		Formal previousDeclaration = scopeTable.lookupVariable(id.getName(), "outer scope only");
+		if (previousDeclaration != null) {
+			errorList.add(new VariableAlreadyDeclaredException(id.getName(), line, column,
+					previousDeclaration.line, previousDeclaration.column));
+		}
+		super.checkScope(errorList);
 	}
 
 	@Override
