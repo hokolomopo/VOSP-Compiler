@@ -2,6 +2,7 @@ package be.vsop.AST;
 
 import be.vsop.exceptions.semantic.SemanticException;
 import be.vsop.exceptions.semantic.TypeNotExpectedException;
+import be.vsop.exceptions.semantic.VariableAlreadyDeclaredException;
 import be.vsop.semantic.ScopeTable;
 
 import java.util.ArrayList;
@@ -18,6 +19,8 @@ public class Let extends Expr {
 	public Let(Id id, Type type, Expr initExpr, Expr bodyExpr) {
 		this.scopeTable = new ScopeTable();
 		this.formal = new Formal(id, type);
+		formal.line = id.line;
+		formal.column = id.column;
 		this.bodyExpr = bodyExpr;
 		this.initExpr = initExpr;
 
@@ -32,6 +35,9 @@ public class Let extends Expr {
 	@Override
 	public void fillScopeTable(ScopeTable scopeTable, ArrayList<SemanticException> errorList) {
 		this.scopeTable.setParent(scopeTable);
+		if (formal.getName().equals("self")) {
+			errorList.add(new VariableAlreadyDeclaredException("self", formal.line, formal.column, 0, 0));
+		}
 		if (children != null) {
 			for (ASTNode node : children) {
 				node.fillScopeTable(this.scopeTable, errorList);
@@ -42,7 +48,7 @@ public class Let extends Expr {
 	@Override
 	public void checkTypes(ArrayList<SemanticException> errorList) {
 		super.checkTypes(errorList);
-		if (initExpr != null && initExpr.typeName != null && initExpr.typeName.equals(formal.getType().getName())) {
+		if (initExpr != null && initExpr.typeName != null && !initExpr.typeName.equals(formal.getType().getName())) {
 			errorList.add(new TypeNotExpectedException(initExpr, formal.getType().getName()));
 		}
 		typeName = bodyExpr.typeName;

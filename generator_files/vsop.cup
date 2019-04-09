@@ -136,7 +136,7 @@ formal ::=
 ;
 
 block ::=
-  LBRACE exprList:el expr:e RBRACE           {: RESULT = new ExprList(el, e); :}
+  LBRACE:l exprList:el expr:e RBRACE           {: RESULT = new ExprList(el, e); RESULT.line = l.getLine(); RESULT.column = l.getColumn(); :}
 ;
 
 exprList ::=
@@ -145,11 +145,11 @@ exprList ::=
 ;
 
 expr ::=
-  IF:i expr:e1 THEN expr:e2                                               {: RESULT = new If(e1, e2); RESULT.line = i.getLine(); RESULT.column = i.getColumn(); :}
-| IF:i expr:e1 THEN expr:e2 ELSE expr:e3                                  {: RESULT = new If(e1, e2, e3); RESULT.line = i.getLine(); RESULT.column = i.getColumn(); :}
-| WHILE:w expr:e1 DO expr:e2                                              {: RESULT = new While(e1, e2); RESULT.line = w.getLine(); RESULT.column = w.getColumn(); :}
-| LET:l identifier:id COLON type:ty IN expr:e                             {: RESULT = new Let(id, ty, e); id.toVar(); RESULT.line = l.getLine(); RESULT.column = l.getColumn(); :}
-| LET:l identifier:id COLON type:ty ASSIGN expr:e1 IN expr:e2             {: RESULT = new Let(id, ty, e1, e2); id.toVar(); RESULT.line = l.getLine(); RESULT.column = l.getColumn(); :}
+  IF:i expr:e1 THEN expr:e2                                               {: RESULT = new If(e1, e2); :}
+| IF:i expr:e1 THEN expr:e2 ELSE expr:e3                                  {: RESULT = new If(e1, e2, e3); :}
+| WHILE:w expr:e1 DO expr:e2                                              {: RESULT = new While(e1, e2); :}
+| LET:l identifier:id COLON type:ty IN expr:e                             {: RESULT = new Let(id, ty, e); id.toVar(); :}
+| LET:l identifier:id COLON type:ty ASSIGN expr:e1 IN expr:e2             {: RESULT = new Let(id, ty, e1, e2); id.toVar(); :}
 | identifier:id ASSIGN:a expr:e                                           {: RESULT = new Assign(id, e); id.toVar(); RESULT.line = a.getLine(); RESULT.column = a.getColumn(); :}
 | NOT:kw expr:e                                                           {: RESULT = new UnOp(kw.getTokenType().getStringValue(), e); :}
 | MINUS:kw expr:e                                                         {: RESULT = new UnOp(kw.getTokenType().getStringValue(), e); :}%prec UMINUS
@@ -165,8 +165,8 @@ expr ::=
 | expr:e1 POW:kw expr:e2                                                  {: RESULT = new BinOp(kw.getTokenType().getStringValue(), e1, e2); :}
 | expr:e DOT identifier:id LPAR args:ar RPAR                              {: RESULT = new Call(e, id, ar); id.toMethod(); :}
 | identifier:id LPAR args:ar RPAR                                         {: Id selfId = new Id("self"); selfId.toVar(); RESULT = new Call(selfId, id, ar); id.toMethod(); :}
-| LPAR RPAR                                                               {: RESULT = new Null(); :}
-| NEW classType:ti                                                        {: RESULT = new New(ti); :}
+| LPAR:l RPAR                                                             {: RESULT = new Null(); RESULT.line = l.getLine(); RESULT.column = l.getColumn(); :}
+| NEW:n classType:ti                                                      {: RESULT = new New(ti); RESULT.line = n.getLine(); RESULT.column = n.getColumn(); :}
 | identifier:id                                                           {: RESULT = id; :}
 | literal:li                                                              {: RESULT = li; :}
 | LPAR expr:e RPAR                                                        {: RESULT = e; :}
@@ -184,14 +184,14 @@ argList ::=
 ;
 
 literal ::=
-  INT_LITERAL:il         {: RESULT = new LiteralInteger(il.getValue()); :}
-| STRING_LITERAL:sl      {: RESULT = new LiteralString(sl.getValue()); :}
+  INT_LITERAL:il         {: RESULT = new LiteralInteger(il.getValue()); RESULT.line = il.getLine(); RESULT.column = il.getColumn(); :}
+| STRING_LITERAL:sl      {: RESULT = new LiteralString(sl.getValue()); RESULT.line = sl.getLine(); RESULT.column = sl.getColumn(); :}
 | booleanLiteral:bl      {: RESULT = bl; :}
 ;
 
 booleanLiteral ::=
-  TRUE:bl       {: RESULT = new LiteralBoolean(bl.getTokenType().getStringValue()); :}
-| FALSE:bl      {: RESULT = new LiteralBoolean(bl.getTokenType().getStringValue()); :}
+  TRUE:bl       {: RESULT = new LiteralBoolean(bl.getTokenType().getStringValue()); RESULT.line = bl.getLine(); RESULT.column = bl.getColumn(); :}
+| FALSE:bl      {: RESULT = new LiteralBoolean(bl.getTokenType().getStringValue()); RESULT.line = bl.getLine(); RESULT.column = bl.getColumn(); :}
 ;
 
 identifier ::=

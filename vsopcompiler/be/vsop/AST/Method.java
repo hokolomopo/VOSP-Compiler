@@ -1,8 +1,6 @@
 package be.vsop.AST;
 
-import be.vsop.exceptions.semantic.InvalidOverrideException;
-import be.vsop.exceptions.semantic.MethodAlreadyDeclaredException;
-import be.vsop.exceptions.semantic.SemanticException;
+import be.vsop.exceptions.semantic.*;
 import be.vsop.semantic.ScopeTable;
 
 import java.util.ArrayList;
@@ -21,9 +19,10 @@ public class Method extends ASTNode {
 		this.block = block;
 
 		this.children = new ArrayList<>();
-		this.children.add(block);
+		this.children.add(id);
 		this.children.add(formals);
 		this.children.add(retType);
+		this.children.add(block);
 	}
 
 	@Override
@@ -38,9 +37,24 @@ public class Method extends ASTNode {
 		} else {
 			scopeTable.addMethod(this);
 		}
+		Formal curParam;
+		for (int i = 0; i < formals.size(); i++) {
+			curParam = formals.get(i);
+			if (curParam.getName().equals("self")) {
+				errorList.add(new VariableAlreadyDeclaredException("self", curParam.line, curParam.column, 0, 0));
+			}
+		}
 		if(children != null)
 			for(ASTNode node : children)
 				node.fillScopeTable(this.scopeTable, errorList);
+	}
+
+	@Override
+	public void checkTypes(ArrayList<SemanticException> errorList) {
+		super.checkTypes(errorList);
+		if (block.typeName != null && !block.typeName.equals(retType.getName())) {
+			errorList.add(new TypeNotExpectedException(block, retType.getName()));
+		}
 	}
 
 	@Override

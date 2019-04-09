@@ -1,6 +1,7 @@
 package be.vsop.AST;
 
 import be.vsop.exceptions.semantic.SemanticException;
+import be.vsop.exceptions.semantic.TypeNotExpectedException;
 import be.vsop.exceptions.semantic.VariableAlreadyDeclaredException;
 import be.vsop.semantic.ScopeTable;
 
@@ -21,6 +22,7 @@ public class Field extends ASTNode {
 		this.initExpr = initExpr;
 
 		this.children = new ArrayList<>();
+		this.children.add(id);
 		this.children.add(type);
 
 		if(initExpr != null)
@@ -47,6 +49,14 @@ public class Field extends ASTNode {
 		if(children != null)
 			for(ASTNode node : children)
 				node.fillScopeTable(scopeTable, errorList);
+	}
+
+	@Override
+	public void checkTypes(ArrayList<SemanticException> errorList) {
+		super.checkTypes(errorList);
+		if (initExpr.typeName != null && !initExpr.typeName.equals(type.getName())) {
+			errorList.add(new TypeNotExpectedException(initExpr, type.getName()));
+		}
 	}
 
 	@Override
