@@ -41,6 +41,11 @@ public class SyntaxAnalyzer {
         }
         if (errors.size() == 0) {
             program.fillScopeTable(null, errors);
+        }
+        if (errors.size() == 0) {
+            program.checkTypes(errors);
+        }
+        if (errors.size() == 0) {
             program.checkScope(errors);
         }
     }

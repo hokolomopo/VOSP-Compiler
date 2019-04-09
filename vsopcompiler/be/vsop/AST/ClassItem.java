@@ -7,6 +7,7 @@ import be.vsop.semantic.ScopeTable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class ClassItem extends ASTNode{
 	private Type type;
@@ -56,7 +57,9 @@ public class ClassItem extends ASTNode{
 			this.scopeTable.setParent(parentTable);
 		}
 		//Add self field
-		Formal self = new Formal(new Id("self"), type);
+		Id selfId = new Id("self");
+		selfId.toVar();
+		Formal self = new Formal(selfId, type);
 		this.scopeTable.addVariable(self);
 
 		if(children != null)
@@ -101,5 +104,26 @@ public class ClassItem extends ASTNode{
 
 	public int parentNameColumn() {
 		return column + getName().length() + " extends ".length();
+	}
+
+	Method lookupMethod(Id methodId) {
+		return scopeTable.lookupMethod(methodId.getName());
+	}
+
+	static String firstCommonAncestor(HashMap<String, ClassItem> classTable, String type1, String type2) {
+		HashSet<String> ancestors1 = new HashSet<>();
+		Type curType = classTable.get(type1).type;
+		while (curType != null) {
+			ancestors1.add(curType.getName());
+			curType = classTable.get(curType.getName()).parentType;
+		}
+		curType = classTable.get(type2).type;
+		while (curType != null) {
+			if (ancestors1.contains(curType.getName())) {
+				return curType.getName();
+			}
+			curType = classTable.get(curType.getName()).parentType;
+		}
+		return null;
 	}
 }

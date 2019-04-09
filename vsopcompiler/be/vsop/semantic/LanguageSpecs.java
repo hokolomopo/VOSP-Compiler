@@ -55,4 +55,13 @@ public class LanguageSpecs {
                 return true;
         return false;
     }
+
+    public static boolean isPrimitiveType(String typeName) {
+        for (Type defaultType : DEFAULT_TYPES) {
+            if (defaultType.getName().equals(typeName)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

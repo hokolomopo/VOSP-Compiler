@@ -6,32 +6,45 @@ import be.vsop.exceptions.semantic.SemanticException;
 import java.util.ArrayList;
 
 public class Assign extends Expr {
-	private Id id;
-	private Expr expr;
+    private Id id;
+    private Expr expr;
 
-	public Assign(Id id, Expr expr) {
-		this.id = id;
-		this.expr = expr;
+    public Assign(Id id, Expr expr) {
+        this.id = id;
+        this.expr = expr;
 
-		this.children = new ArrayList<>();
-		this.children.add(expr);
-	}
+        this.children = new ArrayList<>();
+        this.children.add(expr);
+    }
 
-	@Override
-	public void checkScope(ArrayList<SemanticException> errorList) {
-		if (id.getName().equals("self")) {
-			errorList.add(new InvalidAssignException(line, column));
-		}
-		super.checkScope(errorList);
-	}
+    @Override
+    public void checkTypes(ArrayList<SemanticException> errorList) {
+        super.checkTypes(errorList);
+        //TODO what is the type of an assign ? The type of the assigned object, or unit ?
+        typeName = id.typeName;
+        if (typeName != null && expr.typeName != null) {
+            if (!expr.typeName.equals(typeName)) {
+                errorList.add(new InvalidAssignException("Operands of assign does not have the same type : "
+                        + id.getName() + " is of type " + typeName + " and the expression evaluates to " + expr.typeName, line, column));
+            }
+        }
+    }
 
-	@Override
-	public void print(int tabLevel, boolean doTab) {
-		if(doTab)
-			System.out.print(getTab(tabLevel));
-		System.out.print("Assign(" + id.getName() + ",");
+    @Override
+    public void checkScope(ArrayList<SemanticException> errorList) {
+        if (id.getName().equals("self")) {
+            errorList.add(new InvalidAssignException("Assigning to self is forbidden", line, column));
+        }
+        super.checkScope(errorList);
+    }
 
-		expr.print(tabLevel, false);
-		System.out.print(")");
-	}
+    @Override
+    public void print(int tabLevel, boolean doTab) {
+        if (doTab)
+            System.out.print(getTab(tabLevel));
+        System.out.print("Assign(" + id.getName() + ",");
+
+        expr.print(tabLevel, false);
+        System.out.print(")");
+    }
 }

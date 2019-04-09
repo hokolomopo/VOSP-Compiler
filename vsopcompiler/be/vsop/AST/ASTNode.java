@@ -15,6 +15,7 @@ public abstract class ASTNode {
     protected ArrayList<ASTNode> children;
     protected ScopeTable scopeTable;
     protected HashMap<String, ClassItem> classTable;
+    protected ClassItem firstParent;
 
     protected ASTNode(){}
 
@@ -32,12 +33,17 @@ public abstract class ASTNode {
                 node.fillScopeTable(scopeTable, errorList);
     }
 
+    public void checkTypes(ArrayList<SemanticException> errorList) {
+        if(children != null)
+            for(ASTNode node : children)
+                node.checkTypes(errorList);
+    }
+
     public void checkScope(ArrayList<SemanticException> errorList){
         if(children != null)
             for(ASTNode node : children)
                 node.checkScope(errorList);
     }
-
 
     public void print(){print(0, false);}
     public abstract void print(int tabLevel, boolean doTab);

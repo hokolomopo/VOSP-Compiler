@@ -16,6 +16,12 @@ public class New extends Expr {
 	}
 
 	@Override
+	public void checkTypes(ArrayList<SemanticException> errorList) {
+		super.checkTypes(errorList);
+		typeName = type.getName();
+	}
+
+	@Override
 	public void print(int tabLevel, boolean doTab) {
 		if(doTab)
 			System.out.print(getTab(tabLevel));

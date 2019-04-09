@@ -1,5 +1,9 @@
 package be.vsop.AST;
 
+import be.vsop.exceptions.semantic.SemanticException;
+import be.vsop.exceptions.semantic.TypeNotExpectedException;
+import be.vsop.semantic.LanguageSpecs;
+
 import java.util.ArrayList;
 
 public class BinOp extends Expr {
@@ -19,6 +23,39 @@ public class BinOp extends Expr {
 	}
 
 	@Override
+	public void checkTypes(ArrayList<SemanticException> errorList) {
+		super.checkTypes(errorList);
+		switch (name) {
+			case "and":
+				checkExpr(lhs, "bool", errorList);
+				checkExpr(rhs, "bool", errorList);
+				typeName = "bool";
+				break;
+			case "=":
+				if (LanguageSpecs.isPrimitiveType(lhs.typeName) || LanguageSpecs.isPrimitiveType(rhs.typeName)) {
+					checkExpr(lhs, rhs.typeName, errorList);
+				}
+				typeName = "bool";
+				break;
+			case "<":
+			case "<=":
+				checkExpr(lhs, "int32", errorList);
+				checkExpr(rhs, "int32", errorList);
+				typeName = "bool";
+				break;
+			case "+":
+			case "-":
+			case "*":
+			case "/":
+			case "^":
+				checkExpr(lhs, "int32", errorList);
+				checkExpr(rhs, "int32", errorList);
+				typeName = "int32";
+				break;
+		}
+	}
+
+	@Override
 	public void print(int tabLevel, boolean doTab) {
 		if(doTab)
 			System.out.print(getTab(tabLevel));
@@ -28,5 +65,13 @@ public class BinOp extends Expr {
 		System.out.print(",");
 		rhs.print(tabLevel, false);
 		System.out.print(")");
+	}
+
+	static void checkExpr(Expr expr, String expectedType, ArrayList<SemanticException> errorList) {
+		if (expr.typeName != null) {
+			if (!expr.typeName.equals(expectedType)) {
+				errorList.add(new TypeNotExpectedException(expr, expectedType));
+			}
+		}
 	}
 }

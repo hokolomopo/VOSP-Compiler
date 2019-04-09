@@ -616,7 +616,7 @@ class CUP$VSOPParser$actions {
 		int tyleft = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-1)).left;
 		int tyright = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-1)).right;
 		Type ty = (Type)((java_cup.runtime.Symbol) CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-1)).value;
-		 RESULT = new Field(id, ty); RESULT.line = id.line; RESULT.column = id.column; 
+		 RESULT = new Field(id, ty); id.toVar(); RESULT.line = id.line; RESULT.column = id.column; 
               CUP$VSOPParser$result = parser.getSymbolFactory().newSymbol("field",7, ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-3)), ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()), RESULT);
             }
           return CUP$VSOPParser$result;
@@ -634,7 +634,7 @@ class CUP$VSOPParser$actions {
 		int valleft = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-1)).left;
 		int valright = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-1)).right;
 		Expr val = (Expr)((java_cup.runtime.Symbol) CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-1)).value;
-		 RESULT = new Field(id, ty, val); RESULT.line = id.line; RESULT.column = id.column; 
+		 RESULT = new Field(id, ty, val); id.toVar(); RESULT.line = id.line; RESULT.column = id.column; 
               CUP$VSOPParser$result = parser.getSymbolFactory().newSymbol("field",7, ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-5)), ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()), RESULT);
             }
           return CUP$VSOPParser$result;
@@ -655,7 +655,7 @@ class CUP$VSOPParser$actions {
 		int bleft = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()).left;
 		int bright = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()).right;
 		ExprList b = (ExprList)((java_cup.runtime.Symbol) CUP$VSOPParser$stack.peek()).value;
-		 RESULT = new Method(id, fo, ty, b); RESULT.line = id.line; RESULT.column = id.column; 
+		 RESULT = new Method(id, fo, ty, b); id.toMethod(); RESULT.line = id.line; RESULT.column = id.column; 
               CUP$VSOPParser$result = parser.getSymbolFactory().newSymbol("method",8, ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-6)), ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()), RESULT);
             }
           return CUP$VSOPParser$result;
@@ -790,7 +790,7 @@ class CUP$VSOPParser$actions {
 		int tyleft = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()).left;
 		int tyright = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()).right;
 		Type ty = (Type)((java_cup.runtime.Symbol) CUP$VSOPParser$stack.peek()).value;
-		 RESULT = new Formal(id, ty); RESULT.line = id.line; RESULT.column = id.column; 
+		 RESULT = new Formal(id, ty); id.toVar(); RESULT.line = id.line; RESULT.column = id.column; 
               CUP$VSOPParser$result = parser.getSymbolFactory().newSymbol("formal",11, ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-2)), ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()), RESULT);
             }
           return CUP$VSOPParser$result;
@@ -907,7 +907,7 @@ class CUP$VSOPParser$actions {
 		int eleft = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()).left;
 		int eright = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()).right;
 		Expr e = (Expr)((java_cup.runtime.Symbol) CUP$VSOPParser$stack.peek()).value;
-		 RESULT = new Let(id, ty, e); RESULT.line = l.getLine(); RESULT.column = l.getColumn(); 
+		 RESULT = new Let(id, ty, e); id.toVar(); RESULT.line = l.getLine(); RESULT.column = l.getColumn(); 
               CUP$VSOPParser$result = parser.getSymbolFactory().newSymbol("expr",14, ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-5)), ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()), RESULT);
             }
           return CUP$VSOPParser$result;
@@ -931,7 +931,7 @@ class CUP$VSOPParser$actions {
 		int e2left = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()).left;
 		int e2right = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()).right;
 		Expr e2 = (Expr)((java_cup.runtime.Symbol) CUP$VSOPParser$stack.peek()).value;
-		 RESULT = new Let(id, ty, e1, e2); RESULT.line = l.getLine(); RESULT.column = l.getColumn(); 
+		 RESULT = new Let(id, ty, e1, e2); id.toVar(); RESULT.line = l.getLine(); RESULT.column = l.getColumn(); 
               CUP$VSOPParser$result = parser.getSymbolFactory().newSymbol("expr",14, ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-7)), ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()), RESULT);
             }
           return CUP$VSOPParser$result;
@@ -949,7 +949,7 @@ class CUP$VSOPParser$actions {
 		int eleft = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()).left;
 		int eright = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()).right;
 		Expr e = (Expr)((java_cup.runtime.Symbol) CUP$VSOPParser$stack.peek()).value;
-		 RESULT = new Assign(id, e); RESULT.line = a.getLine(); RESULT.column = a.getColumn(); 
+		 RESULT = new Assign(id, e); id.toVar(); RESULT.line = a.getLine(); RESULT.column = a.getColumn(); 
               CUP$VSOPParser$result = parser.getSymbolFactory().newSymbol("expr",14, ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-2)), ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()), RESULT);
             }
           return CUP$VSOPParser$result;
@@ -1174,7 +1174,7 @@ class CUP$VSOPParser$actions {
 		int arleft = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-1)).left;
 		int arright = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-1)).right;
 		ArgList ar = (ArgList)((java_cup.runtime.Symbol) CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-1)).value;
-		 RESULT = new Call(e, id, ar); 
+		 RESULT = new Call(e, id, ar); id.toMethod(); 
               CUP$VSOPParser$result = parser.getSymbolFactory().newSymbol("expr",14, ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-5)), ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()), RESULT);
             }
           return CUP$VSOPParser$result;
@@ -1189,7 +1189,7 @@ class CUP$VSOPParser$actions {
 		int arleft = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-1)).left;
 		int arright = ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-1)).right;
 		ArgList ar = (ArgList)((java_cup.runtime.Symbol) CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-1)).value;
-		 RESULT = new Call(new Id("self"), id, ar); 
+		 Id selfId = new Id("self"); selfId.toVar(); RESULT = new Call(selfId, id, ar); id.toMethod(); 
               CUP$VSOPParser$result = parser.getSymbolFactory().newSymbol("expr",14, ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.elementAt(CUP$VSOPParser$top-3)), ((java_cup.runtime.Symbol)CUP$VSOPParser$stack.peek()), RESULT);
             }
           return CUP$VSOPParser$result;

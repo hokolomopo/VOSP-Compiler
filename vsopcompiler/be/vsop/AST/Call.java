@@ -1,5 +1,6 @@
 package be.vsop.AST;
 
+import be.vsop.exceptions.semantic.InvalidCallException;
 import be.vsop.exceptions.semantic.MethodNotDeclaredException;
 import be.vsop.exceptions.semantic.SemanticException;
 
@@ -24,14 +25,50 @@ public class Call extends Expr {
 
         this.children = new ArrayList<>();
         this.children.add(objExpr);
+        this.children.add(methodId);
         this.children.add(argList);
     }
 
+    @Override
+    public void checkTypes(ArrayList<SemanticException> errorList) {
+        super.checkTypes(errorList);
+        String object = objExpr.typeName;
+        if (object != null) {
+            Method called = classTable.get(object).lookupMethod(methodId);
+            if (called.nbArguments() != argList.size()) {
+                errorList.add(new InvalidCallException(called.getName(),
+                        line, column, called.line, called.column, "different number of arguments"));
+            } else {
+                StringBuilder messageEnd = new StringBuilder("argument(s) ");
+                String curArgType;
+                boolean invalid = false;
+                for (int i = 0; i < argList.size(); i++) {
+                    curArgType = argList.get(i).typeName;
+                    if (curArgType != null) {
+                        if (!curArgType.equals(called.getArgument(i).getType().getName())) {
+                            invalid = true;
+                            messageEnd.append(i).append(", ");
+                        }
+                    }
+                }
+                if (invalid) {
+                    messageEnd.setLength(messageEnd.length() - 2);
+                    messageEnd.append(" differ(s) in type");
+                    errorList.add(new InvalidCallException(called.getName(),
+                            line, column, called.line, called.column, messageEnd.toString()));
+                } else {
+                    typeName = called.returnType();
+                }
+            }
+        }
+    }
 
+    @Override
     public void checkScope(ArrayList<SemanticException> errorList){
         if(onSelf) {
-            if (scopeTable.lookupMethod(methodId.getName()) == null)
+            if (scopeTable.lookupMethod(methodId.getName()) == null) {
                 errorList.add(new MethodNotDeclaredException(methodId.getName(), line, column));
+            }
         }
         else{
             System.out.println("STILL TODO : Call.java");

@@ -34,4 +34,12 @@ public class ArgList extends ASTNode{
 
 		System.out.print("]");
 	}
+
+	int size() {
+		return args.size();
+	}
+
+	Expr get(int index) {
+		return args.get(index);
+	}
 }

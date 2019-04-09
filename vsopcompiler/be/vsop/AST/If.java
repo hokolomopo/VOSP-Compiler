@@ -1,5 +1,9 @@
 package be.vsop.AST;
 
+import be.vsop.exceptions.semantic.SemanticException;
+import be.vsop.exceptions.semantic.TypeNotExpectedException;
+import be.vsop.semantic.LanguageSpecs;
+
 import java.util.ArrayList;
 
 public class If extends Expr {
@@ -24,6 +28,36 @@ public class If extends Expr {
 			this.children.add(elseExpr);
 	}
 
+	@Override
+	public void checkTypes(ArrayList<SemanticException> errorList) {
+		super.checkTypes(errorList);
+		String condType = condExpr.typeName;
+		String thenType = thenExpr.typeName;
+		String elseType;
+		if (elseExpr == null) {
+			elseType = "unit";
+		} else {
+			elseType = elseExpr.typeName;
+		}
+
+		if (condType != null && !condType.equals("bool")) {
+			errorList.add(new TypeNotExpectedException(condExpr, "bool"));
+		}
+
+		if (thenType != null && elseType != null) {
+			if (thenType.equals("unit") || elseType.equals("unit")) {
+				typeName = "unit";
+			} else if (LanguageSpecs.isPrimitiveType(thenType) || LanguageSpecs.isPrimitiveType(elseType)) {
+				if (!thenType.equals(elseType)) {
+					errorList.add(new TypeNotExpectedException(thenExpr, elseExpr.typeName));
+				} else {
+					typeName = thenType;
+				}
+			} else {
+				typeName = ClassItem.firstCommonAncestor(classTable, thenType, elseType);
+			}
+		}
+	}
 
 	@Override
 	public void print(int tabLevel, boolean doTab) {

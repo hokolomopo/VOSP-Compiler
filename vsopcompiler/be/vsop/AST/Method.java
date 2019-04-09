@@ -72,10 +72,10 @@ public class Method extends ASTNode {
 			}
 		}
 		//TODO can a formal argument be named self ? + maybe need a more general implementation
+		// no and neither can a local variable of a contained block
 		formals.checkAllDifferent(errorList);
 		super.checkScope(errorList);
 	}
-
 
 	@Override
 	public void print(int tabLevel, boolean doTab) {
@@ -99,7 +99,11 @@ public class Method extends ASTNode {
 	int nbArguments() {
 		return formals.size();
 	}
-	
+
+	Formal getArgument(int index) {
+		return formals.get(index);
+	}
+
 	String returnType() {
 		return retType.getName();
 	}

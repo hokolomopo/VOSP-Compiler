@@ -1,5 +1,7 @@
 package be.vsop.AST;
 
+import be.vsop.exceptions.semantic.SemanticException;
+
 import java.util.ArrayList;
 
 public class While extends Expr {
@@ -15,6 +17,11 @@ public class While extends Expr {
 		this.children.add(bodyExpr);
 	}
 
+	@Override
+	public void checkTypes(ArrayList<SemanticException> errorList) {
+		super.checkTypes(errorList);
+		typeName = "unit";
+	}
 
 	@Override
 	public void print(int tabLevel, boolean doTab) {

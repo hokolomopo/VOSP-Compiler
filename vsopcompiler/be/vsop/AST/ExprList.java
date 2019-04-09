@@ -1,5 +1,7 @@
 package be.vsop.AST;
 
+import be.vsop.exceptions.semantic.SemanticException;
+
 import java.util.ArrayList;
 
 public class ExprList extends Expr {
@@ -17,6 +19,12 @@ public class ExprList extends Expr {
 
 	public ExprList() {
 		this.expressions = new ArrayList<>();
+	}
+
+	@Override
+	public void checkTypes(ArrayList<SemanticException> errorList) {
+		super.checkTypes(errorList);
+		typeName = expressions.get(expressions.size() - 1).typeName;
 	}
 
 	@Override

@@ -1,5 +1,7 @@
 package be.vsop.AST;
 
+import be.vsop.exceptions.semantic.SemanticException;
+
 import java.util.ArrayList;
 
 public class UnOp extends Expr {
@@ -12,6 +14,22 @@ public class UnOp extends Expr {
 
 		this.children = new ArrayList<>();
 		this.children.add(expr);
+	}
+
+	@Override
+	public void checkTypes(ArrayList<SemanticException> errorList) {
+		super.checkTypes(errorList);
+		switch (name) {
+			case "isnull":
+			case "not":
+				BinOp.checkExpr(expr, "bool", errorList);
+				typeName = "bool";
+				break;
+			case "-":
+				BinOp.checkExpr(expr, "int32", errorList);
+				typeName = "int32";
+				break;
+		}
 	}
 
 	@Override
