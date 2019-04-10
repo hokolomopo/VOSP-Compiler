@@ -54,7 +54,7 @@ public class Field extends ASTNode {
 	@Override
 	public void checkTypes(ArrayList<SemanticException> errorList) {
 		super.checkTypes(errorList);
-		if (initExpr.typeName != null && !initExpr.typeName.equals(type.getName())) {
+		if (initExpr != null && initExpr.typeName != null && isNotChild(initExpr.typeName, type.getName())) {
 			errorList.add(new TypeNotExpectedException(initExpr, type.getName()));
 		}
 	}

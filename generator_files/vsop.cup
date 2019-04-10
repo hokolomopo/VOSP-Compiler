@@ -101,8 +101,8 @@ classElementList ::=
 ;
 
 field ::=
-  identifier:id COLON type:ty SEMICOLON                   {: RESULT = new Field(id, ty); id.toVar(); RESULT.line = id.line; RESULT.column = id.column; :}
-| identifier:id COLON type:ty ASSIGN expr:val SEMICOLON   {: RESULT = new Field(id, ty, val); id.toVar(); RESULT.line = id.line; RESULT.column = id.column; :}
+  identifier:id COLON type:ty SEMICOLON                   {: RESULT = new Field(id, ty); RESULT.line = id.line; RESULT.column = id.column; :}
+| identifier:id COLON type:ty ASSIGN expr:val SEMICOLON   {: RESULT = new Field(id, ty, val); RESULT.line = id.line; RESULT.column = id.column; :}
 ;
 
 method ::=
@@ -132,7 +132,7 @@ formalList ::=
 ;
 
 formal ::=
-  identifier:id COLON type:ty      {: RESULT = new Formal(id, ty); id.toVar(); RESULT.line = id.line; RESULT.column = id.column; :}
+  identifier:id COLON type:ty      {: RESULT = new Formal(id, ty); RESULT.line = id.line; RESULT.column = id.column; :}
 ;
 
 block ::=
@@ -148,9 +148,9 @@ expr ::=
   IF:i expr:e1 THEN expr:e2                                               {: RESULT = new If(e1, e2); :}
 | IF:i expr:e1 THEN expr:e2 ELSE expr:e3                                  {: RESULT = new If(e1, e2, e3); :}
 | WHILE:w expr:e1 DO expr:e2                                              {: RESULT = new While(e1, e2); :}
-| LET:l identifier:id COLON type:ty IN expr:e                             {: RESULT = new Let(id, ty, e); id.toVar(); :}
-| LET:l identifier:id COLON type:ty ASSIGN expr:e1 IN expr:e2             {: RESULT = new Let(id, ty, e1, e2); id.toVar(); :}
-| identifier:id ASSIGN:a expr:e                                           {: RESULT = new Assign(id, e); id.toVar(); RESULT.line = a.getLine(); RESULT.column = a.getColumn(); :}
+| LET:l identifier:id COLON type:ty IN expr:e                             {: RESULT = new Let(id, ty, e); :}
+| LET:l identifier:id COLON type:ty ASSIGN expr:e1 IN expr:e2             {: RESULT = new Let(id, ty, e1, e2); :}
+| identifier:id ASSIGN:a expr:e                                           {: RESULT = new Assign(id, e); RESULT.line = a.getLine(); RESULT.column = a.getColumn(); :}
 | NOT:kw expr:e                                                           {: RESULT = new UnOp(kw.getTokenType().getStringValue(), e); :}
 | MINUS:kw expr:e                                                         {: RESULT = new UnOp(kw.getTokenType().getStringValue(), e); :}%prec UMINUS
 | ISNULL:kw expr:e                                                        {: RESULT = new UnOp(kw.getTokenType().getStringValue(), e); :}
@@ -163,8 +163,8 @@ expr ::=
 | expr:e1 TIMES:kw expr:e2                                                {: RESULT = new BinOp(kw.getTokenType().getStringValue(), e1, e2); :}
 | expr:e1 DIV:kw expr:e2                                                  {: RESULT = new BinOp(kw.getTokenType().getStringValue(), e1, e2); :}
 | expr:e1 POW:kw expr:e2                                                  {: RESULT = new BinOp(kw.getTokenType().getStringValue(), e1, e2); :}
-| expr:e DOT identifier:id LPAR args:ar RPAR                              {: RESULT = new Call(e, id, ar); id.toMethod(); :}
-| identifier:id LPAR args:ar RPAR                                         {: Id selfId = new Id("self"); selfId.toVar(); RESULT = new Call(selfId, id, ar); id.toMethod(); :}
+| expr:e DOT identifier:id LPAR:l args:ar RPAR                            {: RESULT = new Call(e, id, ar); id.toMethod(); RESULT.line = l.getLine(); RESULT.column = l.getColumn(); :}
+| identifier:id LPAR args:ar RPAR                                         {: Id selfId = new Id("self"); RESULT = new Call(selfId, id, ar); id.toMethod(); :}
 | LPAR:l RPAR                                                             {: RESULT = new Null(); RESULT.line = l.getLine(); RESULT.column = l.getColumn(); :}
 | NEW:n classType:ti                                                      {: RESULT = new New(ti); RESULT.line = n.getLine(); RESULT.column = n.getColumn(); :}
 | identifier:id                                                           {: RESULT = id; :}

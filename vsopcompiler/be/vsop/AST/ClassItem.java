@@ -4,6 +4,7 @@ import be.vsop.exceptions.semantic.ClassAlreadyDeclaredException;
 import be.vsop.exceptions.semantic.MainException;
 import be.vsop.exceptions.semantic.SemanticException;
 import be.vsop.semantic.ScopeTable;
+import com.sun.istack.internal.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -102,28 +103,19 @@ public class ClassItem extends ASTNode{
 		return type.getName();
 	}
 
+	Type getParentType() {
+		return parentType;
+	}
+
+	public Type getType() {
+		return type;
+	}
+
 	public int parentNameColumn() {
 		return column + getName().length() + " extends ".length();
 	}
 
 	Method lookupMethod(Id methodId) {
 		return scopeTable.lookupMethod(methodId.getName());
-	}
-
-	static String firstCommonAncestor(HashMap<String, ClassItem> classTable, String type1, String type2) {
-		HashSet<String> ancestors1 = new HashSet<>();
-		Type curType = classTable.get(type1).type;
-		while (curType != null) {
-			ancestors1.add(curType.getName());
-			curType = classTable.get(curType.getName()).parentType;
-		}
-		curType = classTable.get(type2).type;
-		while (curType != null) {
-			if (ancestors1.contains(curType.getName())) {
-				return curType.getName();
-			}
-			curType = classTable.get(curType.getName()).parentType;
-		}
-		return null;
 	}
 }

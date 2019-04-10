@@ -14,6 +14,7 @@ public class Formal extends ASTNode{
 		this.type = type;
 
 		this.children = new ArrayList<>();
+		this.children.add(id);
 		this.children.add(type);
 	}
 
@@ -40,9 +41,5 @@ public class Formal extends ASTNode{
 
 	public Type getType() {
 		return type;
-	}
-
-	boolean sameType(Formal other) {
-		return this.type.getName().equals(other.type.getName());
 	}
 }

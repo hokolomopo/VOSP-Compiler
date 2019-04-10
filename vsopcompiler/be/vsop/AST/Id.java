@@ -1,9 +1,7 @@
 package be.vsop.AST;
 
-import be.vsop.exceptions.semantic.MethodNotDeclaredException;
 import be.vsop.exceptions.semantic.SemanticException;
 import be.vsop.exceptions.semantic.VariableNotDeclaredException;
-import be.vsop.semantic.ScopeTable;
 
 import java.util.ArrayList;
 
@@ -13,6 +11,7 @@ public class Id extends Expr {
 
 	public Id(String name) {
 		this.name = name;
+		isVar = true;
 	}
 
 	@Override
@@ -25,6 +24,7 @@ public class Id extends Expr {
 
 	@Override
 	public void checkTypes(ArrayList<SemanticException> errorList) {
+		// An Id of method will have a null typeName, which is coherent because we never defined a typeName for methods
 		if (isVar) {
 			Formal var = scopeTable.lookupVariable(name);
 			if (var == null) {

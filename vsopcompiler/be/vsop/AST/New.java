@@ -1,8 +1,6 @@
 package be.vsop.AST;
 
-import be.vsop.exceptions.semantic.ClassNotDeclaredException;
 import be.vsop.exceptions.semantic.SemanticException;
-import be.vsop.semantic.ScopeTable;
 
 import java.util.ArrayList;
 

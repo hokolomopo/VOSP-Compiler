@@ -14,6 +14,7 @@ public class Assign extends Expr {
         this.expr = expr;
 
         this.children = new ArrayList<>();
+        this.children.add(id);
         this.children.add(expr);
     }
 
@@ -23,7 +24,7 @@ public class Assign extends Expr {
         //TODO what is the type of an assign ? The type of the assigned object, or unit ?
         typeName = id.typeName;
         if (typeName != null && expr.typeName != null) {
-            if (!expr.typeName.equals(typeName)) {
+            if (isNotChild(expr.typeName, typeName)) {
                 errorList.add(new InvalidAssignException("Operands of assign does not have the same type : "
                         + id.getName() + " is of type " + typeName + " and the expression evaluates to " + expr.typeName, line, column));
             }

@@ -48,7 +48,7 @@ public class Let extends Expr {
 	@Override
 	public void checkTypes(ArrayList<SemanticException> errorList) {
 		super.checkTypes(errorList);
-		if (initExpr != null && initExpr.typeName != null && !initExpr.typeName.equals(formal.getType().getName())) {
+		if (initExpr != null && initExpr.typeName != null && isNotChild(initExpr.typeName, formal.getType().getName())) {
 			errorList.add(new TypeNotExpectedException(initExpr, formal.getType().getName()));
 		}
 		typeName = bodyExpr.typeName;

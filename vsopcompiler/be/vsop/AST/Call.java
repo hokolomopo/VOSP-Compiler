@@ -11,17 +11,10 @@ public class Call extends Expr {
     private Id methodId;
     private ArgList argList;
 
-    /**
-     * Boolean onSelf used to make the difference between self.call and OtherClass.call
-     * Useful because methods are then not in the same scope
-     */
-    private boolean onSelf;
-
     public Call(Expr objExpr, Id methodId, ArgList argList) {
         this.objExpr = objExpr;
         this.methodId = methodId;
         this.argList = argList;
-        this.onSelf = true;
 
         this.children = new ArrayList<>();
         this.children.add(objExpr);
@@ -45,9 +38,9 @@ public class Call extends Expr {
                 for (int i = 0; i < argList.size(); i++) {
                     curArgType = argList.get(i).typeName;
                     if (curArgType != null) {
-                        if (!curArgType.equals(called.getArgument(i).getType().getName())) {
+                        if (isNotChild(curArgType, called.getArgument(i).getType().getName())) {
                             invalid = true;
-                            messageEnd.append(i).append(", ");
+                            messageEnd.append((i+1)).append(", ");
                         }
                     }
                 }
@@ -65,14 +58,9 @@ public class Call extends Expr {
 
     @Override
     public void checkScope(ArrayList<SemanticException> errorList){
-        if(onSelf) {
-            if (scopeTable.lookupMethod(methodId.getName()) == null) {
-                errorList.add(new MethodNotDeclaredException(methodId.getName(), line, column));
-            }
-        }
-        else{
-            System.out.println("STILL TODO : Call.java");
-            //TODO : need to have the type of the class objExpr to get the methods of this class
+        Method called = classTable.get(objExpr.typeName).lookupMethod(methodId);
+        if (called == null) {
+            errorList.add(new MethodNotDeclaredException(methodId.getName(), line, column));
         }
 
         super.checkScope(errorList);

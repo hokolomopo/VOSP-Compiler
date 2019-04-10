@@ -60,7 +60,7 @@ public class Compiler {
     }
 
     void doSemanticAnalysis(Program program) {
-        //TODO do we really need the argument
+        //TODO do we really need the argument?
         if (program == null) {
             if (this.program == null) {
                 this.program = buildAST();

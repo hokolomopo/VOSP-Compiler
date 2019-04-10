@@ -1,16 +1,36 @@
-class Main {
-    main() : int32 {"this is not a int32"; "but the following one is"; 0}
+class List {
+    isNil() : bool { true }
+    length() : int32 { 0 }
+    test(x: int32, uselessString: string) : int32 {length() + x}
+    test2(hello : bool) : bool {test(58, "hello"); true}
 }
 
-class MyClass {
-    s : string <- "One\n\x32[33;mTwo and \
-                   three\r\n";
-    i : int32 <-  27-0x1b;
+
+(* Nil is nothing more than a glorified alias to List *)
+class Nil extends List {}
+
+
+class Cons extends List {
+    head : int32;
+    tail : List;
+
+    init(hd : int32, tl : List) : Cons {
+        head <- hd;
+        tail <- tl;
+        self
+    }
+
+    head() : int32 { head }
+    isNil() : bool { false }
+    length() : int32 { 1 + tail.length() }
 }
 
-class C {
-    f(sel2f : string) : bool {
-    "an ignored string";
-    let x : bool <- { 1; "a"; true } in not x // Last expression of block
+class Main extends IO {
+    main() : int32 {
+        let xs : List <- (new Cons).init(0, (new Cons).init(
+        1, (new Cons).init(
+        2, new Nil)))
+        in print("List has length ").printInt32(xs.length()).print("\n");
+        0
     }
 }

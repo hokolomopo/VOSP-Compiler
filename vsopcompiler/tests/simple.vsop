@@ -1,5 +1,16 @@
+class Main {
+    main() : int32 {"this is not a int32"; "but the following one is"; 0}
+}
+
 class MyClass {
     s : string <- "One\n\x32[33;mTwo and \
                    three\r\n";
     i : int32 <-  27-0x1b;
+}
+
+class C {
+    f(sel2f : string) : bool {
+    "an ignored string";
+    let x : bool <- { 1; "a"; true } in not x // Last expression of block
+    }
 }

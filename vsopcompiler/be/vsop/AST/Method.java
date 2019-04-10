@@ -52,7 +52,7 @@ public class Method extends ASTNode {
 	@Override
 	public void checkTypes(ArrayList<SemanticException> errorList) {
 		super.checkTypes(errorList);
-		if (block.typeName != null && !block.typeName.equals(retType.getName())) {
+		if (block.typeName != null && isNotChild(block.typeName, retType.getName())) {
 			errorList.add(new TypeNotExpectedException(block, retType.getName()));
 		}
 	}
@@ -68,9 +68,11 @@ public class Method extends ASTNode {
 				StringBuilder messageEnd = new StringBuilder("argument(s) ");
 				boolean invalid = false;
 				for (int i = 0; i < formals.size(); i++) {
-					if (!formals.get(i).sameType(previousDeclaration.formals.get(i))) {
+					String shouldBeChild = formals.get(i).getType().getName();
+					String shouldBeParent = previousDeclaration.formals.get(i).getType().getName();
+					if (isNotChild(shouldBeChild, shouldBeParent)) {
 						invalid = true;
-						messageEnd.append(i).append(", ");
+						messageEnd.append((i+1)).append(", ");
 					}
 				}
 				if (!retType.getName().equals(previousDeclaration.retType.getName())) {
@@ -85,8 +87,6 @@ public class Method extends ASTNode {
 				}
 			}
 		}
-		//TODO can a formal argument be named self ? + maybe need a more general implementation
-		// no and neither can a local variable of a contained block
 		formals.checkAllDifferent(errorList);
 		super.checkScope(errorList);
 	}

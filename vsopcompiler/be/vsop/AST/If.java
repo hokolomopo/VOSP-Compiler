@@ -54,7 +54,7 @@ public class If extends Expr {
 					typeName = thenType;
 				}
 			} else {
-				typeName = ClassItem.firstCommonAncestor(classTable, thenType, elseType);
+				typeName = firstCommonAncestor(thenType, elseType);
 			}
 		}
 	}
