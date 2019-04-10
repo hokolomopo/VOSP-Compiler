@@ -3,7 +3,6 @@ package be.vsop.semantic;
 import be.vsop.AST.Formal;
 import be.vsop.AST.Method;
 import be.vsop.AST.Type;
-import com.sun.javaws.exceptions.InvalidArgumentException;
 
 import java.util.Collections;
 import java.util.HashMap;

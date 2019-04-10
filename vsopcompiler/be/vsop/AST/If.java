@@ -65,14 +65,14 @@ public class If extends Expr {
 			System.out.print(getTab(tabLevel));
 
 		System.out.print("If(");
-		condExpr.print(tabLevel, false);
+		condExpr.print(tabLevel, false, withTypes);
 		System.out.print(",");
 		System.out.println();
-		thenExpr.print(tabLevel + 1, true);
+		thenExpr.print(tabLevel + 1, true, withTypes);
 		if (elseExpr != null) {
 			System.out.print(",");
 			System.out.println();
-			elseExpr.print(tabLevel + 1, true);
+			elseExpr.print(tabLevel + 1, true, withTypes);
 		}
 		System.out.print(")");
 	}

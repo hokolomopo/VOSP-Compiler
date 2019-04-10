@@ -69,14 +69,14 @@ public class Let extends Expr {
 			System.out.print(getTab(tabLevel));
 
 		System.out.print("Let(" + formal.getName() + ",");
-		formal.getType().print(tabLevel, false);
+		formal.getType().print(tabLevel, false, withTypes);
 		if (initExpr != null) {
 			System.out.print(",");
-			initExpr.print(tabLevel, false);
+			initExpr.print(tabLevel, false, withTypes);
 		}
 		System.out.print(",");
 		System.out.println();
-		bodyExpr.print(tabLevel + 1, true);
+		bodyExpr.print(tabLevel + 1, true, withTypes);
 		System.out.print(")");
 	}
 }

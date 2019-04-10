@@ -29,10 +29,10 @@ public class While extends Expr {
 			System.out.print(getTab(tabLevel));
 
 		System.out.print("While(");
-		condExpr.print(tabLevel, false);
+		condExpr.print(tabLevel, false, withTypes);
 		System.out.print(",");
 		System.out.println();
-		bodyExpr.print(tabLevel + 1, true);
+		bodyExpr.print(tabLevel + 1, true, withTypes);
 		System.out.print(")");
 	}
 }

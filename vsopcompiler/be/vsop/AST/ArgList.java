@@ -17,7 +17,7 @@ public class ArgList extends ASTNode{
 	}
 
 	@Override
-	public void print(int tabLevel, boolean doTab) {
+	public void print(int tabLevel, boolean doTab, boolean withTypes) {
 		if(doTab)
 			System.out.print(getTab(tabLevel));
 
@@ -26,10 +26,10 @@ public class ArgList extends ASTNode{
 		int i;
 		if (args.size() > 0) {
 			for (i = 0; i < args.size() - 1; i++) {
-				args.get(i).print(tabLevel, false);
+				args.get(i).print(tabLevel, false, withTypes);
 				System.out.print(",");
 			}
-			args.get(i).print(tabLevel, false);
+			args.get(i).print(tabLevel, false, withTypes);
 		}
 
 		System.out.print("]");

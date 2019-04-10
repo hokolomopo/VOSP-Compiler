@@ -92,17 +92,17 @@ public class Method extends ASTNode {
 	}
 
 	@Override
-	public void print(int tabLevel, boolean doTab) {
+	public void print(int tabLevel, boolean doTab, boolean withTypes) {
 		if(doTab)
 			System.out.print(getTab(tabLevel));
 
 		System.out.print("Method(" + id.getName() + ",");
-		formals.print(tabLevel, false);
+		formals.print(tabLevel, false, withTypes);
 		System.out.print(",");
-		retType.print(tabLevel, false);
+		retType.print(tabLevel, false, withTypes);
 		System.out.print(",");
 		System.out.println();
-		block.print(tabLevel + 1, true);
+		block.print(tabLevel + 1, true, withTypes);
 		System.out.print(")");
 	}
 

@@ -70,15 +70,15 @@ public class Field extends ASTNode {
 	}
 
 	@Override
-	public void print(int tabLevel, boolean doTab) {
+	public void print(int tabLevel, boolean doTab, boolean withTypes) {
 		if(doTab)
 			System.out.print(getTab(tabLevel));
 		System.out.print("Field(" + id.getName() + ",");
 
-		type.print(tabLevel, false);
+		type.print(tabLevel, false, withTypes);
 		if (initExpr != null) {
 			System.out.print(",");
-			initExpr.print(tabLevel, false);
+			initExpr.print(tabLevel, false, withTypes);
 		}
 		System.out.print(")");
 	}

@@ -38,7 +38,7 @@ public class UnOp extends Expr {
 			System.out.print(getTab(tabLevel));
 
 		System.out.print("UnOp(" + name + ",");
-		expr.print(tabLevel, false);
+		expr.print(tabLevel, false, withTypes);
 		System.out.print(")");
 	}
 }

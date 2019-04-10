@@ -45,7 +45,7 @@ public class Assign extends Expr {
             System.out.print(getTab(tabLevel));
         System.out.print("Assign(" + id.getName() + ",");
 
-        expr.print(tabLevel, false);
+        expr.print(tabLevel, false, withTypes);
         System.out.print(")");
     }
 }

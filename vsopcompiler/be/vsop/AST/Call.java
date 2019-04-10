@@ -72,9 +72,9 @@ public class Call extends Expr {
             System.out.print(getTab(tabLevel));
 
         System.out.print("Call(");
-        objExpr.print(tabLevel, false);
+        objExpr.print(tabLevel, false, withTypes);
         System.out.print("," + methodId.getName() + ",");
-        argList.print(tabLevel, false);
+        argList.print(tabLevel, false, withTypes);
         System.out.print(")");
     }
 }

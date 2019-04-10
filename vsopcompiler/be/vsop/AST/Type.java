@@ -33,7 +33,7 @@ public class Type extends ASTNode{
 	}
 
 	@Override
-	public void print(int tabLevel, boolean doTab) {
+	public void print(int tabLevel, boolean doTab, boolean withTypes) {
 		if(doTab)
 			System.out.print(getTab(tabLevel));
 

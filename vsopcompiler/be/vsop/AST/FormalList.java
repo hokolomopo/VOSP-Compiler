@@ -21,7 +21,7 @@ public class FormalList extends ASTNode{
     }
 
     @Override
-    public void print(int tabLevel, boolean doTab) {
+    public void print(int tabLevel, boolean doTab, boolean withTypes) {
         if(doTab)
             System.out.print(getTab(tabLevel));
         System.out.print("[");
@@ -30,10 +30,10 @@ public class FormalList extends ASTNode{
         int i;
         if (formals.size() > 0) {
             for (i = 0; i < formals.size() - 1; i++) {
-                formals.get(i).print(tabLevel, false);
+                formals.get(i).print(tabLevel, false, withTypes);
                 System.out.print(",");
             }
-            formals.get(i).print(tabLevel, false);
+            formals.get(i).print(tabLevel, false, withTypes);
         }
 
         System.out.print("]");

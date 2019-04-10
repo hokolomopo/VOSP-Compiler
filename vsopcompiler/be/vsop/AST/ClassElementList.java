@@ -42,7 +42,7 @@ public class ClassElementList extends ASTNode {
 	}
 
 	@Override
-	public void print(int tabLevel, boolean doTab) {
+	public void print(int tabLevel, boolean doTab, boolean withTypes) {
 		if(doTab)
 			System.out.print(getTab(tabLevel));
 
@@ -51,9 +51,9 @@ public class ClassElementList extends ASTNode {
 		if (fields.size() > 0) {
 			for (i = 0; i < fields.size(); i++) {
 				if(i == 0)
-					fields.get(i).print(tabLevel, false);
+					fields.get(i).print(tabLevel, false, withTypes);
 				else
-					fields.get(i).print(tabLevel, true);
+					fields.get(i).print(tabLevel, true, withTypes);
 
 				if(i < fields.size() - 1) {
 					System.out.print(",");
@@ -69,9 +69,9 @@ public class ClassElementList extends ASTNode {
 		if (methods.size() > 0) {
 			for (i = 0; i < methods.size(); i++) {
 				if(i == 0)
-					methods.get(i).print(tabLevel, false);
+					methods.get(i).print(tabLevel, false, withTypes);
 				else
-					methods.get(i).print(tabLevel, true);
+					methods.get(i).print(tabLevel, true, withTypes);
 
 				if(i < methods.size() - 1) {
 					System.out.print(",");

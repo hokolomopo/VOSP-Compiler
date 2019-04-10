@@ -13,9 +13,9 @@ public class Program extends ASTNode{
     }
 
     @Override
-    public void print(int tabLevel, boolean doTab) {
+    public void print(int tabLevel, boolean doTab, boolean withTypes) {
         for(ClassList c : classLists) {
-            c.print(0, false);
+            c.print(0, false, withTypes);
             System.out.println();
         }
     }

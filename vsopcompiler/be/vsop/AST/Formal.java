@@ -28,11 +28,11 @@ public class Formal extends ASTNode{
 	}
 
 	@Override
-	public void print(int tabLevel, boolean doTab) {
+	public void print(int tabLevel, boolean doTab, boolean withTypes) {
 		if(doTab)
 			System.out.print(getTab(tabLevel));
 		System.out.print(id.getName() + ":");
-		type.print(tabLevel, false);
+		type.print(tabLevel, false, withTypes);
 	}
 
 	public String getName() {

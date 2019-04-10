@@ -76,7 +76,7 @@ public class Compiler {
                 System.err.println(fileName + ":" + e.getMessage());
             System.exit(-1);
         }
-        this.program.print();
+        this.program.print(true);
     }
 
     public Program getAST(){

@@ -4,11 +4,9 @@ import be.vsop.exceptions.semantic.ClassAlreadyDeclaredException;
 import be.vsop.exceptions.semantic.MainException;
 import be.vsop.exceptions.semantic.SemanticException;
 import be.vsop.semantic.ScopeTable;
-import com.sun.istack.internal.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 
 public class ClassItem extends ASTNode{
 	private Type type;
@@ -85,13 +83,13 @@ public class ClassItem extends ASTNode{
 	}
 
 	@Override
-	public void print(int tabLevel, boolean doTab) {
+	public void print(int tabLevel, boolean doTab, boolean withTypes) {
 		if(doTab)
 			System.out.print(getTab(tabLevel));
 		System.out.print("Class(" + type.getName() + "," + parentType.getName() + ",");
 
 		System.out.println();
-		cel.print(tabLevel +1, true);
+		cel.print(tabLevel +1, true, withTypes);
 		System.out.print(")");
 	}
 

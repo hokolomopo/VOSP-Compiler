@@ -71,8 +71,11 @@ public abstract class ASTNode {
                 node.checkScope(errorList);
     }
 
-    public void print(){print(0, false);}
-    public abstract void print(int tabLevel, boolean doTab);
+    public void print(boolean withTypes){
+        print(0, false, withTypes);
+    }
+
+    public abstract void print(int tabLevel, boolean doTab, boolean withTypes);
 
     protected String getTab(int tabLevel){
         StringBuilder s = new StringBuilder();
