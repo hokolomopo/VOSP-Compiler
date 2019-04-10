@@ -41,11 +41,11 @@ public class Compiler {
 
         try {
             parser.parse();
-        } catch (ParserException e) {
-            System.err.println(fileName + ":" + e.getMessage());
-            System.exit(-1);
         }catch (LexerException e){
             System.err.println(fileName+":"+e.getLine()+":"+e.getColumn()+": lexical error :" + e.getMessage());
+            System.exit(-1);
+        }catch (ParserException e) {
+            System.err.println(fileName + ":" + e.getMessage());
             System.exit(-1);
         }catch (IOException e){
             System.err.println("IOException during lexing in " + fileName);
@@ -59,8 +59,8 @@ public class Compiler {
         return this.program;
     }
 
-    void doSemanticAnalysis(Program program) {
-        //TODO do we really need the argument?
+    void doSemanticAnalysis(Program program, String languageDirPath) {
+        //TODO do we really need the first argument?
         if (program == null) {
             if (this.program == null) {
                 this.program = buildAST();
@@ -68,7 +68,7 @@ public class Compiler {
         } else {
             this.program = program;
         }
-        SyntaxAnalyzer sa = new SyntaxAnalyzer(this.program);
+        SyntaxAnalyzer sa = new SyntaxAnalyzer(this.program, languageDirPath);
         sa.analyze();
 
         if(sa.hasError()) {

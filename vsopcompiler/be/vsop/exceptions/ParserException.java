@@ -50,8 +50,8 @@ public class ParserException extends Error {
     @Override
     public String getMessage(){
         if(message == null)
-            return line + ":" + column + ": be.vsop.semantic error";
-        return line + ":" + column + ": be.vsop.semantic error :" + message;
+            return line + ":" + column + ": syntax error";
+        return line + ":" + column + ": syntax error :" + message;
     }
 
 }

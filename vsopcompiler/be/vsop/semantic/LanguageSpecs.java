@@ -17,8 +17,8 @@ public class LanguageSpecs {
     private HashMap<String, ClassItem> classTable;
 
     private enum DefaultClasses{
-        OBJECT("Object","language/Object.vsop"),
-        IO("IO","language/IO.vsop");
+        OBJECT("Object","Object.vsop"),
+        IO("IO","IO.vsop");
 
         private String name;
         private String fileName;
@@ -29,13 +29,17 @@ public class LanguageSpecs {
         }
     }
 
-    LanguageSpecs() {
+    LanguageSpecs(String languageDirPath) {
         classTable = new HashMap<>();
         Compiler compiler;
         ASTNode tree;
         ClassItem curItem;
         for(DefaultClasses d : DefaultClasses.values()) {
-            compiler = new Compiler(d.fileName);
+            if (languageDirPath != null) {
+                compiler = new Compiler(languageDirPath + d.fileName);
+            } else {
+                compiler = new Compiler("language/" + d.fileName);
+            }
             tree = compiler.buildAST();
             curItem = (ClassItem) tree.getChildren().get(0).getChildren().get(0);
             // We assume that there is no error in the default files. If there is, putting null here

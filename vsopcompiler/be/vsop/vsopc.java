@@ -62,8 +62,12 @@ public class vsopc {
             compiler.buildAST().print(false);
         }
 
-        else if(args[0].contentEquals("-check")){
-            compiler.doSemanticAnalysis(null);
+        else if(args[0].contentEquals("-check")) {
+            if (args.length > 2) {
+                compiler.doSemanticAnalysis(null, args[2] + "/language/");
+            } else {
+                compiler.doSemanticAnalysis(null, null);
+            }
         }
     }
 

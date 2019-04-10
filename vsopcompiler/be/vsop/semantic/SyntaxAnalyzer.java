@@ -13,16 +13,18 @@ import java.util.HashSet;
 
 public class SyntaxAnalyzer {
     private Program program;
+    private String languageDirPath;
     private HashMap<String, ClassItem> classTable;
     private ArrayList<SemanticException> errors = new ArrayList<>();
 
-    public SyntaxAnalyzer(Program program) {
+    public SyntaxAnalyzer(Program program, String languageDirPath) {
         this.program = program;
+        this.languageDirPath = languageDirPath;
     }
 
     public void analyze(){
         //Create the class table
-        LanguageSpecs languageSpecs = new LanguageSpecs();
+        LanguageSpecs languageSpecs = new LanguageSpecs(languageDirPath);
         classTable = languageSpecs.getLanguageClassTable();
         program.updateClassTable(classTable, errors);
 
