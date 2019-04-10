@@ -33,10 +33,13 @@ public class Field extends ASTNode {
 	@Override
 	public void fillScopeTable(ScopeTable scopeTable, ArrayList<SemanticException> errorList) {
 		this.scopeTable = scopeTable;
+
+		//Use parent scopeTable because we can't use field of this class in field initializer
+
 		// We need to check here if the variable is already defined in local scope, even if we will
 		// later do the same check with the outer scope, because we can't do a lookup in local scope after
 		// having added the Field : the Field would find itself.
-		Formal previousDeclaration = scopeTable.lookupVariable(id.getName(), "local scope only");
+		Formal previousDeclaration = scopeTable.lookupVariable(id.getName(), ScopeTable.Scope.LOCAL);
 		if(previousDeclaration != null) {
 			errorList.add(new VariableAlreadyDeclaredException(id.getName(), line, column,
 					previousDeclaration.line, previousDeclaration.column));
@@ -44,11 +47,20 @@ public class Field extends ASTNode {
 			Formal newDeclaration = new Formal(id, type);
 			newDeclaration.line = line;
 			newDeclaration.column = column;
-			scopeTable.addVariable(newDeclaration);
+			this.scopeTable.addVariable(newDeclaration);
 		}
-		if(children != null)
-			for(ASTNode node : children)
-				node.fillScopeTable(scopeTable, errorList);
+
+		id.fillScopeTable(this.scopeTable, errorList);
+		type.fillScopeTable(this.scopeTable, errorList);
+
+		// Don't send own ScopeTable because we can't use the field/methods of this class in field initializer
+		if(initExpr != null) {
+			if(scopeTable.getParent() == null)
+				initExpr.fillScopeTable(new ScopeTable(), errorList);
+			else
+				initExpr.fillScopeTable(scopeTable.getParent(), errorList);
+		}
+
 	}
 
 	@Override
@@ -61,7 +73,7 @@ public class Field extends ASTNode {
 
 	@Override
 	public void checkScope(ArrayList<SemanticException> errorList) {
-		Formal previousDeclaration = scopeTable.lookupVariable(id.getName(), "outer scope only");
+		Formal previousDeclaration = scopeTable.lookupVariable(id.getName(), ScopeTable.Scope.OUTER);
 		if (previousDeclaration != null) {
 			errorList.add(new VariableAlreadyDeclaredException(id.getName(), line, column,
 					previousDeclaration.line, previousDeclaration.column));
@@ -77,8 +89,8 @@ public class Field extends ASTNode {
 
 		type.print(tabLevel, false, withTypes);
 		if (initExpr != null) {
-			System.out.print(",");
-			initExpr.print(tabLevel, false, withTypes);
+			System.out.println(",");
+			initExpr.print(tabLevel + 1, true, withTypes);
 		}
 		System.out.print(")");
 	}

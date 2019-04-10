@@ -79,6 +79,8 @@ public class ClassItem extends ASTNode{
 						mainMethod.line, mainMethod.column));
 			}
 		}
+
+
 		super.checkScope(errorList);
 	}
 

@@ -28,6 +28,13 @@ public class Call extends Expr {
         String object = objExpr.typeName;
         if (object != null) {
             Method called = classTable.get(object).lookupMethod(methodId);
+
+            //No such method
+            if(called == null){
+                errorList.add(new MethodNotDeclaredException(methodId.getName(), methodId.line, methodId.column));
+                return;
+            }
+
             if (called.nbArguments() != argList.size()) {
                 errorList.add(new InvalidCallException(called.getName(),
                         line, column, called.line, called.column, "different number of arguments"));

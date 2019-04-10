@@ -18,6 +18,7 @@ public class vsopc {
         }
 
         String fileName = args[1];
+
         FileReader reader = null;
         try {
             reader = new FileReader(fileName);

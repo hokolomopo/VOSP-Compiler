@@ -30,7 +30,7 @@ public class Method extends ASTNode {
 		this.scopeTable.setParent(scopeTable);
 		// If two methods are defined in different scopes, it may not yet be added in the tables,
 		// thus we only check local scope for now.
-		Method previousDeclaration = scopeTable.lookupMethod(getName(), "local scope only");
+		Method previousDeclaration = scopeTable.lookupMethod(getName(), ScopeTable.Scope.LOCAL);
 		if (previousDeclaration != null) {
 			errorList.add(new MethodAlreadyDeclaredException(getName(),
 					line, column, previousDeclaration.line, previousDeclaration.column));
@@ -59,7 +59,7 @@ public class Method extends ASTNode {
 
 	@Override
 	public void checkScope(ArrayList<SemanticException> errorList){
-		Method previousDeclaration = scopeTable.getParent().lookupMethod(getName(), "outer scope only");
+		Method previousDeclaration = scopeTable.getParent().lookupMethod(getName(), ScopeTable.Scope.OUTER);
 		if (previousDeclaration != null) {
 			if (previousDeclaration.formals.size() != this.formals.size()) {
 				errorList.add(new InvalidOverrideException(getName(),

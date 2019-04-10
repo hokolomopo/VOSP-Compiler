@@ -59,10 +59,10 @@ public class BinOp extends Expr {
 	public void print(int tabLevel, boolean doTab) {
 		if(doTab)
 			System.out.print(getTab(tabLevel));
-		System.out.print("BinOp(" + name + ",");
+		System.out.print("BinOp(" + name + ", ");
 
 		lhs.print(tabLevel, false, withTypes);
-		System.out.print(",");
+		System.out.print(", ");
 		rhs.print(tabLevel, false, withTypes);
 		System.out.print(")");
 	}

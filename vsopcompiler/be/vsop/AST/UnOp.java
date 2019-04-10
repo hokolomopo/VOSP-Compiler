@@ -21,6 +21,9 @@ public class UnOp extends Expr {
 		super.checkTypes(errorList);
 		switch (name) {
 			case "isnull":
+				BinOp.checkExpr(expr, "Object", errorList);
+				typeName = "bool";
+				break;
 			case "not":
 				BinOp.checkExpr(expr, "bool", errorList);
 				typeName = "bool";
@@ -37,7 +40,7 @@ public class UnOp extends Expr {
 		if(doTab)
 			System.out.print(getTab(tabLevel));
 
-		System.out.print("UnOp(" + name + ",");
+		System.out.print("UnOp(" + name + ", ");
 		expr.print(tabLevel, false, withTypes);
 		System.out.print(")");
 	}

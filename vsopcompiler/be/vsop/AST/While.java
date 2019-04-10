@@ -1,6 +1,7 @@
 package be.vsop.AST;
 
 import be.vsop.exceptions.semantic.SemanticException;
+import be.vsop.exceptions.semantic.TypeNotExpectedException;
 
 import java.util.ArrayList;
 
@@ -20,6 +21,11 @@ public class While extends Expr {
 	@Override
 	public void checkTypes(ArrayList<SemanticException> errorList) {
 		super.checkTypes(errorList);
+
+		if (condExpr.typeName != null && !condExpr.getTypeName().equals("bool")) {
+			errorList.add(new TypeNotExpectedException(condExpr, "bool"));
+		}
+
 		typeName = "unit";
 	}
 

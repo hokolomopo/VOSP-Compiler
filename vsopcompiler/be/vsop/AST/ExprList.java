@@ -62,5 +62,9 @@ public class ExprList extends Expr {
 		}
 
 		System.out.print("]");
+		if (withTypes) {
+			System.out.print(" : " + typeName);
+		}
+
 	}
 }

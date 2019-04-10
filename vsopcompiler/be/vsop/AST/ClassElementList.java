@@ -1,5 +1,7 @@
 package be.vsop.AST;
 
+import be.vsop.exceptions.semantic.SemanticException;
+
 import java.util.ArrayList;
 import java.util.List;
 
