@@ -22,31 +22,11 @@ public class ScopeTable {
         typeTable = new HashMap<>(Collections.unmodifiableMap(map));
     }
 
-    public ScopeTable() {
-    }
-
-    public ScopeTable(ScopeTable parent) {
-        this();
-        this.parent = parent;
-    }
-
-    public ScopeTable copyWithoutSelf(){
-        ScopeTable copy = new ScopeTable();
-        copy.parent = this.parent;
-        copy.methodTable = new HashMap<>(this.methodTable);
-        copy.variableTable = new HashMap<>(this.variableTable);
-        copy.variableTable.remove("self");
-
-        return copy;
-    }
-
     public void addMethod(Method method){
         this.methodTable.put(method.getName(), method);
     }
 
     public Method lookupMethod(String name, Scope scope) {
-        // Much easier to debug if we put a typo in the argument
-
         Method method = null;
         if (scope != Scope.OUTER) {
             method = methodTable.get(name);

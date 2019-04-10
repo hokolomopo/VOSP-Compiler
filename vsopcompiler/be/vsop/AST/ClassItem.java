@@ -68,8 +68,6 @@ public class ClassItem extends ASTNode{
 
 	@Override
 	public void checkScope(ArrayList<SemanticException> errorList) {
-		//TODO what if the Main class has no main() method, but extends another class which has a main method?
-		// simply a matter of putting "local scope only" or not in lookupMethod arguments.
 		if (getName().equals("Main")) {
 			Method mainMethod = scopeTable.lookupMethod("main");
 			if (mainMethod == null) {

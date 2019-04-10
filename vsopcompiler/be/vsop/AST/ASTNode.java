@@ -34,12 +34,12 @@ public abstract class ASTNode {
             }
             curType = classTable.get(curType.getName()).getParentType();
         }
-        // Should happen only on primitive types, as Object is the parent and thus a common ancestor of all classes
+        // Should never happen, as Object is the parent and thus a common ancestor of all classes
         return "";
     }
 
     boolean isNotChild(String child, String parent) {
-        if (LanguageSpecs.isPrimitiveType(child)) {
+        if (LanguageSpecs.isPrimitiveType(child) || LanguageSpecs.isPrimitiveType(parent)) {
             return !child.equals(parent);
         }
         return !firstCommonAncestor(child, parent).equals(parent);
