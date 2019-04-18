@@ -85,4 +85,19 @@ public class ClassElementList extends ASTNode {
 
 		System.out.print("]");
 	}
+
+	public ArrayList<Field> getFields() {
+		return fields;
+	}
+
+	@Override
+	public String getLlvm() {
+		StringBuilder builder = new StringBuilder();
+
+		if(methods != null)
+			for(Method method: methods)
+				builder.append(method.getLlvm()).append("\n\n");
+		return builder.toString();
+
+	}
 }

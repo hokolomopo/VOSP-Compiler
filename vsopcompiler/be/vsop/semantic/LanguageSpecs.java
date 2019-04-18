@@ -8,12 +8,39 @@ import be.vsop.Compiler;
 import java.util.HashMap;
 
 public class LanguageSpecs {
-    public static final Type[] DEFAULT_TYPES = new Type[]{
-            new Type("bool"),
-            new Type("string"),
-            new Type("int32"),
-            new Type("unit")
-    };
+    public final static String MAIN = "main";
+
+    public enum VSOPTypes{
+        BOOL("bool", "i1"),
+        STRING("string", "i8*"),
+        INT32("int32", "i32"),
+        UNIT("unit", "void");
+
+        private String typeName;
+        private String llvmName;
+
+        VSOPTypes(String typeName, String llvmName) {
+            this.typeName = typeName;
+            this.llvmName = llvmName;
+        }
+
+        public static VSOPTypes getType(String typeName){
+            for (VSOPTypes type : VSOPTypes.values())
+                if(type.typeName.equals(typeName))
+                    return type;
+            return null;
+        }
+
+        public String getName() {
+            return typeName;
+        }
+
+        public String getLlvmName() {
+            return llvmName;
+        }
+    }
+
+
     private HashMap<String, ClassItem> classTable;
 
     private enum DefaultClasses{
@@ -61,11 +88,6 @@ public class LanguageSpecs {
     }
 
     public static boolean isPrimitiveType(String typeName) {
-        for (Type defaultType : DEFAULT_TYPES) {
-            if (defaultType.getName().equals(typeName)) {
-                return true;
-            }
-        }
-        return false;
+        return VSOPTypes.getType(typeName) != null;
     }
 }

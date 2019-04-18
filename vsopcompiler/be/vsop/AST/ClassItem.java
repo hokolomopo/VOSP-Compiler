@@ -18,7 +18,7 @@ public class ClassItem extends ASTNode{
 	}
 
 	public ClassItem(Type type, Type parentType, ClassElementList cel) {
-		this.scopeTable = new ScopeTable();
+		this.scopeTable = new ScopeTable(type);
 		this.type = type;
 		if (type.getName().equals("Object")) {
 			this.parentType = null;
@@ -86,7 +86,7 @@ public class ClassItem extends ASTNode{
 	public void print(int tabLevel, boolean doTab, boolean withTypes) {
 		if(doTab)
 			System.out.print(getTab(tabLevel));
-		System.out.print("Class(" + type.getName() + "," + parentType.getName() + ",");
+		System.out.print("Class(" + type.getName() + ", " + parentType.getName() + ", ");
 
 		System.out.println();
 		cel.print(tabLevel +1, true, withTypes);
@@ -115,5 +115,20 @@ public class ClassItem extends ASTNode{
 
 	Method lookupMethod(Id methodId) {
 		return scopeTable.lookupMethod(methodId.getName());
+	}
+
+	@Override
+	public String getLlvm() {
+		StringBuilder fieldsTypeList = new StringBuilder();
+
+		for(int i = 0;i < cel.getFields().size();i++){
+			fieldsTypeList.append(cel.getFields().get(i).getType().getName());
+
+			if(i < cel.getFields().size() - 1)
+				fieldsTypeList.append(", ");
+
+		}
+
+		return "%class." + getName() + " = type { " + fieldsTypeList.toString() + " }\n\n" + cel.getLlvm() + "\n";
 	}
 }

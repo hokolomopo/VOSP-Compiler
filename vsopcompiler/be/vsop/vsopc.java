@@ -6,6 +6,7 @@ import be.vsop.tokens.Token;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 
 public class vsopc {
@@ -70,6 +71,28 @@ public class vsopc {
                 compiler.doSemanticAnalysis(null, null);
             }
         }
+
+        else if(args[0].contentEquals("-llvm")) {
+            if (args.length > 2) {
+                compiler.doSemanticAnalysis(null, args[2] + "/language/", false);
+            } else {
+                compiler.doSemanticAnalysis(null, null, false);
+            }
+
+            String llvm = compiler.generateLlvm();
+            System.out.println(llvm);
+
+            FileWriter writer;
+            try {
+                writer = new FileWriter("llvm/result.ll", false);
+                writer.write(llvm);
+                writer.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+
     }
 
     private static String convertToEscapeSymbols(String str){

@@ -65,4 +65,24 @@ public class FormalList extends ASTNode{
     Formal get(int index) {
         return formals.get(index);
     }
+
+    @Override
+    public String getLlvm() {
+        StringBuilder builder = new StringBuilder();
+
+        for(int i = 0;i < formals.size();i++){
+            builder.append(formals.get(i).getLlvm());
+
+            if(i < formals.size() - 1)
+                builder.append(", ");
+
+        }
+
+        return builder.toString();
+
+    }
+
+    public int getLength(){
+        return formals.size();
+    }
 }

@@ -4,8 +4,11 @@ import be.vsop.AST.Formal;
 import be.vsop.AST.Method;
 import be.vsop.AST.Type;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+
+import be.vsop.semantic.LanguageSpecs.VSOPTypes;
 
 public class ScopeTable {
     public enum Scope{LOCAL, GLOBAL, OUTER}
@@ -14,12 +17,22 @@ public class ScopeTable {
     private HashMap<String, Method> methodTable = new HashMap<>();
     private HashMap<String, Formal> variableTable = new HashMap<>();
 
+
     private static final HashMap<String, Type> typeTable;
     static {
         HashMap<String, Type> map = new HashMap<>();
-        for(Type defaultType : LanguageSpecs.DEFAULT_TYPES)
-            map.put(defaultType.getName(), defaultType);
+        for(VSOPTypes type : VSOPTypes.values())
+            map.put(type.getName(), new Type(type.getName()));
         typeTable = new HashMap<>(Collections.unmodifiableMap(map));
+    }
+
+    private Type scopeClassType = null;
+
+    public ScopeTable() {
+    }
+
+    public ScopeTable(Type scopeClassType) {
+        this.scopeClassType = scopeClassType;
     }
 
     public void addMethod(Method method){
@@ -59,6 +72,21 @@ public class ScopeTable {
         return var;
     }
 
+    public ArrayList<Formal> getAllVariables(Scope scope) {
+
+        ArrayList<Formal> vars = new ArrayList<>();
+
+        if (scope != Scope.OUTER) {
+            variableTable.forEach(
+                    (k, v) -> vars.add(v));
+        }
+
+        if(parent != null && scope != Scope.LOCAL)
+            vars.addAll(this.parent.getAllVariables(Scope.GLOBAL));
+
+        return vars;
+    }
+
     public Formal lookupVariable(String name){
         return lookupVariable(name, Scope.GLOBAL);
     }
@@ -72,6 +100,12 @@ public class ScopeTable {
     }
 
     public void setParent(ScopeTable parent) { this.parent = parent; }
+
+    public Type getScopeClassType(){
+        if(scopeClassType != null)
+            return scopeClassType;
+        return parent.scopeClassType;
+    }
 
 
 }

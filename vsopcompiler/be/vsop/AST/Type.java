@@ -3,14 +3,19 @@ package be.vsop.AST;
 import be.vsop.exceptions.semantic.ClassNotDeclaredException;
 import be.vsop.exceptions.semantic.SemanticException;
 import be.vsop.exceptions.semantic.TypeNotValidException;
+import be.vsop.semantic.LanguageSpecs;
 import be.vsop.semantic.ScopeTable;
+import be.vsop.semantic.LanguageSpecs.VSOPTypes;
 
 import java.util.ArrayList;
 
 public class Type extends ASTNode{
 	private String name;
+	private boolean isPrimitive = false;
 
 	public Type(String name) {
+		if(LanguageSpecs.VSOPTypes.getType(name) != null)
+			isPrimitive = true;
 		this.name = name;
 	}
 
@@ -42,5 +47,16 @@ public class Type extends ASTNode{
 
 	public String getName() {
 		return name;
+	}
+
+	public String getLlvmName(){
+
+		//check if it's a primitive type
+		VSOPTypes type = VSOPTypes.getType(name);
+		if(type != null)
+			return type.getLlvmName();
+
+		//It's a class
+		return "%class." + name;
 	}
 }

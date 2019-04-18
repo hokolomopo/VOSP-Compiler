@@ -8,6 +8,7 @@ import java.util.ArrayList;
 public class Formal extends ASTNode{
 	private Id id;
 	private Type type;
+	private String llvmId;
 
 	public Formal(Id id, Type type) {
 		this.id = id;
@@ -41,5 +42,10 @@ public class Formal extends ASTNode{
 
 	public Type getType() {
 		return type;
+	}
+
+	@Override
+	public String getLlvm() {
+		return type.getLlvmName() + " " + "%" + id.getName();
 	}
 }

@@ -1,6 +1,5 @@
 package be.vsop.exceptions.semantic;
 
-import be.vsop.AST.Type;
 import be.vsop.semantic.LanguageSpecs;
 
 public class TypeNotValidException extends SemanticException {
@@ -10,7 +9,7 @@ public class TypeNotValidException extends SemanticException {
         StringBuilder s = new StringBuilder();
 
         s.append("Type ").append(typeName).append(" is not valid. Types declared in VSOP are : [");
-        for(Type t : LanguageSpecs.DEFAULT_TYPES){
+        for(LanguageSpecs.VSOPTypes t : LanguageSpecs.VSOPTypes.values()){
             s.append(t.getName()).append(",");
         }
         s.deleteCharAt(s.lastIndexOf(","));

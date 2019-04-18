@@ -43,7 +43,7 @@ public class Assign extends Expr {
     public void print(int tabLevel, boolean doTab) {
         if (doTab)
             System.out.print(getTab(tabLevel));
-        System.out.print("Assign(" + id.getName() + ",");
+        System.out.print("Assign(" + id.getName() + ", ");
 
         expr.print(tabLevel, false, withTypes);
         System.out.print(")");

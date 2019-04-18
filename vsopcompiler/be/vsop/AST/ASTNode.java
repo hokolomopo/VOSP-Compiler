@@ -20,6 +20,15 @@ public abstract class ASTNode {
 
     protected ASTNode(){}
 
+    public String getLlvm(){
+        StringBuilder builder = new StringBuilder();
+
+        if(children != null)
+            for(ASTNode child: children)
+                builder.append(child.getLlvm()).append("\n");
+        return builder.toString();
+    }
+
     String firstCommonAncestor(String type1, String type2) {
         HashSet<String> ancestors1 = new HashSet<>();
         Type curType = classTable.get(type1).getType();

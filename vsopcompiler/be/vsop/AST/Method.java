@@ -1,6 +1,7 @@
 package be.vsop.AST;
 
 import be.vsop.exceptions.semantic.*;
+import be.vsop.semantic.LanguageSpecs;
 import be.vsop.semantic.ScopeTable;
 
 import java.util.ArrayList;
@@ -96,11 +97,11 @@ public class Method extends ASTNode {
 		if(doTab)
 			System.out.print(getTab(tabLevel));
 
-		System.out.print("Method(" + id.getName() + ",");
+		System.out.print("Method(" + id.getName() + ", ");
 		formals.print(tabLevel, false, withTypes);
-		System.out.print(",");
+		System.out.print(", ");
 		retType.print(tabLevel, false, withTypes);
-		System.out.print(",");
+		System.out.print(", ");
 		System.out.println();
 		block.print(tabLevel + 1, true, withTypes);
 		System.out.print(")");
@@ -120,5 +121,24 @@ public class Method extends ASTNode {
 
 	String returnType() {
 		return retType.getName();
+	}
+
+	@Override
+	public String getLlvm() {
+		String llvm =  "define " + retType.getLlvmName() +
+				" @" + scopeTable.getScopeClassType().getName() + "." + id.getName() +
+				"(" + scopeTable.getScopeClassType().getLlvmName() + "* %this";
+		if(formals.getLength() > 0)
+			llvm += ", " +
+				formals.getLlvm();
+
+		llvm += ") {\n";
+
+		if(id.getName().equals(LanguageSpecs.MAIN))
+			llvm += "entry:\n";
+
+		llvm += block.getLlvm() + "}";
+
+		return llvm;
 	}
 }

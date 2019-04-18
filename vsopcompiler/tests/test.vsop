@@ -1,8 +1,13 @@
-class Parent {
-    i() : int32 { 2 }
-}
-class Child extends Parent {
-    var : int32 <- 3;
-    theAnswer : int32 <- 40 + new Parent.i();
-}
-class Main { main() : int32 { 0 } }
+class Main {
+	head : int32;
+	tail : int32;
+
+	main() : int32{
+		truc(0, true)
+	}
+
+ 	truc(machin : int32, boolean : bool) : int32 { 
+ 		let xs : int32 <- 0 in 
+ 			tail <- xs
+ 	} 
+ }

@@ -60,6 +60,10 @@ public class Compiler {
     }
 
     void doSemanticAnalysis(Program program, String languageDirPath) {
+        doSemanticAnalysis(program, languageDirPath, true);
+    }
+
+    void doSemanticAnalysis(Program program, String languageDirPath, boolean print) {
         //TODO do we really need the first argument?
         if (program == null) {
             if (this.program == null) {
@@ -76,7 +80,14 @@ public class Compiler {
                 System.err.println(fileName + ":" + e.getMessage());
             System.exit(-1);
         }
-        this.program.print(true);
+
+        if(print)
+            this.program.print(true);
+    }
+
+
+    String generateLlvm(){
+        return this.program.getLlvm();
     }
 
     public Program getAST(){
