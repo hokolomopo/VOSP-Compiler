@@ -14,4 +14,14 @@ public class LiteralBoolean extends Literal {
         super.checkTypes(errorList);
         typeName = "bool";
     }
+
+    @Override
+    protected String getLlvmValue() {
+        return value;
+    }
+
+    @Override
+    protected boolean isLlvmLiteral() {
+        return true;
+    }
 }

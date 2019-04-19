@@ -1,7 +1,10 @@
 package be.vsop.AST;
 
+import be.vsop.codegenutil.ExprEval;
+import be.vsop.codegenutil.InstrCounter;
 import be.vsop.exceptions.semantic.InvalidAssignException;
 import be.vsop.exceptions.semantic.SemanticException;
+import javafx.util.Pair;
 
 import java.util.ArrayList;
 
@@ -48,4 +51,14 @@ public class Assign extends Expr {
         expr.print(tabLevel, false, withTypes);
         System.out.print(")");
     }
+
+    @Override
+    public ExprEval evalExpr(InstrCounter counter) {
+        Formal toAssign = scopeTable.lookupVariable(id.getName());
+
+        ExprEval eval = expr.evalExpr(counter);
+
+        return new ExprEval(eval.llvmId, eval.llvmCode  + toAssign.llvmStore(eval.llvmId));
+    }
+
 }

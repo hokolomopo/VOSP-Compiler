@@ -1,5 +1,7 @@
 package be.vsop.AST;
 
+import be.vsop.codegenutil.ExprEval;
+import be.vsop.codegenutil.InstrCounter;
 import be.vsop.exceptions.semantic.SemanticException;
 import be.vsop.exceptions.semantic.VariableNotDeclaredException;
 
@@ -47,4 +49,14 @@ public class Id extends Expr {
 	public void toMethod() {
 		isVar = false;
 	}
+
+	@Override
+	public ExprEval evalExpr(InstrCounter counter) {
+		Formal thisFormal =  this.scopeTable.lookupVariable(name);
+
+		String id = counter.getNextLlvmId();
+
+		return new ExprEval(id, thisFormal.llvmLoad(id));
+	}
+
 }

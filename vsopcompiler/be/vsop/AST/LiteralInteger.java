@@ -14,4 +14,15 @@ public class LiteralInteger extends Literal {
         super.checkTypes(errorList);
         typeName = "int32";
     }
+
+    @Override
+    protected String getLlvmValue() {
+        return value;
+    }
+
+    @Override
+    protected boolean isLlvmLiteral() {
+        return true;
+    }
+
 }

@@ -2,6 +2,7 @@ package be.vsop;
 
 import be.vsop.AST.ClassList;
 import be.vsop.AST.Program;
+import be.vsop.codegenutil.InstrCounter;
 import be.vsop.exceptions.LexerException;
 import be.vsop.exceptions.ParserException;
 import be.vsop.exceptions.semantic.SemanticException;
@@ -64,7 +65,6 @@ public class Compiler {
     }
 
     void doSemanticAnalysis(Program program, String languageDirPath, boolean print) {
-        //TODO do we really need the first argument?
         if (program == null) {
             if (this.program == null) {
                 this.program = buildAST();
@@ -87,7 +87,7 @@ public class Compiler {
 
 
     String generateLlvm(){
-        return this.program.getLlvm();
+        return this.program.getLlvm(new InstrCounter());
     }
 
     public Program getAST(){

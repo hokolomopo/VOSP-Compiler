@@ -22,197 +22,178 @@ target triple = "x86_64-pc-linux-gnu"
 
 @_ZStL8__ioinit = internal global %"class.std::ios_base::Init" zeroinitializer, align 1
 @__dso_handle = external global i8
+@_ZZ4mainE4str1 = private unnamed_addr constant [14 x i8] c"Sample string\00", align 1
 @_ZSt4cout = external global %"class.std::basic_ostream", align 8
-@.str = private unnamed_addr constant [18 x i8] c"Volume of Box1 : \00", align 1
+@.str = private unnamed_addr constant [4 x i8] c"lol\00", align 1
 @.str.1 = private unnamed_addr constant [18 x i8] c"Volume of Box2 : \00", align 1
 @llvm.global_ctors = appending global [1 x { i32, void ()*, i8* }] [{ i32, void ()*, i8* } { i32 65535, void ()* @_GLOBAL__sub_I_test.cpp, i8* null }]
 
-declare void @_ZNSt8ios_base4InitC1Ev(%"class.std::ios_base::Init"*) #0
-
-declare void @_ZNSt8ios_base4InitD1Ev(%"class.std::ios_base::Init"*) #0
-
-; Function Attrs: nounwind
-declare i32 @__cxa_atexit(void (i8*)*, i8*, i8*) #1
-
-; Function Attrs: norecurse nounwind readonly uwtable
-define double @_ZN3Box9getVolumeEv(%class.Box* nocapture readonly %this) #2 align 2 {
-  %1 = getelementptr inbounds %class.Box, %class.Box* %this, i64 0, i32 0
-  %2 = load double, double* %1, align 8, !tbaa !1
-  %3 = getelementptr inbounds %class.Box, %class.Box* %this, i64 0, i32 1
-  %4 = load double, double* %3, align 8, !tbaa !6
-  %5 = fmul double %2, %4
-  %6 = getelementptr inbounds %class.Box, %class.Box* %this, i64 0, i32 2
-  %7 = load double, double* %6, align 8, !tbaa !7
-  %8 = fmul double %5, %7
-  ret double %8
+; Function Attrs: uwtable
+define internal void @__cxx_global_var_init() #0 section ".text.startup" {
+  call void @_ZNSt8ios_base4InitC1Ev(%"class.std::ios_base::Init"* @_ZStL8__ioinit)
+  %1 = call i32 @__cxa_atexit(void (i8*)* bitcast (void (%"class.std::ios_base::Init"*)* @_ZNSt8ios_base4InitD1Ev to void (i8*)*), i8* getelementptr inbounds (%"class.std::ios_base::Init", %"class.std::ios_base::Init"* @_ZStL8__ioinit, i32 0, i32 0), i8* @__dso_handle) #2
+  ret void
 }
 
-; Function Attrs: norecurse nounwind uwtable
-define void @_ZN3Box9setLengthEd(%class.Box* noalias nocapture sret %agg.result, %class.Box* nocapture %this, double %len) #3 align 2 {
-  %1 = getelementptr inbounds %class.Box, %class.Box* %this, i64 0, i32 0
-  store double %len, double* %1, align 8, !tbaa !1
-  %2 = bitcast %class.Box* %agg.result to i8*
-  %3 = bitcast %class.Box* %this to i8*
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %2, i8* %3, i64 24, i32 8, i1 false), !tbaa.struct !8
+declare void @_ZNSt8ios_base4InitC1Ev(%"class.std::ios_base::Init"*) #1
+
+declare void @_ZNSt8ios_base4InitD1Ev(%"class.std::ios_base::Init"*) #1
+
+; Function Attrs: nounwind
+declare i32 @__cxa_atexit(void (i8*)*, i8*, i8*) #2
+
+; Function Attrs: nounwind uwtable
+define double @_ZN3Box9getVolumeEv(%class.Box* %this) #3 align 2 {
+  %1 = alloca %class.Box*, align 8
+  store %class.Box* %this, %class.Box** %1, align 8
+  %2 = load %class.Box*, %class.Box** %1, align 8
+  %3 = getelementptr inbounds %class.Box, %class.Box* %2, i32 0, i32 0
+  %4 = load double, double* %3, align 8
+  %5 = getelementptr inbounds %class.Box, %class.Box* %2, i32 0, i32 1
+  %6 = load double, double* %5, align 8
+  %7 = fmul double %4, %6
+  %8 = getelementptr inbounds %class.Box, %class.Box* %2, i32 0, i32 2
+  %9 = load double, double* %8, align 8
+  %10 = fmul double %7, %9
+  ret double %10
+}
+
+; Function Attrs: nounwind uwtable
+define void @_ZN3Box9setLengthEdS_(%class.Box* noalias sret %agg.result, %class.Box* %this, double %len, %class.Box* byval align 8 %a) #3 align 2 {
+  %1 = alloca %class.Box*, align 8
+  %2 = alloca double, align 8
+  store %class.Box* %this, %class.Box** %1, align 8
+  store double %len, double* %2, align 8
+  %3 = load %class.Box*, %class.Box** %1, align 8
+  %4 = load double, double* %2, align 8
+  %5 = getelementptr inbounds %class.Box, %class.Box* %3, i32 0, i32 0
+  store double %4, double* %5, align 8
+  %6 = bitcast %class.Box* %agg.result to i8*
+  %7 = bitcast %class.Box* %3 to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %6, i8* %7, i64 24, i32 8, i1 false)
   ret void
 }
 
 ; Function Attrs: argmemonly nounwind
 declare void @llvm.memcpy.p0i8.p0i8.i64(i8* nocapture, i8* nocapture readonly, i64, i32, i1) #4
 
-; Function Attrs: norecurse nounwind uwtable
-define void @_ZN3Box10setBreadthEd(%class.Box* nocapture %this, double %bre) #3 align 2 {
-  %1 = getelementptr inbounds %class.Box, %class.Box* %this, i64 0, i32 1
-  store double %bre, double* %1, align 8, !tbaa !6
+; Function Attrs: nounwind uwtable
+define void @_ZN3Box10setBreadthEd(%class.Box* %this, double %bre) #3 align 2 {
+  %1 = alloca %class.Box*, align 8
+  %2 = alloca double, align 8
+  store %class.Box* %this, %class.Box** %1, align 8
+  store double %bre, double* %2, align 8
+  %3 = load %class.Box*, %class.Box** %1, align 8
+  %4 = load double, double* %2, align 8
+  %5 = fadd double %4, 9.000000e+00
+  store double %5, double* %2, align 8
+  %6 = load double, double* %2, align 8
+  %7 = getelementptr inbounds %class.Box, %class.Box* %3, i32 0, i32 1
+  store double %6, double* %7, align 8
   ret void
 }
 
-; Function Attrs: norecurse nounwind uwtable
-define void @_ZN3Box9setHeightEd(%class.Box* nocapture %this, double %hei) #3 align 2 {
-  %1 = getelementptr inbounds %class.Box, %class.Box* %this, i64 0, i32 2
-  store double %hei, double* %1, align 8, !tbaa !7
+; Function Attrs: nounwind uwtable
+define void @_ZN3Box9setHeightEd(%class.Box* %this, double %hei) #3 align 2 {
+  %1 = alloca %class.Box*, align 8
+  %2 = alloca double, align 8
+  %myHeight = alloca double, align 8
+  store %class.Box* %this, %class.Box** %1, align 8
+  store double %hei, double* %2, align 8
+  %3 = load %class.Box*, %class.Box** %1, align 8
+  %4 = getelementptr inbounds %class.Box, %class.Box* %3, i32 0, i32 2
+  %5 = load double, double* %4, align 8
+  store double %5, double* %myHeight, align 8
+  %6 = load double, double* %2, align 8
+  %7 = getelementptr inbounds %class.Box, %class.Box* %3, i32 0, i32 2
+  store double %6, double* %7, align 8
   ret void
 }
 
 ; Function Attrs: norecurse uwtable
 define i32 @main() #5 {
-  %1 = tail call dereferenceable(272) %"class.std::basic_ostream"* @_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_l(%"class.std::basic_ostream"* nonnull dereferenceable(272) @_ZSt4cout, i8* nonnull getelementptr inbounds ([18 x i8], [18 x i8]* @.str, i64 0, i64 0), i64 17)
-  %2 = tail call dereferenceable(272) %"class.std::basic_ostream"* @_ZNSo9_M_insertIdEERSoT_(%"class.std::basic_ostream"* nonnull @_ZSt4cout, double 2.100000e+02)
-  %3 = bitcast %"class.std::basic_ostream"* %2 to i8**
-  %4 = load i8*, i8** %3, align 8, !tbaa !10
-  %5 = getelementptr i8, i8* %4, i64 -24
-  %6 = bitcast i8* %5 to i64*
-  %7 = load i64, i64* %6, align 8
-  %8 = bitcast %"class.std::basic_ostream"* %2 to i8*
-  %9 = getelementptr inbounds i8, i8* %8, i64 %7
-  %10 = getelementptr inbounds i8, i8* %9, i64 240
-  %11 = bitcast i8* %10 to %"class.std::ctype"**
-  %12 = load %"class.std::ctype"*, %"class.std::ctype"** %11, align 8, !tbaa !12
-  %13 = icmp eq %"class.std::ctype"* %12, null
-  br i1 %13, label %14, label %_ZSt13__check_facetISt5ctypeIcEERKT_PS3_.exit3
+  %1 = alloca i32, align 4
+  %Box1 = alloca %class.Box, align 8
+  %Box2 = alloca %class.Box, align 8
+  %volume = alloca double, align 8
+  %height1 = alloca double, align 8
+  %str1 = alloca [14 x i8], align 1
+  %b4 = alloca %class.Box, align 8
+  %b3 = alloca %class.Box, align 8
+  %2 = alloca %class.Box, align 8
+  %3 = alloca %class.Box, align 8
+  %4 = alloca %class.Box, align 8
+  store i32 0, i32* %1, align 4
+  store double 0.000000e+00, double* %volume, align 8
+  store double 2.130000e+01, double* %height1, align 8
+  %5 = bitcast [14 x i8]* %str1 to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %5, i8* getelementptr inbounds ([14 x i8], [14 x i8]* @_ZZ4mainE4str1, i32 0, i32 0), i64 14, i32 1, i1 false)
+  %6 = bitcast %class.Box* %b4 to i8*
+  %7 = bitcast %class.Box* %Box1 to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %6, i8* %7, i64 24, i32 8, i1 false)
+  %8 = bitcast %class.Box* %2 to i8*
+  %9 = bitcast %class.Box* %Box1 to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %8, i8* %9, i64 24, i32 8, i1 false)
+  call void @_ZN3Box9setLengthEdS_(%class.Box* sret %b3, %class.Box* %Box1, double 6.000000e+00, %class.Box* byval align 8 %2)
+  call void @_ZN3Box10setBreadthEd(%class.Box* %Box1, double 7.000000e+00)
+  %10 = load double, double* %height1, align 8
+  call void @_ZN3Box9setHeightEd(%class.Box* %Box1, double %10)
+  %11 = call double @_ZN3Box9getVolumeEv(%class.Box* %b3)
+  %12 = load double, double* %height1, align 8
+  %13 = fcmp ogt double %11, %12
+  br i1 %13, label %14, label %15
 
 ; <label>:14                                      ; preds = %0
-  tail call void @_ZSt16__throw_bad_castv() #8
-  unreachable
+  store double 2.220000e+01, double* %volume, align 8
+  br label %16
 
-_ZSt13__check_facetISt5ctypeIcEERKT_PS3_.exit3:   ; preds = %0
-  %15 = getelementptr inbounds %"class.std::ctype", %"class.std::ctype"* %12, i64 0, i32 8
-  %16 = load i8, i8* %15, align 8, !tbaa !16
-  %17 = icmp eq i8 %16, 0
-  br i1 %17, label %21, label %18
+; <label>:15                                      ; preds = %0
+  store double 8.756000e+01, double* %volume, align 8
+  br label %16
 
-; <label>:18                                      ; preds = %_ZSt13__check_facetISt5ctypeIcEERKT_PS3_.exit3
-  %19 = getelementptr inbounds %"class.std::ctype", %"class.std::ctype"* %12, i64 0, i32 9, i64 10
-  %20 = load i8, i8* %19, align 1, !tbaa !18
-  br label %_ZNKSt5ctypeIcE5widenEc.exit2
-
-; <label>:21                                      ; preds = %_ZSt13__check_facetISt5ctypeIcEERKT_PS3_.exit3
-  tail call void @_ZNKSt5ctypeIcE13_M_widen_initEv(%"class.std::ctype"* nonnull %12)
-  %22 = bitcast %"class.std::ctype"* %12 to i8 (%"class.std::ctype"*, i8)***
-  %23 = load i8 (%"class.std::ctype"*, i8)**, i8 (%"class.std::ctype"*, i8)*** %22, align 8, !tbaa !10
-  %24 = getelementptr inbounds i8 (%"class.std::ctype"*, i8)*, i8 (%"class.std::ctype"*, i8)** %23, i64 6
-  %25 = load i8 (%"class.std::ctype"*, i8)*, i8 (%"class.std::ctype"*, i8)** %24, align 8
-  %26 = tail call signext i8 %25(%"class.std::ctype"* nonnull %12, i8 signext 10)
-  br label %_ZNKSt5ctypeIcE5widenEc.exit2
-
-_ZNKSt5ctypeIcE5widenEc.exit2:                    ; preds = %18, %21
-  %.0.i1 = phi i8 [ %20, %18 ], [ %26, %21 ]
-  %27 = tail call dereferenceable(272) %"class.std::basic_ostream"* @_ZNSo3putEc(%"class.std::basic_ostream"* nonnull %2, i8 signext %.0.i1)
-  %28 = tail call dereferenceable(272) %"class.std::basic_ostream"* @_ZNSo5flushEv(%"class.std::basic_ostream"* nonnull %27)
-  %29 = tail call dereferenceable(272) %"class.std::basic_ostream"* @_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_l(%"class.std::basic_ostream"* nonnull dereferenceable(272) @_ZSt4cout, i8* nonnull getelementptr inbounds ([18 x i8], [18 x i8]* @.str.1, i64 0, i64 0), i64 17)
-  %30 = tail call dereferenceable(272) %"class.std::basic_ostream"* @_ZNSo9_M_insertIdEERSoT_(%"class.std::basic_ostream"* nonnull @_ZSt4cout, double 1.560000e+03)
-  %31 = bitcast %"class.std::basic_ostream"* %30 to i8**
-  %32 = load i8*, i8** %31, align 8, !tbaa !10
-  %33 = getelementptr i8, i8* %32, i64 -24
-  %34 = bitcast i8* %33 to i64*
-  %35 = load i64, i64* %34, align 8
-  %36 = bitcast %"class.std::basic_ostream"* %30 to i8*
-  %37 = getelementptr inbounds i8, i8* %36, i64 %35
-  %38 = getelementptr inbounds i8, i8* %37, i64 240
-  %39 = bitcast i8* %38 to %"class.std::ctype"**
-  %40 = load %"class.std::ctype"*, %"class.std::ctype"** %39, align 8, !tbaa !12
-  %41 = icmp eq %"class.std::ctype"* %40, null
-  br i1 %41, label %42, label %_ZSt13__check_facetISt5ctypeIcEERKT_PS3_.exit
-
-; <label>:42                                      ; preds = %_ZNKSt5ctypeIcE5widenEc.exit2
-  tail call void @_ZSt16__throw_bad_castv() #8
-  unreachable
-
-_ZSt13__check_facetISt5ctypeIcEERKT_PS3_.exit:    ; preds = %_ZNKSt5ctypeIcE5widenEc.exit2
-  %43 = getelementptr inbounds %"class.std::ctype", %"class.std::ctype"* %40, i64 0, i32 8
-  %44 = load i8, i8* %43, align 8, !tbaa !16
-  %45 = icmp eq i8 %44, 0
-  br i1 %45, label %49, label %46
-
-; <label>:46                                      ; preds = %_ZSt13__check_facetISt5ctypeIcEERKT_PS3_.exit
-  %47 = getelementptr inbounds %"class.std::ctype", %"class.std::ctype"* %40, i64 0, i32 9, i64 10
-  %48 = load i8, i8* %47, align 1, !tbaa !18
-  br label %_ZNKSt5ctypeIcE5widenEc.exit
-
-; <label>:49                                      ; preds = %_ZSt13__check_facetISt5ctypeIcEERKT_PS3_.exit
-  tail call void @_ZNKSt5ctypeIcE13_M_widen_initEv(%"class.std::ctype"* nonnull %40)
-  %50 = bitcast %"class.std::ctype"* %40 to i8 (%"class.std::ctype"*, i8)***
-  %51 = load i8 (%"class.std::ctype"*, i8)**, i8 (%"class.std::ctype"*, i8)*** %50, align 8, !tbaa !10
-  %52 = getelementptr inbounds i8 (%"class.std::ctype"*, i8)*, i8 (%"class.std::ctype"*, i8)** %51, i64 6
-  %53 = load i8 (%"class.std::ctype"*, i8)*, i8 (%"class.std::ctype"*, i8)** %52, align 8
-  %54 = tail call signext i8 %53(%"class.std::ctype"* nonnull %40, i8 signext 10)
-  br label %_ZNKSt5ctypeIcE5widenEc.exit
-
-_ZNKSt5ctypeIcE5widenEc.exit:                     ; preds = %46, %49
-  %.0.i = phi i8 [ %48, %46 ], [ %54, %49 ]
-  %55 = tail call dereferenceable(272) %"class.std::basic_ostream"* @_ZNSo3putEc(%"class.std::basic_ostream"* nonnull %30, i8 signext %.0.i)
-  %56 = tail call dereferenceable(272) %"class.std::basic_ostream"* @_ZNSo5flushEv(%"class.std::basic_ostream"* nonnull %55)
+; <label>:16                                      ; preds = %15, %14
+  %17 = bitcast %class.Box* %3 to i8*
+  %18 = bitcast %class.Box* %b3 to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %17, i8* %18, i64 24, i32 8, i1 false)
+  call void @_ZN3Box9setLengthEdS_(%class.Box* sret %4, %class.Box* %Box2, double 1.200000e+01, %class.Box* byval align 8 %3)
+  call void @_ZN3Box10setBreadthEd(%class.Box* %Box2, double 1.300000e+01)
+  call void @_ZN3Box9setHeightEd(%class.Box* %Box2, double 1.000000e+01)
+  %19 = call double @_ZN3Box9getVolumeEv(%class.Box* %Box1)
+  store double %19, double* %volume, align 8
+  %20 = call dereferenceable(272) %"class.std::basic_ostream"* @_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc(%"class.std::basic_ostream"* dereferenceable(272) @_ZSt4cout, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str, i32 0, i32 0))
+  %21 = load double, double* %volume, align 8
+  %22 = call dereferenceable(272) %"class.std::basic_ostream"* @_ZNSolsEd(%"class.std::basic_ostream"* %20, double %21)
+  %23 = call dereferenceable(272) %"class.std::basic_ostream"* @_ZNSolsEPFRSoS_E(%"class.std::basic_ostream"* %22, %"class.std::basic_ostream"* (%"class.std::basic_ostream"*)* @_ZSt4endlIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_)
+  %24 = call double @_ZN3Box9getVolumeEv(%class.Box* %Box2)
+  store double %24, double* %volume, align 8
+  %25 = call dereferenceable(272) %"class.std::basic_ostream"* @_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc(%"class.std::basic_ostream"* dereferenceable(272) @_ZSt4cout, i8* getelementptr inbounds ([18 x i8], [18 x i8]* @.str.1, i32 0, i32 0))
+  %26 = load double, double* %volume, align 8
+  %27 = call dereferenceable(272) %"class.std::basic_ostream"* @_ZNSolsEd(%"class.std::basic_ostream"* %25, double %26)
+  %28 = call dereferenceable(272) %"class.std::basic_ostream"* @_ZNSolsEPFRSoS_E(%"class.std::basic_ostream"* %27, %"class.std::basic_ostream"* (%"class.std::basic_ostream"*)* @_ZSt4endlIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_)
   ret i32 0
 }
 
-declare dereferenceable(272) %"class.std::basic_ostream"* @_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_l(%"class.std::basic_ostream"* dereferenceable(272), i8*, i64) #0
+declare dereferenceable(272) %"class.std::basic_ostream"* @_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc(%"class.std::basic_ostream"* dereferenceable(272), i8*) #1
 
-declare dereferenceable(272) %"class.std::basic_ostream"* @_ZNSo9_M_insertIdEERSoT_(%"class.std::basic_ostream"*, double) #0
+declare dereferenceable(272) %"class.std::basic_ostream"* @_ZNSolsEd(%"class.std::basic_ostream"*, double) #1
 
-declare dereferenceable(272) %"class.std::basic_ostream"* @_ZNSo3putEc(%"class.std::basic_ostream"*, i8 signext) #0
+declare dereferenceable(272) %"class.std::basic_ostream"* @_ZNSolsEPFRSoS_E(%"class.std::basic_ostream"*, %"class.std::basic_ostream"* (%"class.std::basic_ostream"*)*) #1
 
-declare dereferenceable(272) %"class.std::basic_ostream"* @_ZNSo5flushEv(%"class.std::basic_ostream"*) #0
-
-; Function Attrs: noreturn
-declare void @_ZSt16__throw_bad_castv() #6
-
-declare void @_ZNKSt5ctypeIcE13_M_widen_initEv(%"class.std::ctype"*) #0
+declare dereferenceable(272) %"class.std::basic_ostream"* @_ZSt4endlIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_(%"class.std::basic_ostream"* dereferenceable(272)) #1
 
 ; Function Attrs: uwtable
-define internal void @_GLOBAL__sub_I_test.cpp() #7 section ".text.startup" {
-  tail call void @_ZNSt8ios_base4InitC1Ev(%"class.std::ios_base::Init"* nonnull @_ZStL8__ioinit)
-  %1 = tail call i32 @__cxa_atexit(void (i8*)* bitcast (void (%"class.std::ios_base::Init"*)* @_ZNSt8ios_base4InitD1Ev to void (i8*)*), i8* getelementptr inbounds (%"class.std::ios_base::Init", %"class.std::ios_base::Init"* @_ZStL8__ioinit, i64 0, i32 0), i8* nonnull @__dso_handle) #1
+define internal void @_GLOBAL__sub_I_test.cpp() #0 section ".text.startup" {
+  call void @__cxx_global_var_init()
   ret void
 }
 
-attributes #0 = { "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { nounwind }
-attributes #2 = { norecurse nounwind readonly uwtable "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #3 = { norecurse nounwind uwtable "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #0 = { uwtable "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #2 = { nounwind }
+attributes #3 = { nounwind uwtable "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #4 = { argmemonly nounwind }
-attributes #5 = { norecurse uwtable "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #6 = { noreturn "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #7 = { uwtable "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #8 = { noreturn }
+attributes #5 = { norecurse uwtable "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2" "unsafe-fp-math"="false" "use-soft-float"="false" }
 
 !llvm.ident = !{!0}
 
 !0 = !{!"clang version 3.8.0-2ubuntu4 (tags/RELEASE_380/final)"}
-!1 = !{!2, !3, i64 0}
-!2 = !{!"_ZTS3Box", !3, i64 0, !3, i64 8, !3, i64 16}
-!3 = !{!"double", !4, i64 0}
-!4 = !{!"omnipotent char", !5, i64 0}
-!5 = !{!"Simple C/C++ TBAA"}
-!6 = !{!2, !3, i64 8}
-!7 = !{!2, !3, i64 16}
-!8 = !{i64 0, i64 8, !9, i64 8, i64 8, !9, i64 16, i64 8, !9}
-!9 = !{!3, !3, i64 0}
-!10 = !{!11, !11, i64 0}
-!11 = !{!"vtable pointer", !5, i64 0}
-!12 = !{!13, !14, i64 240}
-!13 = !{!"_ZTSSt9basic_iosIcSt11char_traitsIcEE", !14, i64 216, !4, i64 224, !15, i64 225, !14, i64 232, !14, i64 240, !14, i64 248, !14, i64 256}
-!14 = !{!"any pointer", !4, i64 0}
-!15 = !{!"bool", !4, i64 0}
-!16 = !{!17, !4, i64 56}
-!17 = !{!"_ZTSSt5ctypeIcE", !14, i64 16, !15, i64 24, !14, i64 32, !14, i64 40, !14, i64 48, !4, i64 56, !4, i64 57, !4, i64 313, !4, i64 569}
-!18 = !{!4, !4, i64 0}

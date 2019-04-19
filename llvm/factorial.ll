@@ -1,7 +1,6 @@
 @.str = private unnamed_addr constant [22 x i8] c"Factorial of %d = %d\0A\00", align 1
 
 define i32 @factorial(i32 %n) {
-entry:
   %cmp = icmp sle i32 %n, 1
   br i1 %cmp, label %cond.true, label %cond.false
 
@@ -20,14 +19,16 @@ cond.end:                                         ; preds = %cond.false, %cond.t
 }
 
 define i32 @main(i32 %argc, i8** %argv) {
-entry:
   %retval = alloca i32, align 4
   %argc.addr = alloca i32, align 4
   %argv.addr = alloca i8**, align 8
+  %void = alloca void, align 4   
+
   store i32 5, i32* %retval
   store i32 %argc, i32* %argc.addr, align 4
   store i8** %argv, i8*** %argv.addr, align 8
-  %call = call i32 @factorial(i32 10)
+  %int = add i32 0, 10
+  %call = call i32 @factorial(i32 %int)
   %call3 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str , i32 0, i32 0), i32 10, i32 %call)
 
   ret i32 %call

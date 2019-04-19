@@ -1,9 +1,12 @@
 package be.vsop.AST;
 
+import be.vsop.codegenutil.ExprEval;
+import be.vsop.codegenutil.InstrCounter;
 import be.vsop.exceptions.semantic.SemanticException;
 import be.vsop.exceptions.semantic.TypeNotExpectedException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class While extends Expr {
 	private Expr condExpr;
@@ -41,4 +44,36 @@ public class While extends Expr {
 		bodyExpr.print(tabLevel + 1, true, withTypes);
 		System.out.print(")");
 	}
+
+	@Override
+	public ExprEval evalExpr(InstrCounter counter) {
+
+		String llvm = "";
+		HashMap<String, String> labels = counter.getNextLoopLabel();
+
+
+		//TODO :  Commencer par jump au début de la boucle, utile? clang le fait mais no idea why
+
+		//Evaluate loop condition
+		llvm += labels.get(InstrCounter.LOOP_COND_LABEL) + ":" + endLine;
+		ExprEval condEval = condExpr.evalExpr(counter);
+		llvm += condEval.llvmCode;
+
+		llvm += "br i1 " + condEval.llvmId + ", label %" + labels.get(InstrCounter.LOOP_START_LABEL) + ", label %" + labels.get(InstrCounter.LOOP_END_LABEL)
+				+ endLine + endLine;
+
+		//Loop start label
+		llvm += labels.get(InstrCounter.LOOP_START_LABEL) + ":" + endLine;
+
+		//Evaluate body of loop
+		ExprEval bodyEval = bodyExpr.evalExpr(counter);
+		llvm += bodyEval.llvmCode;
+		llvm += "br label %" + labels.get(InstrCounter.LOOP_COND_LABEL) + endLine + endLine;
+
+		//Loop end label
+		llvm += labels.get(InstrCounter.LOOP_END_LABEL) + ":" + endLine;
+
+		return new ExprEval(null, llvm);//TODO
+	}
+
 }

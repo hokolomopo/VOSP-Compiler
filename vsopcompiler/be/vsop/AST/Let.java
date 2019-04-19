@@ -1,5 +1,7 @@
 package be.vsop.AST;
 
+import be.vsop.codegenutil.ExprEval;
+import be.vsop.codegenutil.InstrCounter;
 import be.vsop.exceptions.semantic.SemanticException;
 import be.vsop.exceptions.semantic.TypeNotExpectedException;
 import be.vsop.exceptions.semantic.VariableAlreadyDeclaredException;
@@ -79,4 +81,21 @@ public class Let extends Expr {
 		bodyExpr.print(tabLevel + 1, true, withTypes);
 		System.out.print(")");
 	}
+
+	@Override
+	public ExprEval evalExpr(InstrCounter counter) {
+		String llvm =  formal.llvmAllocate();
+
+		if(initExpr != null){
+			Assign init = new Assign(new Id(formal.getName()), initExpr);
+			init.setScopeTable(this.scopeTable);
+			llvm += init.getLlvm(counter);
+		}
+
+		ExprEval bodyEval = bodyExpr.evalExpr(counter);
+		llvm += bodyEval.llvmCode;
+
+		return new ExprEval(bodyEval.llvmId, llvm);
+	}
+
 }

@@ -1,5 +1,8 @@
 package be.vsop.AST;
 
+import be.vsop.codegenutil.ExprEval;
+import be.vsop.codegenutil.InstrCounter;
+
 public abstract class Literal extends Expr {
 	String value;
 
@@ -14,4 +17,12 @@ public abstract class Literal extends Expr {
 
 		System.out.print(value);
 	}
+
+	@Override
+	public ExprEval evalExpr(InstrCounter counter) {
+		return new ExprEval(getLlvmValue(), "", true);
+	}
+
+	protected abstract String getLlvmValue();
+
 }

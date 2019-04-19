@@ -1,5 +1,7 @@
 package be.vsop.AST;
 
+import be.vsop.codegenutil.ExprEval;
+import be.vsop.codegenutil.InstrCounter;
 import be.vsop.exceptions.semantic.SemanticException;
 
 import java.util.ArrayList;
@@ -9,6 +11,11 @@ public class Null extends Expr {
 		if(doTab)
 			System.out.print(getTab(tabLevel));
 		System.out.print("()");
+	}
+
+	@Override
+	public ExprEval evalExpr(InstrCounter counter) {
+		return new ExprEval("","Todo null");//TODO null;
 	}
 
 	@Override

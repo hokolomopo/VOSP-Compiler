@@ -1,8 +1,10 @@
 package be.vsop.AST;
 
+import be.vsop.codegenutil.InstrCounter;
 import be.vsop.exceptions.semantic.ClassAlreadyDeclaredException;
 import be.vsop.exceptions.semantic.MainException;
 import be.vsop.exceptions.semantic.SemanticException;
+import be.vsop.semantic.LanguageSpecs;
 import be.vsop.semantic.ScopeTable;
 
 import java.util.ArrayList;
@@ -118,17 +120,36 @@ public class ClassItem extends ASTNode{
 	}
 
 	@Override
-	public String getLlvm() {
+	public String getLlvm(InstrCounter counter) {
 		StringBuilder fieldsTypeList = new StringBuilder();
 
-		for(int i = 0;i < cel.getFields().size();i++){
-			fieldsTypeList.append(cel.getFields().get(i).getType().getName());
+		//Get all class fields
+		ArrayList<Formal> fields = scopeTable.getAllVariables(ScopeTable.Scope.LOCAL);
 
-			if(i < cel.getFields().size() - 1)
+		//Remove self
+		Formal self = null;
+		for(Formal field : fields)
+			if(field.getName().equals(LanguageSpecs.SELF)) {
+				self = field;
+				break;
+			}
+		fields.remove(self);
+
+		//Give id and parent class to fields
+		int k = 0;
+		for(Formal field : fields) {
+			field.setClassFieldId(k++);
+			field.setParentClass("%class." + this.getName());
+		}
+
+		for(int i = 0;i < fields.size();i++){
+			fieldsTypeList.append(fields.get(i).getType().getName());
+
+			if(i < fields.size() - 1)
 				fieldsTypeList.append(", ");
 
 		}
 
-		return "%class." + getName() + " = type { " + fieldsTypeList.toString() + " }\n\n" + cel.getLlvm() + "\n";
+		return "%class." + getName() + " = type { " + fieldsTypeList.toString() + " }\n\n" + cel.getLlvm(counter) + "\n";
 	}
 }

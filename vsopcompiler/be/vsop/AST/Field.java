@@ -45,6 +45,7 @@ public class Field extends ASTNode {
 			Formal newDeclaration = new Formal(id, type);
 			newDeclaration.line = line;
 			newDeclaration.column = column;
+			newDeclaration.setClassField(true);
 			this.scopeTable.addVariable(newDeclaration);
 		}
 

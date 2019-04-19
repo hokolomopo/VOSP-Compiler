@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
-import be.vsop.semantic.LanguageSpecs.VSOPTypes;
+import be.vsop.semantic.VSOPTypes;
 
 public class ScopeTable {
     public enum Scope{LOCAL, GLOBAL, OUTER}

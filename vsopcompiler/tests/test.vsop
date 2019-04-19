@@ -3,11 +3,25 @@ class Main {
 	tail : int32;
 
 	main() : int32{
-		truc(0, true)
+		let n : int32 <- 3 in
+			if n < 0 then {
+			-1
+		}else
+			897
 	}
 
- 	truc(machin : int32, boolean : bool) : int32 { 
- 		let xs : int32 <- 0 in 
- 			tail <- xs
+	testString(myString : string) : string{
+		myString <- "Viva la vida baby and keep on Rockin'";
+		"lol"	
+	}
+
+ 	truc(tail : int32, boolean : Main) : int32 { 
+ 		head <- 2 + head * tail;
+ 		let xs : int32 <- tail in 
+ 			tail <- xs;
+		while true do{
+			tail <- tail + 1
+		};
+		2 + 3	
  	} 
  }

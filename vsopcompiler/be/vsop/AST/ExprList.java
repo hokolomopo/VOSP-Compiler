@@ -1,5 +1,7 @@
 package be.vsop.AST;
 
+import be.vsop.codegenutil.ExprEval;
+import be.vsop.codegenutil.InstrCounter;
 import be.vsop.exceptions.semantic.SemanticException;
 
 import java.util.ArrayList;
@@ -67,4 +69,22 @@ public class ExprList extends Expr {
 		}
 
 	}
+
+	@Override
+	public ExprEval evalExpr(InstrCounter counter) {
+		StringBuilder builder = new StringBuilder();
+
+
+
+		ExprEval lastEval = null;
+		for(Expr e : expressions){
+			lastEval = e.evalExpr(counter);
+			builder.append(lastEval.llvmCode);
+		}
+
+		if(lastEval == null)
+			return new ExprEval("", "");
+		return new ExprEval(lastEval.llvmId, builder.toString(), lastEval.isLiteral());
+	}
+
 }

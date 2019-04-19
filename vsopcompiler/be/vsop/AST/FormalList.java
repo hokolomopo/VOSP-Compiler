@@ -1,5 +1,6 @@
 package be.vsop.AST;
 
+import be.vsop.codegenutil.InstrCounter;
 import be.vsop.exceptions.semantic.VariableAlreadyDeclaredException;
 import be.vsop.exceptions.semantic.SemanticException;
 
@@ -18,6 +19,10 @@ public class FormalList extends ASTNode{
 
     public FormalList() {
         formals = new ArrayList<>();
+    }
+
+    public void addFormal(Formal formal, int index){
+        formals.add(index, formal);
     }
 
     @Override
@@ -67,11 +72,11 @@ public class FormalList extends ASTNode{
     }
 
     @Override
-    public String getLlvm() {
+    public String getLlvm(InstrCounter counter) {
         StringBuilder builder = new StringBuilder();
 
         for(int i = 0;i < formals.size();i++){
-            builder.append(formals.get(i).getLlvm());
+            builder.append(formals.get(i).getLlvm(counter));
 
             if(i < formals.size() - 1)
                 builder.append(", ");
@@ -80,6 +85,33 @@ public class FormalList extends ASTNode{
 
         return builder.toString();
 
+    }
+
+    public String llvmAllocate() {
+        StringBuilder builder = new StringBuilder();
+
+        for(Formal formal : formals)
+            builder.append(formal.llvmAllocate());
+
+        return builder.toString();
+
+    }
+
+    public String llvmStore() {
+        StringBuilder builder = new StringBuilder();
+
+        for(Formal formal : formals)
+            builder.append(formal.llvmStore(formal.getLlvmId()));
+
+        return builder.toString();
+
+    }
+
+
+    public void classesToPtr(){
+        for(Formal formal : formals)
+            if(!formal.isPrimitive() && !formal.isPointer())
+                formal.toPointer();
     }
 
     public int getLength(){

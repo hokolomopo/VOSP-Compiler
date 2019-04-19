@@ -1,8 +1,12 @@
 package be.vsop.AST;
 
+import be.vsop.codegenutil.ExprEval;
+import be.vsop.codegenutil.InstrCounter;
 import be.vsop.exceptions.semantic.*;
 import be.vsop.semantic.LanguageSpecs;
 import be.vsop.semantic.ScopeTable;
+import be.vsop.semantic.VSOPTypes;
+import be.vsop.AST.Type;
 
 import java.util.ArrayList;
 
@@ -124,20 +128,32 @@ public class Method extends ASTNode {
 	}
 
 	@Override
-	public String getLlvm() {
+	public String getLlvm(InstrCounter counter) {
+		//Add self to formals
+		Formal self = new Formal(new Id("self"), new Type(scopeTable.getScopeClassType().getName()));
+		formals.addFormal(self, 0);
+
+		//Method header
 		String llvm =  "define " + retType.getLlvmName() +
 				" @" + scopeTable.getScopeClassType().getName() + "." + id.getName() +
-				"(" + scopeTable.getScopeClassType().getLlvmName() + "* %this";
-		if(formals.getLength() > 0)
-			llvm += ", " +
-				formals.getLlvm();
-
+				"(";
+		if(formals.getLength() > 0) {
+			formals.classesToPtr();
+			llvm +=  formals.getLlvm(counter);
+		}
 		llvm += ") {\n";
 
-		if(id.getName().equals(LanguageSpecs.MAIN))
-			llvm += "entry:\n";
+		//Method body
 
-		llvm += block.getLlvm() + "}";
+		//Allocate and store all arguments into pointers
+		llvm += formals.llvmAllocate();
+		llvm += formals.llvmStore();
+
+		ExprEval bodyEval = block.evalExpr(new InstrCounter());
+		llvm += bodyEval.llvmCode;
+
+		llvm += "ret " + VSOPTypes.getLlvmTypeName(block.typeName) + " " + bodyEval.llvmId + " " + endLine + "}";
+
 
 		return llvm;
 	}

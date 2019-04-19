@@ -1,5 +1,7 @@
 package be.vsop.AST;
 
+import be.vsop.codegenutil.ExprEval;
+import be.vsop.codegenutil.InstrCounter;
 import be.vsop.exceptions.semantic.SemanticException;
 
 import java.util.ArrayList;
@@ -25,4 +27,10 @@ public class New extends Expr {
 			System.out.print(getTab(tabLevel));
 		System.out.print("New(" + type.getName() + ")");
 	}
+
+	@Override
+	public ExprEval evalExpr(InstrCounter counter) {
+		return new ExprEval("","TODO New");//TODO
+	}
+
 }

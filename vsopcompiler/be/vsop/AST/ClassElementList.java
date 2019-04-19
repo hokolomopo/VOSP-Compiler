@@ -1,5 +1,6 @@
 package be.vsop.AST;
 
+import be.vsop.codegenutil.InstrCounter;
 import be.vsop.exceptions.semantic.SemanticException;
 
 import java.util.ArrayList;
@@ -91,12 +92,12 @@ public class ClassElementList extends ASTNode {
 	}
 
 	@Override
-	public String getLlvm() {
+	public String getLlvm(InstrCounter counter) {
 		StringBuilder builder = new StringBuilder();
 
 		if(methods != null)
 			for(Method method: methods)
-				builder.append(method.getLlvm()).append("\n\n");
+				builder.append(method.getLlvm(counter)).append("\n\n");
 		return builder.toString();
 
 	}

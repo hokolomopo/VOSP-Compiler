@@ -1,10 +1,15 @@
 package be.vsop.AST;
 
+import be.vsop.codegenutil.ExprEval;
+import be.vsop.codegenutil.InstrCounter;
 import be.vsop.exceptions.semantic.SemanticException;
 import be.vsop.exceptions.semantic.TypeNotExpectedException;
 import be.vsop.semantic.LanguageSpecs;
+import be.vsop.semantic.VSOPTypes;
+import javafx.util.Pair;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class If extends Expr {
 	private Expr condExpr;
@@ -34,14 +39,16 @@ public class If extends Expr {
 		String condType = condExpr.typeName;
 		String thenType = thenExpr.typeName;
 		String elseType;
+
+
+		if (condType != null && !condType.equals("bool")) {
+			errorList.add(new TypeNotExpectedException(condExpr, "bool"));
+		}
+
 		if (elseExpr == null) {
 			elseType = "unit";
 		} else {
 			elseType = elseExpr.typeName;
-		}
-
-		if (condType != null && !condType.equals("bool")) {
-			errorList.add(new TypeNotExpectedException(condExpr, "bool"));
 		}
 
 		if (thenType != null && elseType != null) {
@@ -76,4 +83,63 @@ public class If extends Expr {
 		}
 		System.out.print(")");
 	}
+
+	@Override
+	public ExprEval evalExpr(InstrCounter counter) {
+		HashMap<String, String> labels = counter.getNextCondLabels();
+
+		String llvm = "";
+		String retId = null;
+
+		//Allocate return value
+		Formal retFormal = null;
+		if(!typeName.equals(VSOPTypes.UNIT.getName())){
+			retId = "%" + labels.get(InstrCounter.COND_ID);
+
+			Type retType = new Type(this.typeName);
+			retFormal = new Formal(new Id(labels.get(InstrCounter.COND_ID)), retType);
+			llvm += retFormal.llvmAllocate();
+		}
+
+		//Evaluate the condition
+		ExprEval condEval = condExpr.evalExpr(counter);
+		llvm += condEval.llvmCode;
+
+		//Else label == End of condition label if there is no else branch
+		String elseLabel = labels.get(InstrCounter.COND_ELSE_LABEL);
+		if(elseExpr == null)
+			elseLabel = labels.get(InstrCounter.COND_END_LABEL);
+
+		//Branching
+		llvm += "br i1 " + condEval.llvmId + ", label %" + labels.get(InstrCounter.COND_IF_LABEL) + ", label %" + elseLabel + endLine + endLine;
+
+		//Then condition
+		ExprEval thenEval = thenExpr.evalExpr(counter);
+		llvm += labels.get(InstrCounter.COND_IF_LABEL) + ":" + endLine +
+				thenEval.llvmCode;
+		if(retFormal != null)
+			llvm += retFormal.llvmStore(thenEval.llvmId);
+		llvm += "br label %" + labels.get(InstrCounter.COND_END_LABEL) + endLine + endLine;
+
+		//Else condition
+		if(elseExpr != null){
+			ExprEval elseEval = elseExpr.evalExpr(counter);
+			llvm += labels.get(InstrCounter.COND_ELSE_LABEL) + ":" + endLine +
+					elseEval.llvmCode;
+			if(retFormal != null)
+				llvm += retFormal.llvmStore(elseEval.llvmId);
+			llvm += "br label %" + labels.get(InstrCounter.COND_END_LABEL) + endLine + endLine;//TODO  useful?
+		}
+
+		//End of condition
+		llvm += labels.get(InstrCounter.COND_END_LABEL) + ":" + endLine;
+
+		//Store result of the condition if needed
+		if(retFormal != null){
+			llvm += retFormal.llvmLoad(retId);
+		}
+
+		return new ExprEval(retId, llvm);
+	}
+
 }

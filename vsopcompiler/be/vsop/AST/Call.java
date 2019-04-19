@@ -1,5 +1,7 @@
 package be.vsop.AST;
 
+import be.vsop.codegenutil.ExprEval;
+import be.vsop.codegenutil.InstrCounter;
 import be.vsop.exceptions.semantic.InvalidCallException;
 import be.vsop.exceptions.semantic.MethodNotDeclaredException;
 import be.vsop.exceptions.semantic.SemanticException;
@@ -84,4 +86,10 @@ public class Call extends Expr {
         argList.print(tabLevel, false, withTypes);
         System.out.print(")");
     }
+
+    @Override
+    public ExprEval evalExpr(InstrCounter counter) {
+        return new ExprEval("","TODO call");//TODO
+    }
+
 }
