@@ -129,9 +129,10 @@ public class BinOp extends Expr {
 		switch (type){
 			case AND:
 			case EQUAL:
-			case LOWER:
 			case LOWEREQ:
 				return "TODO binop";//TODO
+			case LOWER:
+				return "icmp ult " + VSOPTypes.INT32.getLlvmName() + " " +  leftId + ", " + rightId;
 			case PLUS:
 				return "add " + VSOPTypes.INT32.getLlvmName() + " " +  leftId + ", " + rightId;
 			case MINUS:

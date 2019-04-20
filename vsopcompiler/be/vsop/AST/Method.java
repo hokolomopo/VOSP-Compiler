@@ -147,7 +147,7 @@ public class Method extends ASTNode {
 
 		//Allocate and store all arguments into pointers
 		llvm += formals.llvmAllocate();
-		llvm += formals.llvmStore();
+		llvm += formals.llvmStore(counter);
 
 		ExprEval bodyEval = block.evalExpr(new InstrCounter());
 		llvm += bodyEval.llvmCode;

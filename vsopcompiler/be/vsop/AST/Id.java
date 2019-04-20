@@ -54,9 +54,8 @@ public class Id extends Expr {
 	public ExprEval evalExpr(InstrCounter counter) {
 		Formal thisFormal =  this.scopeTable.lookupVariable(name);
 
-		String id = counter.getNextLlvmId();
-
-		return new ExprEval(id, thisFormal.llvmLoad(id));
+		ExprEval load =  thisFormal.llvmLoad(counter);
+		return load;
 	}
 
 }

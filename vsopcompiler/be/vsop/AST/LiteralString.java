@@ -72,4 +72,14 @@ public class LiteralString extends Literal{
     public String getRawValue(){
         return value.substring(1, value.length() - 1);
     }
+
+    public String getLlvmDelaraction(){
+        StringBuilder declaration = new StringBuilder();
+        declaration.append(getStringId()).append(" = ");
+        declaration.append("private unnamed_addr constant ");
+        declaration.append(String.format("[%d x i8] c\"%s\\00\"", getRawValue().length() + 1, getRawValue()));
+        declaration.append(endLine);
+
+        return declaration.toString();
+    }
 }

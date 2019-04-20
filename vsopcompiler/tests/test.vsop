@@ -3,11 +3,9 @@ class Main {
 	tail : int32;
 
 	main() : int32{
-		let n : int32 <- 3 in
-			if n < 0 then {
-			-1
-		}else
-			897
+ 		let xs : int32 <- 879 in 
+			head <- xs * 2;
+		head
 	}
 
 	testString(myString : string) : string{
@@ -16,12 +14,7 @@ class Main {
 	}
 
  	truc(tail : int32, boolean : Main) : int32 { 
- 		head <- 2 + head * tail;
- 		let xs : int32 <- tail in 
- 			tail <- xs;
-		while true do{
-			tail <- tail + 1
-		};
-		2 + 3	
+ 		tail <- tail + 3;
+ 		tail <- tail
  	} 
  }

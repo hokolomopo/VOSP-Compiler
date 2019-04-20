@@ -3,7 +3,7 @@ package be.vsop.codegenutil;
 import java.util.HashMap;
 
 public class InstrCounter {
-    private int counter = 0;
+    private int counter = 1;
     private int condLabelCounter = 1;
     private int loopCounter = 1;
 
@@ -63,7 +63,7 @@ public class InstrCounter {
             loopLabels.put(LOOP_COND_LABEL, "loop" + loopCounter + ".cond");
         }
 
-        condLabelCounter++;
+        loopCounter++;
 
         return loopLabels;
     }

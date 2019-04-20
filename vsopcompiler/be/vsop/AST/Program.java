@@ -1,6 +1,8 @@
 package be.vsop.AST;
 
 import be.vsop.codegenutil.InstrCounter;
+import be.vsop.semantic.LanguageSpecs;
+import be.vsop.semantic.VSOPTypes;
 
 import java.util.ArrayList;
 
@@ -27,9 +29,13 @@ public class Program extends ASTNode{
         ArrayList<LiteralString> stringsLiteral = new ArrayList<>();
         this.getStringLiteral(stringsLiteral);
 
-        String strDeclarations = llvmDeclareStrings(stringsLiteral);
+        //Declare the String constants
+        String llvm = llvmDeclareStrings(stringsLiteral) + endLine + endLine;
 
-        return strDeclarations + endLine + super.getLlvm(counter);
+        //Create a main function
+        llvm += createMain() + endLine;
+
+        return llvm + endLine + super.getLlvm(counter);
     }
 
     private String llvmDeclareStrings(ArrayList<LiteralString> literalStrings){
@@ -38,13 +44,30 @@ public class Program extends ASTNode{
         for(LiteralString str : literalStrings){
             str.setStringId(i);
 
-            declarations.append(str.getStringId()).append(" = ");
-            declarations.append("private unnamed_addr constant ");
-            declarations.append(String.format("[%d : i8] c\"%s\\00\"", str.getRawValue().length() + 1, str.getRawValue()));
-            declarations.append(endLine);
+            declarations.append(str.getLlvmDelaraction());
             i++;
         }
 
         return declarations.toString();
+    }
+
+    private String createMain(){
+        String llvm = "";
+
+        //Begin main function
+        llvm += "define " + VSOPTypes.INT32.getLlvmName() + " @main () { " + endLine;
+
+        //Create a new Main class
+        Formal main = new Formal(new Id("Main"), new Type("Main"));
+        Formal mainRet = new Formal(new Id("returned"), new Type(VSOPTypes.INT32.getName()));
+
+        llvm += main.llvmAllocate();
+        //TODO clean call
+        llvm += mainRet.getLlvmId() + " = call i32 @Main.main(" + main.getType().getLlvmPtr() + " " + main.getLlvmPtr() + ")" + endLine;
+
+        llvm += "ret " + VSOPTypes.INT32.getLlvmName() + " " + mainRet.getLlvmId() + endLine;
+
+        llvm += "}" + endLine;
+        return llvm;
     }
 }

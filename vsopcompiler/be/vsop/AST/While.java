@@ -52,7 +52,8 @@ public class While extends Expr {
 		HashMap<String, String> labels = counter.getNextLoopLabel();
 
 
-		//TODO :  Commencer par jump au début de la boucle, utile? clang le fait mais no idea why
+		// Must branch to the start of the loop, because otherwise llvm says that the label is an unexpected token
+		llvm += "br label %" + labels.get(InstrCounter.LOOP_COND_LABEL) + endLine;
 
 		//Evaluate loop condition
 		llvm += labels.get(InstrCounter.LOOP_COND_LABEL) + ":" + endLine;

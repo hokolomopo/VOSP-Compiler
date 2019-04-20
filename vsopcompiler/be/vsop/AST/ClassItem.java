@@ -143,7 +143,7 @@ public class ClassItem extends ASTNode{
 		}
 
 		for(int i = 0;i < fields.size();i++){
-			fieldsTypeList.append(fields.get(i).getType().getName());
+			fieldsTypeList.append(fields.get(i).getType().getLlvmName());
 
 			if(i < fields.size() - 1)
 				fieldsTypeList.append(", ");

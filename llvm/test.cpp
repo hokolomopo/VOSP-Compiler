@@ -41,7 +41,7 @@ int main() {
    double volume = 0.0;     // Store the volume of a box here
    double height1 = 21.3;
 	char str1[]="Sample string";
-    Box b4 = Box1;
+    Box b4 = Box();
 
    // box 1 specification
    Box b3 = Box1.setLength(6.0, Box1); 

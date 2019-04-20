@@ -129,49 +129,51 @@ define i32 @main() #5 {
   %5 = bitcast [14 x i8]* %str1 to i8*
   call void @llvm.memcpy.p0i8.p0i8.i64(i8* %5, i8* getelementptr inbounds ([14 x i8], [14 x i8]* @_ZZ4mainE4str1, i32 0, i32 0), i64 14, i32 1, i1 false)
   %6 = bitcast %class.Box* %b4 to i8*
-  %7 = bitcast %class.Box* %Box1 to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %6, i8* %7, i64 24, i32 8, i1 false)
-  %8 = bitcast %class.Box* %2 to i8*
-  %9 = bitcast %class.Box* %Box1 to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %8, i8* %9, i64 24, i32 8, i1 false)
+  call void @llvm.memset.p0i8.i64(i8* %6, i8 0, i64 24, i32 8, i1 false)
+  %7 = bitcast %class.Box* %2 to i8*
+  %8 = bitcast %class.Box* %Box1 to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %7, i8* %8, i64 24, i32 8, i1 false)
   call void @_ZN3Box9setLengthEdS_(%class.Box* sret %b3, %class.Box* %Box1, double 6.000000e+00, %class.Box* byval align 8 %2)
   call void @_ZN3Box10setBreadthEd(%class.Box* %Box1, double 7.000000e+00)
-  %10 = load double, double* %height1, align 8
-  call void @_ZN3Box9setHeightEd(%class.Box* %Box1, double %10)
-  %11 = call double @_ZN3Box9getVolumeEv(%class.Box* %b3)
-  %12 = load double, double* %height1, align 8
-  %13 = fcmp ogt double %11, %12
-  br i1 %13, label %14, label %15
+  %9 = load double, double* %height1, align 8
+  call void @_ZN3Box9setHeightEd(%class.Box* %Box1, double %9)
+  %10 = call double @_ZN3Box9getVolumeEv(%class.Box* %b3)
+  %11 = load double, double* %height1, align 8
+  %12 = fcmp ogt double %10, %11
+  br i1 %12, label %13, label %14
+
+; <label>:13                                      ; preds = %0
+  store double 2.220000e+01, double* %volume, align 8
+  br label %15
 
 ; <label>:14                                      ; preds = %0
-  store double 2.220000e+01, double* %volume, align 8
-  br label %16
-
-; <label>:15                                      ; preds = %0
   store double 8.756000e+01, double* %volume, align 8
-  br label %16
+  br label %15
 
-; <label>:16                                      ; preds = %15, %14
-  %17 = bitcast %class.Box* %3 to i8*
-  %18 = bitcast %class.Box* %b3 to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %17, i8* %18, i64 24, i32 8, i1 false)
+; <label>:15                                      ; preds = %14, %13
+  %16 = bitcast %class.Box* %3 to i8*
+  %17 = bitcast %class.Box* %b3 to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %16, i8* %17, i64 24, i32 8, i1 false)
   call void @_ZN3Box9setLengthEdS_(%class.Box* sret %4, %class.Box* %Box2, double 1.200000e+01, %class.Box* byval align 8 %3)
   call void @_ZN3Box10setBreadthEd(%class.Box* %Box2, double 1.300000e+01)
   call void @_ZN3Box9setHeightEd(%class.Box* %Box2, double 1.000000e+01)
-  %19 = call double @_ZN3Box9getVolumeEv(%class.Box* %Box1)
-  store double %19, double* %volume, align 8
-  %20 = call dereferenceable(272) %"class.std::basic_ostream"* @_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc(%"class.std::basic_ostream"* dereferenceable(272) @_ZSt4cout, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str, i32 0, i32 0))
-  %21 = load double, double* %volume, align 8
-  %22 = call dereferenceable(272) %"class.std::basic_ostream"* @_ZNSolsEd(%"class.std::basic_ostream"* %20, double %21)
-  %23 = call dereferenceable(272) %"class.std::basic_ostream"* @_ZNSolsEPFRSoS_E(%"class.std::basic_ostream"* %22, %"class.std::basic_ostream"* (%"class.std::basic_ostream"*)* @_ZSt4endlIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_)
-  %24 = call double @_ZN3Box9getVolumeEv(%class.Box* %Box2)
-  store double %24, double* %volume, align 8
-  %25 = call dereferenceable(272) %"class.std::basic_ostream"* @_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc(%"class.std::basic_ostream"* dereferenceable(272) @_ZSt4cout, i8* getelementptr inbounds ([18 x i8], [18 x i8]* @.str.1, i32 0, i32 0))
-  %26 = load double, double* %volume, align 8
-  %27 = call dereferenceable(272) %"class.std::basic_ostream"* @_ZNSolsEd(%"class.std::basic_ostream"* %25, double %26)
-  %28 = call dereferenceable(272) %"class.std::basic_ostream"* @_ZNSolsEPFRSoS_E(%"class.std::basic_ostream"* %27, %"class.std::basic_ostream"* (%"class.std::basic_ostream"*)* @_ZSt4endlIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_)
+  %18 = call double @_ZN3Box9getVolumeEv(%class.Box* %Box1)
+  store double %18, double* %volume, align 8
+  %19 = call dereferenceable(272) %"class.std::basic_ostream"* @_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc(%"class.std::basic_ostream"* dereferenceable(272) @_ZSt4cout, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str, i32 0, i32 0))
+  %20 = load double, double* %volume, align 8
+  %21 = call dereferenceable(272) %"class.std::basic_ostream"* @_ZNSolsEd(%"class.std::basic_ostream"* %19, double %20)
+  %22 = call dereferenceable(272) %"class.std::basic_ostream"* @_ZNSolsEPFRSoS_E(%"class.std::basic_ostream"* %21, %"class.std::basic_ostream"* (%"class.std::basic_ostream"*)* @_ZSt4endlIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_)
+  %23 = call double @_ZN3Box9getVolumeEv(%class.Box* %Box2)
+  store double %23, double* %volume, align 8
+  %24 = call dereferenceable(272) %"class.std::basic_ostream"* @_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc(%"class.std::basic_ostream"* dereferenceable(272) @_ZSt4cout, i8* getelementptr inbounds ([18 x i8], [18 x i8]* @.str.1, i32 0, i32 0))
+  %25 = load double, double* %volume, align 8
+  %26 = call dereferenceable(272) %"class.std::basic_ostream"* @_ZNSolsEd(%"class.std::basic_ostream"* %24, double %25)
+  %27 = call dereferenceable(272) %"class.std::basic_ostream"* @_ZNSolsEPFRSoS_E(%"class.std::basic_ostream"* %26, %"class.std::basic_ostream"* (%"class.std::basic_ostream"*)* @_ZSt4endlIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_)
   ret i32 0
 }
+
+; Function Attrs: argmemonly nounwind
+declare void @llvm.memset.p0i8.i64(i8* nocapture, i8, i64, i32, i1) #4
 
 declare dereferenceable(272) %"class.std::basic_ostream"* @_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc(%"class.std::basic_ostream"* dereferenceable(272), i8*) #1
 

@@ -97,11 +97,11 @@ public class FormalList extends ASTNode{
 
     }
 
-    public String llvmStore() {
+    public String llvmStore(InstrCounter counter) {
         StringBuilder builder = new StringBuilder();
 
         for(Formal formal : formals)
-            builder.append(formal.llvmStore(formal.getLlvmId()));
+            builder.append(formal.llvmStore(formal.getLlvmId(), counter));
 
         return builder.toString();
 

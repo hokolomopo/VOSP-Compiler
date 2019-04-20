@@ -1,5 +1,6 @@
 package be.vsop.AST;
 
+import be.vsop.codegenutil.ExprEval;
 import be.vsop.codegenutil.InstrCounter;
 import be.vsop.exceptions.semantic.SemanticException;
 import be.vsop.semantic.LanguageSpecs;
@@ -92,38 +93,43 @@ public class Formal extends ASTNode{
 		return String.format("%s = alloca %s \n", getLlvmPtr(), type.getLlvmName());
 	}
 
-	public String llvmLoad(String loadTo, String parentClassId){
+	public ExprEval llvmLoad(String parentClassId, InstrCounter counter){
+		String llvm = "", id;
+
 		if(isClassField){
-			String llvm = getFieldPtr(parentClassId);
-			llvm += String.format("%s = load %s, %s %s \n", loadTo, type.getLlvmName(), type.getLlvmPtr(), getLlvmId());
-			return llvm;
+			ExprEval getFieldPtrEval = getFieldPtr(parentClassId, counter);
+			id = counter.getNextLlvmId();
+			llvm += getFieldPtrEval.llvmCode + String.format("%s = load %s, %s %s \n", id, type.getLlvmName(), type.getLlvmPtr(), getFieldPtrEval.llvmId);
+			return new ExprEval(id, llvm);
 		}
-		return String.format("%s = load %s, %s %s \n", loadTo, type.getLlvmName(), type.getLlvmPtr(), getLlvmPtr());
+		id = counter.getNextLlvmId();
+		llvm = String.format("%s = load %s, %s %s \n", id, type.getLlvmName(), type.getLlvmPtr(), getLlvmPtr());
+		return new ExprEval(id, llvm);
 	}
 
-	public String llvmLoad(String loadTo){
-		return llvmLoad(loadTo, "%" + LanguageSpecs.SELF);
+	public ExprEval llvmLoad(InstrCounter counter){
+		return llvmLoad("%" + LanguageSpecs.SELF, counter);
 	}
 
-	private String getFieldPtr(String parentClassId){
-		return String.format("%s = getelementptr %s, %s* %s, i32 0, i32 %d \n", getLlvmId(), parentClass, parentClass, parentClassId, classFieldId);//TODO : inbound? always int32? wtf is this function
+	private ExprEval getFieldPtr(String parentClassId, InstrCounter counter){
+		String id = counter.getNextLlvmId();
+		String llvm = String.format("%s = getelementptr %s, %s* %s, i32 0, i32 %d \n", id, parentClass, parentClass, parentClassId, classFieldId);//TODO : inbound? always int32? wtf is this function
+
+		return new ExprEval(id, llvm);
 	}
 
-	public String llvmLoad(){
-		return llvmLoad(getLlvmId());
-	}
-
-	public String llvmStore(String toStore, String parentClassId){
+	public String llvmStore(String toStore, String parentClassId, InstrCounter counter){
 		if(isClassField){
-			String llvm = getFieldPtr(parentClassId);
-			llvm += String.format("store %s %s, %s %s \n", type.getLlvmName(), toStore, type.getLlvmPtr(), getLlvmId());
+			ExprEval eval = getFieldPtr(parentClassId, counter);
+			String llvm = eval.llvmCode;
+			llvm += String.format("store %s %s, %s %s \n", type.getLlvmName(), toStore, type.getLlvmPtr(), eval.llvmId);
 			return llvm;
 		}
 		return String.format("store %s %s, %s %s \n", type.getLlvmName(), toStore, type.getLlvmPtr(), getLlvmPtr());
 	}
 
-	public String llvmStore(String toStore){
-		return llvmStore(toStore, "%" + LanguageSpecs.SELF);
+	public String llvmStore(String toStore, InstrCounter counter){
+		return llvmStore(toStore, "%" + LanguageSpecs.SELF, counter);
 	}
 
 	public boolean isPrimitive(){

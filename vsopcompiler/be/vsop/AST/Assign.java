@@ -58,7 +58,7 @@ public class Assign extends Expr {
 
         ExprEval eval = expr.evalExpr(counter);
 
-        return new ExprEval(eval.llvmId, eval.llvmCode  + toAssign.llvmStore(eval.llvmId));
+        return new ExprEval(eval.llvmId, eval.llvmCode  + toAssign.llvmStore(eval.llvmId, counter));
     }
 
 }

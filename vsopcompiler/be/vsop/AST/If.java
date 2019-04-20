@@ -118,7 +118,7 @@ public class If extends Expr {
 		llvm += labels.get(InstrCounter.COND_IF_LABEL) + ":" + endLine +
 				thenEval.llvmCode;
 		if(retFormal != null)
-			llvm += retFormal.llvmStore(thenEval.llvmId);
+			llvm += retFormal.llvmStore(thenEval.llvmId, counter);
 		llvm += "br label %" + labels.get(InstrCounter.COND_END_LABEL) + endLine + endLine;
 
 		//Else condition
@@ -127,7 +127,7 @@ public class If extends Expr {
 			llvm += labels.get(InstrCounter.COND_ELSE_LABEL) + ":" + endLine +
 					elseEval.llvmCode;
 			if(retFormal != null)
-				llvm += retFormal.llvmStore(elseEval.llvmId);
+				llvm += retFormal.llvmStore(elseEval.llvmId, counter);
 			llvm += "br label %" + labels.get(InstrCounter.COND_END_LABEL) + endLine + endLine;//TODO  useful?
 		}
 
@@ -136,7 +136,9 @@ public class If extends Expr {
 
 		//Store result of the condition if needed
 		if(retFormal != null){
-			llvm += retFormal.llvmLoad(retId);
+			ExprEval ret = retFormal.llvmLoad(counter);
+			llvm += ret.llvmCode;
+			retId = ret.llvmId;
 		}
 
 		return new ExprEval(retId, llvm);

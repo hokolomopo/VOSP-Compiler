@@ -9,6 +9,7 @@ import java.util.HashMap;
 
 public class LanguageSpecs {
     public final static String MAIN = "main";
+
     public final static String SELF = "self";
 
     private HashMap<String, ClassItem> classTable;
