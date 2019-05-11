@@ -33,7 +33,7 @@ public class Field extends ASTNode {
 	@Override
 	public void fillScopeTable(ScopeTable scopeTable, ArrayList<SemanticException> errorList) {
 		this.scopeTable = scopeTable;
-		
+
 		// We need to check here if the variable is already defined in local scope, even if we will
 		// later do the same check with the outer scope, because we can't do a lookup in local scope after
 		// having added the Field : the Field would find itself.
