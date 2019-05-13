@@ -2,6 +2,8 @@ package be.vsop.AST;
 
 import be.vsop.codegenutil.InstrCounter;
 import be.vsop.exceptions.semantic.SemanticException;
+import be.vsop.semantic.LLVMKeywords;
+import be.vsop.semantic.LLVMTypes;
 import be.vsop.semantic.LanguageSpecs;
 import be.vsop.semantic.ScopeTable;
 
@@ -19,7 +21,7 @@ public abstract class ASTNode {
     ScopeTable scopeTable;
     HashMap<String, ClassItem> classTable;
 
-    protected String endLine = "\n";
+    String endLine = "\n";
 
     protected ASTNode(){}
 
@@ -104,5 +106,71 @@ public abstract class ASTNode {
         if(children != null)
             for(ASTNode child : children)
                 child.getStringLiteral(literalStrings);
+    }
+
+    String llvmAllocation(LLVMTypes type, String id) {
+        return id + " = " + LLVMKeywords.ALLOCATE + " " + type.getLlvmName() + endLine;
+    }
+
+    String llvmStore(LLVMTypes type, String value, String where) {
+        return LLVMKeywords.STORE.getLlvmName() + " " + type.getLlvmName() + " " + value + ", " + type.getLlvmName() +
+                "* " + where + endLine;
+    }
+
+    String llvmSetBool(String result, boolean value) {
+        if (value) {
+            return result + " = " + LLVMKeywords.ADD.getLlvmName() + " " + LLVMTypes.BOOL.getLlvmName() + " " + "1" + ", " + "0" + endLine;
+        } else {
+            return result + " = " + LLVMKeywords.ADD.getLlvmName() + " " + LLVMTypes.BOOL.getLlvmName() + " " + "0" + ", " + "0" + endLine;
+        }
+    }
+
+    String llvmLabel(String label) {
+        return label + ":" + endLine;
+    }
+
+    String llvmBranch(String label) {
+        return LLVMKeywords.BRANCH.getLlvmName() + " " + LLVMKeywords.LABEL.getLlvmName() + " " + label + endLine;
+    }
+
+    String llvmBranch(String cond, String labelTrue, String labelFalse) {
+        return LLVMKeywords.BRANCH.getLlvmName() + " " + LLVMTypes.BOOL.getLlvmName() + " " + cond + " " + ", " +
+                LLVMKeywords.LABEL.getLlvmName() + " %" + labelTrue + ", " + LLVMKeywords.LABEL.getLlvmName() + " %" +
+                labelFalse + endLine;
+    }
+
+    String llvmPhi(String result, LLVMTypes type, String valIfTrue, String labelIfTrue,
+                   String valIfFalse, String labelIfFalse) {
+        return result + " = " + LLVMKeywords.PHI.getLlvmName() + " " + type.getLlvmName() + " [" + valIfTrue +
+                ", %" + labelIfTrue + "], [" + valIfFalse + ", " + labelIfFalse + "]" + endLine;
+    }
+
+    String llvmCast(String result, LLVMKeywords conversion, LLVMTypes fromType, LLVMTypes toType, String fromValue) {
+        return llvmCast(result, conversion, fromType.getLlvmName(), toType.getLlvmName(), fromValue);
+    }
+
+    String llvmCast(String result, LLVMKeywords conversion, String fromType, LLVMTypes toType, String fromValue) {
+        return llvmCast(result, conversion, fromType, toType.getLlvmName(), fromValue);
+    }
+
+    String llvmCast(String result, LLVMKeywords conversion, LLVMTypes fromType, String toType, String fromValue) {
+        return llvmCast(result, conversion, fromType.getLlvmName(), toType, fromValue);
+    }
+
+    private String llvmCast(String result, LLVMKeywords conversion, String fromType, String toType, String fromValue) {
+        return result + " = " + conversion.getLlvmName() + " " + fromType +
+                " " + fromValue + " " + LLVMKeywords.TO.getLlvmName() + " " + toType + endLine;
+    }
+
+    String llvmCall(String result, String retType, String funcName, ArrayList<String> argumentsIds, ArrayList<String> argumentsTypes) {
+        StringBuilder ret = new StringBuilder();
+        ret.append(result).append(" = ").append(LLVMKeywords.CALL.getLlvmName()).append(" ").append(retType)
+                .append(" ").append(funcName).append("(");
+        for (int i = 0; i < argumentsIds.size(); i++) {
+            ret.append(argumentsTypes.get(i)).append(" ").append(argumentsIds.get(i)).append(", ");
+        }
+        ret.setLength(ret.length() - 2);
+        ret.append(")").append(endLine);
+        return ret.toString();
     }
 }

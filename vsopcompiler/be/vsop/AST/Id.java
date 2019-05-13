@@ -42,7 +42,7 @@ public class Id extends Expr {
 		return name;
 	}
 
-	public void toVar() {
+	void toVar() {
 		isVar = true;
 	}
 
@@ -54,8 +54,7 @@ public class Id extends Expr {
 	public ExprEval evalExpr(InstrCounter counter) {
 		Formal thisFormal =  this.scopeTable.lookupVariable(name);
 
-		ExprEval load =  thisFormal.llvmLoad(counter);
-		return load;
+		return thisFormal.llvmLoad(counter);
 	}
 
 }

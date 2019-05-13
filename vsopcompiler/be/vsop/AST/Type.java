@@ -3,7 +3,6 @@ package be.vsop.AST;
 import be.vsop.exceptions.semantic.ClassNotDeclaredException;
 import be.vsop.exceptions.semantic.SemanticException;
 import be.vsop.exceptions.semantic.TypeNotValidException;
-import be.vsop.semantic.LanguageSpecs;
 import be.vsop.semantic.ScopeTable;
 import be.vsop.semantic.VSOPTypes;
 
@@ -50,32 +49,26 @@ public class Type extends ASTNode {
 	}
 
 	public String getLlvmName() {
-
-		//check if it's a primitive type
-		VSOPTypes type = VSOPTypes.getType(name);
-		if (type != null)
-			return type.getLlvmName();
-
-		//It's a class
-		return "%class." + name;
+		return getLlvmName(false);
 	}
 
-	public String getLlvmPtr() {
-		return getLlvmName() + "*";
+	public String getLlvmName(boolean pointerOnClass) {
+		return VSOPTypes.getLlvmTypeName(name, pointerOnClass);
 	}
 
-	public boolean isPrimitive() {
+	String getLlvmPtr() {
+		return getLlvmPtr(false);
+	}
+
+	String getLlvmPtr(boolean pointerOnClass) {
+		return getLlvmName(pointerOnClass) + "*";
+	}
+
+	boolean isPrimitive() {
 		return isPrimitive;
 	}
 
-	public boolean isPointer() {
+	boolean isPointer() {
 		return isPointer;
-	}
-
-
-	public void toPointer(){
-		name += "*";
-		isPrimitive = false;
-		isPointer = true;
 	}
 }

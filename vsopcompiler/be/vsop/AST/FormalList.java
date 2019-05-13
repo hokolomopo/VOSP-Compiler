@@ -107,13 +107,6 @@ public class FormalList extends ASTNode{
 
     }
 
-
-    public void classesToPtr(){
-        for(Formal formal : formals)
-            if(!formal.isPrimitive() && !formal.isPointer())
-                formal.toPointer();
-    }
-
     public int getLength(){
         return formals.size();
     }

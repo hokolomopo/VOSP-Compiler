@@ -3,6 +3,7 @@ package be.vsop.AST;
 import be.vsop.codegenutil.ExprEval;
 import be.vsop.codegenutil.InstrCounter;
 import be.vsop.exceptions.semantic.SemanticException;
+import be.vsop.semantic.LLVMKeywords;
 import be.vsop.semantic.VSOPTypes;
 
 import java.util.ArrayList;
@@ -91,7 +92,7 @@ public class UnOp extends Expr {
 			case NOT:
 				return "TODO NOT UnOP";//TODO
 			case UMINUS:
-				return "sub " + VSOPTypes.INT32.getLlvmName() + " " + 0 + ", " + exprId;
+				return LLVMKeywords.SUB.getLlvmName() + " " + VSOPTypes.INT32.getLlvmName() + " " + 0 + ", " + exprId;
 			case ISNULL:
 				return "TODO ISNULL UnOP";//TODO
 		}

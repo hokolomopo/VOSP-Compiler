@@ -24,7 +24,6 @@ public class Assign extends Expr {
     @Override
     public void checkTypes(ArrayList<SemanticException> errorList) {
         super.checkTypes(errorList);
-        //TODO what is the type of an assign ? The type of the assigned object, or unit ?
         typeName = id.typeName;
         if (typeName != null && expr.typeName != null) {
             if (isNotChild(expr.typeName, typeName)) {

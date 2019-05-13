@@ -10,15 +10,21 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class vsopc {
-
     public static void main(String[] args) {
-
-        if (args.length < 2) {
-            System.err.println("Wrong Arguments :\n1) -lex for be.vsop.lexer usage, -be.vsop.parser for be.vsop.parser usage\n2) path to the file to parse.");
-            System.exit(-1);
+        String fileName = null;
+        String mode = "";
+        for (String arg : args) {
+            if (arg.contains("-")) {
+                mode = arg;
+            } else {
+                fileName = arg;
+            }
         }
 
-        String fileName = args[1];
+        if (fileName == null) {
+            System.err.println("Missing Argument : path to the file to parse");
+            System.exit(-1);
+        }
 
         FileReader reader = null;
         try {
@@ -30,7 +36,7 @@ public class vsopc {
 
         Compiler compiler = new Compiler(fileName);
 
-        if (args[0].equals("-lex")) {
+        if (mode.contentEquals("-lex")) {
             VSOPLexer lexer = new VSOPLexer(reader);
 
             try {
@@ -58,13 +64,13 @@ public class vsopc {
             System.exit(0);
         }
 
-        if (args[0].contentEquals("-parse")) {
+        if (mode.contentEquals("-parse")) {
             /*TODO improve errors : for instance if a className does not start with an uppercase letter we get :
              * tests/test.vsop:7:7: be.vsop.semantic error :Symbol found is : IDENTIFIER expected Symbols are [] */
             compiler.buildAST().print(false);
         }
 
-        else if(args[0].contentEquals("-check")) {
+        else if(mode.contentEquals("-check")) {
             if (args.length > 2) {
                 compiler.doSemanticAnalysis(null, args[2] + "/language/");
             } else {
@@ -72,7 +78,7 @@ public class vsopc {
             }
         }
 
-        else if(args[0].contentEquals("-llvm")) {
+        else if(mode.contentEquals("-llvm")) {
             if (args.length > 2) {
                 compiler.doSemanticAnalysis(null, args[2] + "/language/", false);
             } else {
@@ -91,7 +97,7 @@ public class vsopc {
                 e.printStackTrace();
             }
 
-        }
+        }//TODO else generate executable
 
     }
 

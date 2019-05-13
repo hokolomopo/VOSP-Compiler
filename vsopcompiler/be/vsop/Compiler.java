@@ -15,6 +15,9 @@ import java_cup.runtime.ComplexSymbolFactory;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.charset.StandardCharsets;
 
 public class Compiler {
     private String fileName;
@@ -86,12 +89,24 @@ public class Compiler {
     }
 
 
-    String generateLlvm(){
-        return this.program.getLlvm(new InstrCounter());
+    String generateLlvm() {
+        return writeIOCode() + this.program.getLlvm(new InstrCounter());
     }
 
     public Program getAST(){
         return program;
+    }
+
+    private String writeIOCode() {
+        try {
+            return new String(Files.readAllBytes(Paths.get("language/llcode.ll")), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("File language/llcode.ll not found (containing implementation of IO's functions");
+            System.exit(-1);
+            // IDE wants a return there
+            return "";
+        }
     }
 
 }

@@ -61,7 +61,7 @@ public class Program extends ASTNode{
         Formal main = new Formal(new Id("Main"), new Type("Main"));
         Formal mainRet = new Formal(new Id("returned"), new Type(VSOPTypes.INT32.getName()));
 
-        llvm += main.llvmAllocate();
+        llvm += main.getLlvmPtr() + " = alloca " + main.getType().getLlvmName() + endLine;
         //TODO clean call
         llvm += mainRet.getLlvmId() + " = call i32 @Main.main(" + main.getType().getLlvmPtr() + " " + main.getLlvmPtr() + ")" + endLine;
 

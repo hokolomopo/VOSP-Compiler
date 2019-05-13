@@ -1,0 +1,12 @@
+Ok donc basiquement dans l'ordre ce que je fais : 
+- Je parcours une fois tout l'arbre pour avoir tous les String literals, et je fait le code llvm qui déclare des strings
+- Je crée un main llvm qui va créer une classe Main et apeller la fonction Main.main()
+- Après je parcours l'abre récursivement pour générer le code llvm
+- Pour les classes je déclare une structure qui contient tous les attributs
+- Les méthodes je rajoute un argument self
+- La fonction generateLlvm() d'une expression renvoie une classe qui contient (l'id pour récupérer le résultat de l'expression, le code llvm qui génère l'expression)
+- pour stocker tous les résultats intermédiares je passe résursivement un compteur qui va etre utilisé pour créer des variables llvm ou mettre les résultats intermédiaires (%1, %2, %3, ...)
+
+Ce qui reste a faire : 
+- Pas mal d'opérateurs et de trucs du genre a traduire en llvm (j'ai mis des TODO) 
+- Le dispatch dynamique/l'héritage

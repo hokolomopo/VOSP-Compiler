@@ -9,154 +9,150 @@ import be.vsop.semantic.ScopeTable;
 import java.util.ArrayList;
 
 public class Formal extends ASTNode{
-	private Id id;
-	private Type type;
+    private Id id;
+    private Type type;
 
-	// Set to true if the formal is a field of a class
-	private boolean isClassField = false;
-	private int classFieldId = -1;
-	private String parentClass;
+    // Set to true if the formal is a field of a class
+    private boolean isClassField = false;
+    private int classFieldId = -1;
+    private String parentClass;
 
-	//For formals with same name, we add a number to uniquely identify them
-	private int number = 1;
+    //For formals with same name, we add a number to uniquely identify them
+    private int number = 1;
 
-	public Formal(Id id, Type type) {
-		this.id = id;
-		this.type = type;
+    public Formal(Id id, Type type) {
+        this.id = id;
+        this.type = type;
 
-		this.children = new ArrayList<>();
-		this.children.add(id);
-		this.children.add(type);
-	}
+        this.children = new ArrayList<>();
+        this.children.add(id);
+        this.children.add(type);
+    }
 
-	@Override
-	public void fillScopeTable(ScopeTable scopeTable, ArrayList<SemanticException> errorList) {
-		this.scopeTable = scopeTable;
-		scopeTable.addVariable(this);
-		this.buildLlvmId();
-		if(children != null)
-			for(ASTNode node : children)
-				node.fillScopeTable(scopeTable, errorList);
-	}
+    @Override
+    public void fillScopeTable(ScopeTable scopeTable, ArrayList<SemanticException> errorList) {
+        this.scopeTable = scopeTable;
+        scopeTable.addVariable(this);
+        this.buildLlvmId();
+        if(children != null)
+            for(ASTNode node : children)
+                node.fillScopeTable(scopeTable, errorList);
+    }
 
-	@Override
-	public void print(int tabLevel, boolean doTab, boolean withTypes) {
-		if(doTab)
-			System.out.print(getTab(tabLevel));
-		System.out.print(id.getName() + ":");
-		type.print(tabLevel, false, withTypes);
-	}
+    @Override
+    public void print(int tabLevel, boolean doTab, boolean withTypes) {
+        if(doTab)
+            System.out.print(getTab(tabLevel));
+        System.out.print(id.getName() + ":");
+        type.print(tabLevel, false, withTypes);
+    }
 
-	public String getName() {
-		return id.getName();
-	}
+    public String getName() {
+        return id.getName();
+    }
 
-	public Type getType() {
-		return type;
-	}
+    public Type getType() {
+        return type;
+    }
 
-	private void buildLlvmId(){
-		Formal twin = scopeTable.lookupVariable(id.getName(), ScopeTable.Scope.OUTER);
-		if(twin != null && !twin.isClassField())
-			number = twin.getNumber() + 1;
-	}
+    private void buildLlvmId(){
+        Formal twin = scopeTable.lookupVariable(id.getName(), ScopeTable.Scope.OUTER);
+        if(twin != null && !twin.isClassField())
+            number = twin.getNumber() + 1;
+    }
 
-	public String getLlvmId(){
-		if(number > 1)
-			return "%" + id.getName() + number;
-		return "%" + id.getName();
-	}
+    public String getLlvmId(){
+        if(number > 1)
+            return "%" + id.getName() + number;
+        return "%" + id.getName();
+    }
 
-	public String getLlvmPtr(){
-		return getLlvmId()  + "Ptr";
-	}
+    public String getLlvmPtr(){
+        return getLlvmId()  + ".ptr";
+    }
 
 
-	public int getNumber() {
-		return number;
-	}
+    public int getNumber() {
+        return number;
+    }
 
-	@Override
-	public String getLlvm(InstrCounter counter) {
-		return type.getLlvmName() + " " + getLlvmId();
-	}
+    @Override
+    public String getLlvm(InstrCounter counter) {
+        return type.getLlvmName(true) + " " + getLlvmId();
+    }
 
-	public boolean isClassField() {
-		return isClassField;
-	}
+    public boolean isClassField() {
+        return isClassField;
+    }
 
-	public void setClassField(boolean classField) {
-		isClassField = classField;
-	}
+    public void setClassField(boolean classField) {
+        isClassField = classField;
+    }
 
-	public String llvmAllocate(){
-		return String.format("%s = alloca %s \n", getLlvmPtr(), type.getLlvmName());
-	}
+    public String llvmAllocate(){
+        return String.format("%s = alloca %s \n", getLlvmPtr(), type.getLlvmName(true));
+    }
 
-	public ExprEval llvmLoad(String parentClassId, InstrCounter counter){
-		String llvm = "", id;
+    public ExprEval llvmLoad(String parentClassId, InstrCounter counter){
+        String llvm = "", id;
 
-		if(isClassField){
-			ExprEval getFieldPtrEval = getFieldPtr(parentClassId, counter);
-			id = counter.getNextLlvmId();
-			llvm += getFieldPtrEval.llvmCode + String.format("%s = load %s, %s %s \n", id, type.getLlvmName(), type.getLlvmPtr(), getFieldPtrEval.llvmId);
-			return new ExprEval(id, llvm);
-		}
-		id = counter.getNextLlvmId();
-		llvm = String.format("%s = load %s, %s %s \n", id, type.getLlvmName(), type.getLlvmPtr(), getLlvmPtr());
-		return new ExprEval(id, llvm);
-	}
+        if(isClassField){
+            ExprEval getFieldPtrEval = getFieldPtr(parentClassId, counter);
+            id = counter.getNextLlvmId();
+            llvm += getFieldPtrEval.llvmCode + String.format("%s = load %s, %s %s \n", id, type.getLlvmName(true), type.getLlvmPtr(true), getFieldPtrEval.llvmId);
+            return new ExprEval(id, llvm);
+        }
+        id = counter.getNextLlvmId();
+        llvm = String.format("%s = load %s, %s %s \n", id, type.getLlvmName(true), type.getLlvmPtr(true), getLlvmPtr());
+        return new ExprEval(id, llvm);
+    }
 
-	public ExprEval llvmLoad(InstrCounter counter){
-		return llvmLoad("%" + LanguageSpecs.SELF, counter);
-	}
+    public ExprEval llvmLoad(InstrCounter counter){
+        return llvmLoad("%" + LanguageSpecs.SELF, counter);
+    }
 
-	private ExprEval getFieldPtr(String parentClassId, InstrCounter counter){
-		String id = counter.getNextLlvmId();
-		String llvm = String.format("%s = getelementptr %s, %s* %s, i32 0, i32 %d \n", id, parentClass, parentClass, parentClassId, classFieldId);//TODO : inbound? always int32? wtf is this function
+    private ExprEval getFieldPtr(String parentClassId, InstrCounter counter){
+        String id = counter.getNextLlvmId();
+        String llvm = String.format("%s = getelementptr %s, %s* %s, i32 0, i32 %d \n", id, parentClass, parentClass, parentClassId, classFieldId);//TODO : inbound? always int32? wtf is this function
 
-		return new ExprEval(id, llvm);
-	}
+        return new ExprEval(id, llvm);
+    }
 
-	public String llvmStore(String toStore, String parentClassId, InstrCounter counter){
-		if(isClassField){
-			ExprEval eval = getFieldPtr(parentClassId, counter);
-			String llvm = eval.llvmCode;
-			llvm += String.format("store %s %s, %s %s \n", type.getLlvmName(), toStore, type.getLlvmPtr(), eval.llvmId);
-			return llvm;
-		}
-		return String.format("store %s %s, %s %s \n", type.getLlvmName(), toStore, type.getLlvmPtr(), getLlvmPtr());
-	}
+    public String llvmStore(String toStore, String parentClassId, InstrCounter counter){
+        if(isClassField){
+            ExprEval eval = getFieldPtr(parentClassId, counter);
+            String llvm = eval.llvmCode;
+            llvm += String.format("store %s %s, %s %s \n", type.getLlvmName(true), toStore, type.getLlvmPtr(true), eval.llvmId);
+            return llvm;
+        }
+        return String.format("store %s %s, %s %s \n", type.getLlvmName(true), toStore, type.getLlvmPtr(true), getLlvmPtr());
+    }
 
-	public String llvmStore(String toStore, InstrCounter counter){
-		return llvmStore(toStore, "%" + LanguageSpecs.SELF, counter);
-	}
+    public String llvmStore(String toStore, InstrCounter counter){
+        return llvmStore(toStore, "%" + LanguageSpecs.SELF, counter);
+    }
 
-	public boolean isPrimitive(){
-		return type.isPrimitive();
-	}
+    public boolean isPrimitive(){
+        return type.isPrimitive();
+    }
 
-	public boolean isPointer(){
-		return type.isPointer();
-	}
+    public boolean isPointer(){
+        return type.isPointer();
+    }
 
-	public void toPointer(){
-		this.type.toPointer();
-	}
+    public int getClassFieldId() {
+        return classFieldId;
+    }
 
-	public int getClassFieldId() {
-		return classFieldId;
-	}
+    public void setClassFieldId(int classFieldId) {
+        this.classFieldId = classFieldId;
+    }
 
-	public void setClassFieldId(int classFieldId) {
-		this.classFieldId = classFieldId;
-	}
+    public String getParentClass() {
+        return parentClass;
+    }
 
-	public String getParentClass() {
-		return parentClass;
-	}
-
-	public void setParentClass(String parentClass) {
-		this.parentClass = parentClass;
-	}
+    public void setParentClass(String parentClass) {
+        this.parentClass = parentClass;
+    }
 }
