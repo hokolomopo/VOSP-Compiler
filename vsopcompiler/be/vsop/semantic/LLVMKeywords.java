@@ -1,6 +1,9 @@
 package be.vsop.semantic;
 
 public enum LLVMKeywords {
+    GETPTR("getelementptr"),
+    RET("ret"),
+    DEFINE("define"),
     PHI("phi"),
     STORE("store"),
     ALLOCATE("alloca"),

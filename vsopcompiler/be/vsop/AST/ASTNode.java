@@ -48,8 +48,8 @@ public abstract class ASTNode {
             }
             curType = classTable.get(curType.getName()).getParentType();
         }
-        // Should never happen, as Object is the parent and thus a common ancestor of all classes
-        return "";
+        // Should happen only if one type is primitive, as Object is the parent and thus a common ancestor of all classes
+        return null;
     }
 
     boolean isNotChild(String child, String parent) {
@@ -108,8 +108,8 @@ public abstract class ASTNode {
                 child.getStringLiteral(literalStrings);
     }
 
-    String llvmAllocation(LLVMTypes type, String id) {
-        return id + " = " + LLVMKeywords.ALLOCATE + " " + type.getLlvmName() + endLine;
+    String llvmAllocation(String result, String type) {
+        return result + " = " + LLVMKeywords.ALLOCATE.getLlvmName() + " " + type + endLine;
     }
 
     String llvmStore(LLVMTypes type, String value, String where) {

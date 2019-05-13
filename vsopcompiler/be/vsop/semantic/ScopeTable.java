@@ -7,13 +7,15 @@ import be.vsop.AST.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class ScopeTable {
     public enum Scope{LOCAL, GLOBAL, OUTER}
 
     private ScopeTable parent;
     private HashMap<String, Method> methodTable = new HashMap<>();
-    private HashMap<String, Formal> variableTable = new HashMap<>();
+    // LinkedHashMap preserves insertion order, useful for initializing objects
+    private LinkedHashMap<String, Formal> variableTable = new LinkedHashMap<>();
 
 
     private static final HashMap<String, Type> typeTable;

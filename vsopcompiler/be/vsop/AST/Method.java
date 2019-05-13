@@ -3,6 +3,7 @@ package be.vsop.AST;
 import be.vsop.codegenutil.ExprEval;
 import be.vsop.codegenutil.InstrCounter;
 import be.vsop.exceptions.semantic.*;
+import be.vsop.semantic.LLVMKeywords;
 import be.vsop.semantic.ScopeTable;
 import be.vsop.semantic.VSOPTypes;
 
@@ -132,7 +133,7 @@ public class Method extends ASTNode {
         formals.addFormal(self, 0);
 
         //Method header
-        String llvm =  "define " + retType.getLlvmName(true) +
+        String llvm =  LLVMKeywords.DEFINE.getLlvmName() + " " + retType.getLlvmName(true) +
                 " @" + scopeTable.getScopeClassType().getName() + "." + id.getName() +
                 "(";
         if(formals.getLength() > 0) {

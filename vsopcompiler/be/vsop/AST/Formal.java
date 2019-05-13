@@ -113,7 +113,7 @@ public class Formal extends ASTNode{
 
     private ExprEval getFieldPtr(String parentClassId, InstrCounter counter){
         String id = counter.getNextLlvmId();
-        String llvm = String.format("%s = getelementptr %s, %s* %s, i32 0, i32 %d \n", id, parentClass, parentClass, parentClassId, classFieldId);//TODO : inbound? always int32? wtf is this function
+        String llvm = String.format("%s = getelementptr %s, %s* %s, i32 0, i32 %d \n", id, parentClass, parentClass, parentClassId, classFieldId);
 
         return new ExprEval(id, llvm);
     }

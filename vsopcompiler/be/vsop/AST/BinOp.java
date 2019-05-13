@@ -102,7 +102,7 @@ public class BinOp extends Expr {
         System.out.print(")");
     }
 
-    static void checkExpr(Expr expr, String expectedType, ArrayList<SemanticException> errorList) {
+    private static void checkExpr(Expr expr, String expectedType, ArrayList<SemanticException> errorList) {
         if (expr.typeName != null) {
             if (!expr.typeName.equals(expectedType)) {
                 errorList.add(new TypeNotExpectedException(expr, expectedType));

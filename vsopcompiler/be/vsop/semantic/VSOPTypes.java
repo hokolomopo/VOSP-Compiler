@@ -42,4 +42,16 @@ public enum VSOPTypes{
         }
         return "%class." + typeName;
     }
+
+    public static String getLlvmDefaultInit(String typeName) {
+        if (typeName.equals(BOOL.typeName)) {
+            return "0";
+        } else if (typeName.equals(STRING.typeName)) {
+            return LlvmWrappers.emptyString;
+        } else if (typeName.equals(INT32.getName())) {
+            return "0";
+        } else {
+            return "null";
+        }
+    }
 }

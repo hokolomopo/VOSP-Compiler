@@ -1,104 +1,103 @@
 package be.vsop.AST;
 
 import be.vsop.codegenutil.InstrCounter;
-import be.vsop.exceptions.semantic.SemanticException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ClassElementList extends ASTNode {
-	private ArrayList<Field> fields;
-	private ArrayList<Method> methods;
+    private ArrayList<Field> fields;
+    private ArrayList<Method> methods;
 
-	public ClassElementList(ClassElementList cel, Field f) {
-		this.fields = cel.fields;
-		this.fields.add(f);
-		this.methods = cel.methods;
+    public ClassElementList(ClassElementList cel, Field f) {
+        this.fields = cel.fields;
+        this.fields.add(f);
+        this.methods = cel.methods;
 
-		this.children = new ArrayList<>();
-		this.children.addAll(fields);
-		this.children.addAll(methods);
-	}
+        this.children = new ArrayList<>();
+        this.children.addAll(fields);
+        this.children.addAll(methods);
+    }
 
-	public ClassElementList(ClassElementList cel, Method m) {
-		this.fields = cel.fields;
-		this.methods = cel.methods;
-		this.methods.add(m);
+    public ClassElementList(ClassElementList cel, Method m) {
+        this.fields = cel.fields;
+        this.methods = cel.methods;
+        this.methods.add(m);
 
-		this.children = new ArrayList<>();
-		this.children.addAll(fields);
-		this.children.addAll(methods);
-	}
+        this.children = new ArrayList<>();
+        this.children.addAll(fields);
+        this.children.addAll(methods);
+    }
 
-	public ClassElementList(List<Field> fields, List<Method> methods) {
-		this.fields = new ArrayList<>(fields);
-		this.methods = new ArrayList<>(methods);
+    public ClassElementList(List<Field> fields, List<Method> methods) {
+        this.fields = new ArrayList<>(fields);
+        this.methods = new ArrayList<>(methods);
 
-		this.children = new ArrayList<>();
-		this.children.addAll(fields);
-		this.children.addAll(methods);
-	}
+        this.children = new ArrayList<>();
+        this.children.addAll(fields);
+        this.children.addAll(methods);
+    }
 
-	public ClassElementList() {
-		fields = new ArrayList<>();
-		methods = new ArrayList<>();
-	}
+    public ClassElementList() {
+        fields = new ArrayList<>();
+        methods = new ArrayList<>();
+    }
 
-	@Override
-	public void print(int tabLevel, boolean doTab, boolean withTypes) {
-		if(doTab)
-			System.out.print(getTab(tabLevel));
+    @Override
+    public void print(int tabLevel, boolean doTab, boolean withTypes) {
+        if(doTab)
+            System.out.print(getTab(tabLevel));
 
-		System.out.print("[");
-		int i;
-		if (fields.size() > 0) {
-			for (i = 0; i < fields.size(); i++) {
-				if(i == 0)
-					fields.get(i).print(tabLevel, false, withTypes);
-				else
-					fields.get(i).print(tabLevel, true, withTypes);
+        System.out.print("[");
+        int i;
+        if (fields.size() > 0) {
+            for (i = 0; i < fields.size(); i++) {
+                if(i == 0)
+                    fields.get(i).print(tabLevel, false, withTypes);
+                else
+                    fields.get(i).print(tabLevel, true, withTypes);
 
-				if(i < fields.size() - 1) {
-					System.out.print(",");
-					System.out.println();
-				}
-			}
-		}
+                if(i < fields.size() - 1) {
+                    System.out.print(",");
+                    System.out.println();
+                }
+            }
+        }
 
-		System.out.print("],");
-		System.out.println();
-		System.out.print(getTab(tabLevel) + "[");
+        System.out.print("],");
+        System.out.println();
+        System.out.print(getTab(tabLevel) + "[");
 
-		if (methods.size() > 0) {
-			for (i = 0; i < methods.size(); i++) {
-				if(i == 0)
-					methods.get(i).print(tabLevel, false, withTypes);
-				else
-					methods.get(i).print(tabLevel, true, withTypes);
+        if (methods.size() > 0) {
+            for (i = 0; i < methods.size(); i++) {
+                if(i == 0)
+                    methods.get(i).print(tabLevel, false, withTypes);
+                else
+                    methods.get(i).print(tabLevel, true, withTypes);
 
-				if(i < methods.size() - 1) {
-					System.out.print(",");
-					System.out.println();
-				}
-			}
-		}
+                if(i < methods.size() - 1) {
+                    System.out.print(",");
+                    System.out.println();
+                }
+            }
+        }
 
 
-		System.out.print("]");
-	}
+        System.out.print("]");
+    }
 
-	public ArrayList<Field> getFields() {
-		return fields;
-	}
+    public ArrayList<Field> getFields() {
+        return fields;
+    }
 
-	@Override
-	public String getLlvm(InstrCounter counter) {
-		StringBuilder builder = new StringBuilder();
+    @Override
+    public String getLlvm(InstrCounter counter) {
+        StringBuilder builder = new StringBuilder();
 
-		if(methods != null)
-			for(Method method: methods)
-				builder.append(method.getLlvm(counter)).append("\n\n");
-		return builder.toString();
+        if(methods != null)
+            for(Method method: methods)
+                builder.append(method.getLlvm(counter)).append("\n\n");
+        return builder.toString();
 
-	}
+    }
 }

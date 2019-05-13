@@ -6,6 +6,7 @@ public enum LLVMTypes {
     STRING("i8*"),
     INT32("i32"),
     INT64("i64"),
+    NULL("null"),
     UNIT("void");
 
     private String llvmName;

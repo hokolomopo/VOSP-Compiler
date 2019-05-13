@@ -1,11 +1,11 @@
 package be.vsop.AST;
 
+import be.vsop.codegenutil.ExprEval;
 import be.vsop.codegenutil.InstrCounter;
 import be.vsop.exceptions.semantic.ClassAlreadyDeclaredException;
 import be.vsop.exceptions.semantic.MainException;
 import be.vsop.exceptions.semantic.SemanticException;
-import be.vsop.semantic.LanguageSpecs;
-import be.vsop.semantic.ScopeTable;
+import be.vsop.semantic.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -125,32 +125,62 @@ public class ClassItem extends ASTNode{
         StringBuilder fieldsTypeList = new StringBuilder();
 
         //Get all class fields
-        ArrayList<Formal> fields = scopeTable.getAllVariables(ScopeTable.Scope.LOCAL);
+        ArrayList<Formal> fieldFormals = scopeTable.getAllVariables(ScopeTable.Scope.LOCAL);
 
         //Remove self
         Formal self = null;
-        for(Formal field : fields)
+        for(Formal field : fieldFormals)
             if(field.getName().equals(LanguageSpecs.SELF)) {
                 self = field;
                 break;
             }
-        fields.remove(self);
+        fieldFormals.remove(self);
 
         //Give id and parent class to fields
         int k = 0;
-        for(Formal field : fields) {
+        for(Formal field : fieldFormals) {
             field.setClassFieldId(k++);
             field.setParentClass("%class." + this.getName());
         }
 
-        for(int i = 0;i < fields.size();i++){
-            fieldsTypeList.append(fields.get(i).getType().getLlvmName(true));
+        for(int i = 0; i < fieldFormals.size(); i++){
+            fieldsTypeList.append(fieldFormals.get(i).getType().getLlvmName(true));
 
-            if(i < fields.size() - 1)
+            if(i < fieldFormals.size() - 1)
                 fieldsTypeList.append(", ");
 
         }
 
-        return "%class." + getName() + " = type { " + fieldsTypeList.toString() + " }\n\n" + cel.getLlvm(counter) + "\n";
+        StringBuilder llvm = new StringBuilder();
+        llvm.append("%class.").append(getName()).append(" = type { ").append(fieldsTypeList).append(" }\n\n")
+                .append(cel.getLlvm(counter)).append(endLine);
+
+        // Generate new method
+        // header
+        llvm.append(LLVMKeywords.DEFINE.getLlvmName()).append(" ")
+                .append(VSOPTypes.getLlvmTypeName(type.getName(), true)).append(" ")
+                .append(LlvmWrappers.newFunctionNameFromClassName(type.getName())).append("() {").append(endLine);
+
+        InstrCounter newCounter = new InstrCounter();
+        ExprEval heapAllocationExpr = LlvmWrappers.heapAllocation(newCounter, type.getName());
+        String retLlvmId = heapAllocationExpr.llvmId;
+        llvm.append(heapAllocationExpr.llvmCode);
+
+        ExprEval evalFieldInitExpr;
+        ArrayList<Field> fields = cel.getFields();
+        for (int i = 0; i < fields.size(); i++) {
+            evalFieldInitExpr = fields.get(i).getInitLlvm(newCounter);
+            llvm.append(evalFieldInitExpr.llvmCode);
+            llvm.append(fieldFormals.get(i).llvmStore(evalFieldInitExpr.llvmId, retLlvmId, newCounter));
+        }
+
+        // return initialized object
+        llvm.append(LLVMKeywords.RET.getLlvmName()).append(" ").append(VSOPTypes.getLlvmTypeName(type.getName(), true))
+                .append(" ").append(retLlvmId).append(endLine);
+
+        // end of new method
+        llvm.append("}").append(endLine).append(endLine);
+
+        return llvm.toString();
     }
 }

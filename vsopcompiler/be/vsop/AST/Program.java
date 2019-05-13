@@ -1,7 +1,10 @@
 package be.vsop.AST;
 
+import be.vsop.codegenutil.ExprEval;
 import be.vsop.codegenutil.InstrCounter;
+import be.vsop.semantic.LLVMTypes;
 import be.vsop.semantic.LanguageSpecs;
+import be.vsop.semantic.LlvmWrappers;
 import be.vsop.semantic.VSOPTypes;
 
 import java.util.ArrayList;
@@ -58,16 +61,22 @@ public class Program extends ASTNode{
         llvm += "define " + VSOPTypes.INT32.getLlvmName() + " @main () { " + endLine;
 
         //Create a new Main class
-        Formal main = new Formal(new Id("Main"), new Type("Main"));
-        Formal mainRet = new Formal(new Id("returned"), new Type(VSOPTypes.INT32.getName()));
+        String mainTypeName = "Main";
+        ExprEval newMain = new New(new Type(mainTypeName)).evalExpr(new InstrCounter());
 
-        llvm += main.getLlvmPtr() + " = alloca " + main.getType().getLlvmName() + endLine;
-        //TODO clean call
-        llvm += mainRet.getLlvmId() + " = call i32 @Main.main(" + main.getType().getLlvmPtr() + " " + main.getLlvmPtr() + ")" + endLine;
+        //Call main function of Main class
+        String result = "%returned";
+        String mainFuncName = "@Main.main";
+        ArrayList<String> argumentsIds = new ArrayList<>();
+        argumentsIds.add(newMain.llvmId);
+        ArrayList<String> argumentsTypes = new ArrayList<>();
+        argumentsTypes.add(VSOPTypes.getLlvmTypeName(mainTypeName, true));
+        llvm += newMain.llvmCode + LlvmWrappers.call(result, LLVMTypes.INT32.getLlvmName(), mainFuncName,
+                argumentsIds, argumentsTypes);
 
-        llvm += "ret " + VSOPTypes.INT32.getLlvmName() + " " + mainRet.getLlvmId() + endLine;
+        //Return the value returned by the main function
+        llvm += "ret " + VSOPTypes.INT32.getLlvmName() + " " + result + endLine + "}";
 
-        llvm += "}" + endLine;
         return llvm;
     }
 }

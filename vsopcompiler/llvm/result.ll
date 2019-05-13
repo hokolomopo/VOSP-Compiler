@@ -83,13 +83,12 @@ define i32 @IO.inputInt32(%class.IO* %self) {
 
 
 define i32 @main () { 
-%Main.ptr = alloca %class.Main
-%returned = call i32 @Main.main(%class.Main* %Main.ptr)
+%1 = call %class.Main* @.New.Main()
+%returned = call i32 @Main.main(%class.Main* %1)
 ret i32 %returned
 }
 
-
-%class.Main = type { i1, i32, %class.X*, i8* }
+%class.Main = type { i1, i32, i8*, %class.X* }
 
 define i32 @Main.main(%class.Main* %self) {
 %self.ptr = alloca %class.Main* 
@@ -98,12 +97,13 @@ store %class.Main* %self, %class.Main** %self.ptr
 %2 = ptrtoint %class.Main* %1 to i64
 %3 = inttoptr i64 %2 to %class.IO*
 %4 = getelementptr %class.Main, %class.Main* %self, i32 0, i32 3 
-%5 = load i8*, i8** %4 
-%6 = call %class.IO* @IO.print(%class.IO* %3, i8* %5)
-%7 = load %class.Main*, %class.Main** %self.ptr 
-%8 = getelementptr %class.Main, %class.Main* %self, i32 0, i32 3 
-%9 = load i8*, i8** %8 
-%10 = call %class.Main* @Main.testString(%class.Main* %7, i8* %9)
+%5 = load %class.X*, %class.X** %4 
+%6 = icmp eq %class.X* null, %5
+%7 = call %class.IO* @IO.printBool(%class.IO* %3, i1 %6)
+%8 = load %class.Main*, %class.Main** %self.ptr 
+%9 = getelementptr %class.Main, %class.Main* %self, i32 0, i32 2 
+%10 = load i8*, i8** %9 
+%11 = call %class.Main* @Main.testString(%class.Main* %8, i8* %10)
 ret i32 0 
 }
 
@@ -133,13 +133,42 @@ ret i32 %3
 }
 
 
-%class.X = type { i32 }
-
-define %class.X* @X.xfun(%class.X* %self) {
-%self.ptr = alloca %class.X* 
-store %class.X* %self, %class.X** %self.ptr 
-%1 = load %class.X*, %class.X** %self.ptr 
-ret %class.X* %1 
+define %class.Main* @.New.Main() {
+%1 = getelementptr %class.Main, %class.Main* null, i32 1
+%2 = ptrtoint %class.Main* %1 to i64
+%3 = call i8* @malloc(i64 %2)
+%4 = ptrtoint i8* %3 to i64
+%5 = inttoptr i64 %4 to %class.Main*
+%6 = getelementptr %class.Main, %class.Main* %5, i32 0, i32 0 
+store i1 1, i1* %6 
+%7 = getelementptr %class.Main, %class.Main* %5, i32 0, i32 1 
+store i32 0, i32* %7 
+%8 = getelementptr %class.Main, %class.Main* %5, i32 0, i32 2 
+store i8* getelementptr inbounds ([38 x i8], [38 x i8]* @.str, i32 0, i32 0), i8** %8 
+%9 = getelementptr %class.Main, %class.Main* %5, i32 0, i32 3 
+store %class.X* null, %class.X** %9 
+ret %class.Main* %5
 }
 
+%class.X = type { i32 }
+
+define i32 @X.xfun(%class.X* %self) {
+%self.ptr = alloca %class.X* 
+store %class.X* %self, %class.X** %self.ptr 
+%1 = getelementptr %class.X, %class.X* %self, i32 0, i32 0 
+%2 = load i32, i32* %1 
+ret i32 %2 
+}
+
+
+define %class.X* @.New.X() {
+%1 = getelementptr %class.X, %class.X* null, i32 1
+%2 = ptrtoint %class.X* %1 to i64
+%3 = call i8* @malloc(i64 %2)
+%4 = ptrtoint i8* %3 to i64
+%5 = inttoptr i64 %4 to %class.X*
+%6 = getelementptr %class.X, %class.X* %5, i32 0, i32 0 
+store i32 42, i32* %6 
+ret %class.X* %5
+}
 

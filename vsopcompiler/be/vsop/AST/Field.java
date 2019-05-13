@@ -1,9 +1,12 @@
 package be.vsop.AST;
 
+import be.vsop.codegenutil.ExprEval;
+import be.vsop.codegenutil.InstrCounter;
 import be.vsop.exceptions.semantic.SemanticException;
 import be.vsop.exceptions.semantic.TypeNotExpectedException;
 import be.vsop.exceptions.semantic.VariableAlreadyDeclaredException;
 import be.vsop.semantic.ScopeTable;
+import be.vsop.semantic.VSOPTypes;
 
 import java.util.ArrayList;
 
@@ -90,5 +93,12 @@ public class Field extends ASTNode {
 
     public Type getType() {
         return type;
+    }
+
+    ExprEval getInitLlvm(InstrCounter counter) {
+        if (initExpr == null) {
+            return new ExprEval(VSOPTypes.getLlvmDefaultInit(type.getName()), "");
+        }
+        return initExpr.evalExpr(counter);
     }
 }
