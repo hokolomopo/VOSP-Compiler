@@ -47,6 +47,16 @@ public class UnOp extends Expr {
     }
 
     @Override
+    public void print(int tabLevel, boolean doTab) {
+        if(doTab)
+            System.out.print(getTab(tabLevel));
+
+        System.out.print("UnOp(" + opType.name + ", ");
+        expr.print(tabLevel, false, withTypes);
+        System.out.print(")");
+    }
+
+    @Override
     public void checkTypes(ArrayList<SemanticException> errorList) {
         super.checkTypes(errorList);
         switch (opType) {
@@ -65,14 +75,25 @@ public class UnOp extends Expr {
         }
     }
 
-    @Override
-    public void print(int tabLevel, boolean doTab) {
-        if(doTab)
-            System.out.print(getTab(tabLevel));
-
-        System.out.print("UnOp(" + opType.name + ", ");
-        expr.print(tabLevel, false, withTypes);
-        System.out.print(")");
+    /**
+     * Check the types for the semantic analysis
+     *
+     * @param expr the expression
+     * @param expectedType the expected type
+     * @param errorList the list of error of the semantic analysis
+     */
+    private void checkExpr(Expr expr, String expectedType, ArrayList<SemanticException> errorList) {
+        if (expr.typeName != null) {
+            if (LanguageSpecs.isPrimitiveType(expectedType)) {
+                if (!expr.typeName.equals(expectedType)) {
+                    errorList.add(new TypeNotExpectedException(expr, expectedType));
+                }
+            } else {
+                if (isNotChild(expr.typeName, expectedType)) {
+                    errorList.add(new TypeNotExpectedException(expr, expectedType));
+                }
+            }
+        }
     }
 
     @Override
@@ -90,6 +111,12 @@ public class UnOp extends Expr {
         return new ExprEval(id, llvm);
     }
 
+    /**
+     * Get the llvm code of the expression
+     *
+     * @param exprId the expression id
+     * @return the llvm code
+     */
     private String evaluateExpr(String exprId){
         switch (opType){
             case NOT:
@@ -104,18 +131,7 @@ public class UnOp extends Expr {
         return null;
     }
 
-    private void checkExpr(Expr expr, String expectedType, ArrayList<SemanticException> errorList) {
-        if (expr.typeName != null) {
-            if (LanguageSpecs.isPrimitiveType(expectedType)) {
-                if (!expr.typeName.equals(expectedType)) {
-                    errorList.add(new TypeNotExpectedException(expr, expectedType));
-                }
-            } else {
-                if (isNotChild(expr.typeName, expectedType)) {
-                    errorList.add(new TypeNotExpectedException(expr, expectedType));
-                }
-            }
-        }
-    }
+
+
 
 }

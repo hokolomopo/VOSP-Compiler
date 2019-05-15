@@ -127,7 +127,7 @@ public class ClassItem extends ASTNode{
         //Get all class fields
         ArrayList<Formal> fieldFormals = scopeTable.getAllVariables(ScopeTable.Scope.LOCAL);
 
-        //Remove self
+        //Remove self from fields
         Formal self = null;
         for(Formal field : fieldFormals)
             if(field.getName().equals(LanguageSpecs.SELF)) {
@@ -143,6 +143,7 @@ public class ClassItem extends ASTNode{
             field.setParentClass("%class." + this.getName());
         }
 
+        //Generate list of types of fields to define the Structure representing the Object  in llvm
         for(int i = 0; i < fieldFormals.size(); i++){
             fieldsTypeList.append(fieldFormals.get(i).getType().getLlvmName(true));
 
@@ -151,12 +152,14 @@ public class ClassItem extends ASTNode{
 
         }
 
+        //Declare Structure of the object in llvm
         StringBuilder llvm = new StringBuilder();
         llvm.append("%class.").append(getName()).append(" = type { ").append(fieldsTypeList).append(" }\n\n")
                 .append(cel.getLlvm(counter)).append(endLine);
 
-        // Generate new method
-        // header
+        // Generate initialization method
+
+        // Header of initialization method
         llvm.append(LLVMKeywords.DEFINE.getLlvmName()).append(" ")
                 .append(VSOPTypes.getLlvmTypeName(type.getName(), true)).append(" ")
                 .append(LlvmWrappers.newFunctionNameFromClassName(type.getName())).append("() {").append(endLine);
@@ -178,7 +181,7 @@ public class ClassItem extends ASTNode{
         llvm.append(LLVMKeywords.RET.getLlvmName()).append(" ").append(VSOPTypes.getLlvmTypeName(type.getName(), true))
                 .append(" ").append(retLlvmId).append(endLine);
 
-        // end of new method
+        // End of initialization method
         llvm.append("}").append(endLine).append(endLine);
 
         return llvm.toString();

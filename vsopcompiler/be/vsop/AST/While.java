@@ -4,6 +4,7 @@ import be.vsop.codegenutil.ExprEval;
 import be.vsop.codegenutil.InstrCounter;
 import be.vsop.exceptions.semantic.SemanticException;
 import be.vsop.exceptions.semantic.TypeNotExpectedException;
+import be.vsop.semantic.LLVMKeywords;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,7 +60,6 @@ public class While extends Expr {
 		llvm += labels.get(InstrCounter.LOOP_COND_LABEL) + ":" + endLine;
 		ExprEval condEval = condExpr.evalExpr(counter);
 		llvm += condEval.llvmCode;
-
 		llvm += "br i1 " + condEval.llvmId + ", label %" + labels.get(InstrCounter.LOOP_START_LABEL) + ", label %" + labels.get(InstrCounter.LOOP_END_LABEL)
 				+ endLine + endLine;
 
@@ -74,7 +74,7 @@ public class While extends Expr {
 		//Loop end label
 		llvm += labels.get(InstrCounter.LOOP_END_LABEL) + ":" + endLine;
 
-		return new ExprEval(null, llvm);//TODO
+		return new ExprEval(null, llvm);
 	}
 
 }

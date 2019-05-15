@@ -3,7 +3,6 @@ package be.vsop.AST;
 import be.vsop.codegenutil.ExprEval;
 import be.vsop.codegenutil.InstrCounter;
 import be.vsop.semantic.LLVMTypes;
-import be.vsop.semantic.LanguageSpecs;
 import be.vsop.semantic.LlvmWrappers;
 import be.vsop.semantic.VSOPTypes;
 
@@ -47,7 +46,7 @@ public class Program extends ASTNode{
         for(LiteralString str : literalStrings){
             str.setStringId(i);
 
-            declarations.append(str.getLlvmDelaraction());
+            declarations.append(str.getLlvmDeclaration());
             i++;
         }
 

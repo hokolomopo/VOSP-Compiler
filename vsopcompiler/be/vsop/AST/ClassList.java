@@ -6,7 +6,7 @@ public class ClassList extends ASTNode {
     private ArrayList<ClassItem> classes;
 
     public ClassList(ClassList cl, ClassItem ci) {
-        //TODO when and why should either of the arguments be null ?
+        //TODO when and why should either of the arguments be null ? C'est toi qui a fait le constructeur, qu'est ce que j'en sais x)
         if(cl == null)
             this.classes = new ArrayList<>();
         else

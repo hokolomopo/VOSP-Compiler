@@ -1,0 +1,72 @@
+class Main extends IO {
+    head : bool <- true;
+    tail : int32;
+    mainString : string <- "Viva la vida baby and keep on Rockin'\n";
+    x : X <- new X;
+
+    main() : int32{
+        printBool(isnull x);
+        testString(mainString);
+        testLoopCond(0);
+        testNew();
+        0
+    }
+
+    testString(myString : string) : Main {
+        myString <- "Viva la vida baby and keep on Rockin'\n";
+        "lol";
+        print(myString);   
+        print(mainString);  
+        print(myString);                
+        self
+    }
+
+    testLoop(i : int32) : int32 {
+        while (i < 3) do{
+            printInt32(i);
+            i <- i + 1
+        };
+        print("\n");
+        i
+    }
+
+    testNew() : int32{
+        let c : Y <- new Y in
+            if (isnull x) then 
+                print("X is null \n")
+            else
+                printInt32(c.yfun());
+        3
+    }
+
+    testLoopCond(i : int32) : int32 {
+        if (i = 0) then
+            while (i < 3) do{
+                printInt32(i);
+                i <- i + 1
+            };
+        print("\n");
+        i
+    }
+
+
+    truc(tail : int32, boolean : Main) : int32 { 
+        tail <- tail + 3;
+        tail <- tail
+    } 
+ }
+
+ class X extends IO {
+    xval : int32 <- 42;
+
+    xfun() : int32 {
+        xval
+    }
+ }
+
+  class Y extends X {
+
+    yfun() : int32 {
+        xfun()
+    }
+ }

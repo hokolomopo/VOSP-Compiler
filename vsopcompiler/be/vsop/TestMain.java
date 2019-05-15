@@ -2,13 +2,26 @@ package be.vsop;
 
 import be.vsop.AST.Program;
 
+import java.io.FileWriter;
+import java.io.IOException;
+
 public class TestMain {
     public static void main(String[] args) {
-        String fileName = "vsopcompiler/tests/test.vsop";
+        String fileName = "llvm/test.vsop";
         Compiler compiler = new Compiler(fileName);
         Program program = compiler.buildAST();
-        program.print();
         System.out.println();
-        compiler.doSemanticAnalysis(program);
+        compiler.doSemanticAnalysis(null, null);
+        String llvm = compiler.generateLlvm();
+        System.out.println(llvm);
+
+        FileWriter writer;
+        try {
+            writer = new FileWriter("llvm/result.ll", false);
+            writer.write(llvm);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

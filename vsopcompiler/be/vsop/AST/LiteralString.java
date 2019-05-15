@@ -3,6 +3,7 @@ package be.vsop.AST;
 import be.vsop.codegenutil.ExprEval;
 import be.vsop.codegenutil.InstrCounter;
 import be.vsop.exceptions.semantic.SemanticException;
+import be.vsop.semantic.LLVMKeywords;
 
 import java.util.ArrayList;
 
@@ -27,17 +28,6 @@ public class LiteralString extends Literal{
         System.out.print(convertToEscapeSymbols(value));
     }
 
-    private String convertToEscapeSymbols(String str){
-        String result = str;
-        result = result.replace("\\b", "\\x08");
-        result = result.replace("\\f", "\\x0c");
-        result = result.replace("\\n", "\\x0a");
-        result = result.replace("\\r", "\\x0d");
-        result = result.replace("\\t", "\\x09");
-        result = result.replace("\\v", "\\x0b");
-
-        return result;
-    }
 
     @Override
     protected String getLlvmValue() {
@@ -62,24 +52,92 @@ public class LiteralString extends Literal{
 
     @Override
     public ExprEval evalExpr(InstrCounter counter) {
-        String value = String.format("getelementptr inbounds ([%d x i8], [%d x i8]* %s, i32 0, i32 0)", getRawValue().length() + 1, getRawValue().length() + 1, stringId);
+        String value = String.format("getelementptr inbounds ([%d x i8], [%d x i8]* %s, i32 0, i32 0)", getLlvmLength(), getLlvmLength(), stringId);
         return new ExprEval(value, "", true);
     }
 
     /**
-     * @return String value without ""
+     *
+     * @return the declaration of the String in llvm
      */
-    public String getRawValue(){
-        return value.substring(1, value.length() - 1);
-    }
+    public String getLlvmDeclaration(){
+        String llvmString = getLlvmString();
 
-    public String getLlvmDelaraction(){
         StringBuilder declaration = new StringBuilder();
         declaration.append(getStringId()).append(" = ");
         declaration.append("private unnamed_addr constant ");
-        declaration.append(String.format("[%d x i8] c\"%s\\00\"", getRawValue().length() + 1, getRawValue()));
+        declaration.append(String.format("[%d x i8] c\"%s\"", getLlvmLength(), llvmString));
         declaration.append(endLine);
 
         return declaration.toString();
     }
+
+    /**
+     * @return String value without the quotes symbols
+     */
+    private String getRawValue(){
+        return value.substring(1, value.length() - 1);
+    }
+
+    /**
+     * @return the String in llvm (with correct escape symbols, the final \00 and without quotes)
+     */
+    private String getLlvmString(){
+        return convertToLlvmEscapeSymbols(this.getRawValue()) + "\\00";
+    }
+
+    /**
+     * @return the length of the String in llvm (with correct escape symbols, the final \00 and without quotes)
+     */
+    private int getLlvmLength(){
+        return removeEscapeSymbols(getRawValue()).length() + 1;
+    }
+
+
+    /**
+     * @return the given String with escape symbols replaces by their ascii code (\x00)
+     */
+    private String convertToEscapeSymbols(String str){
+        String result = str;
+        result = result.replace("\\b", "\\x08");
+        result = result.replace("\\f", "\\x0c");
+        result = result.replace("\\n", "\\x0a");
+        result = result.replace("\\r", "\\x0d");
+        result = result.replace("\\t", "\\x09");
+        result = result.replace("\\v", "\\x0b");
+
+        return result;
+    }
+
+    /**
+     * @return the given String with escape symbols replaces by their ascii code in llvm (\00)
+     */
+    private String convertToLlvmEscapeSymbols(String str){
+        String result = str;
+        result = result.replace("\\b", "\\08");
+        result = result.replace("\\f", "\\0c");
+        result = result.replace("\\n", "\\0a");
+        result = result.replace("\\r", "\\0d");
+        result = result.replace("\\t", "\\09");
+        result = result.replace("\\v", "\\0b");
+
+        return result;
+    }
+
+    /**
+     * @return the given String with escape symbols replaced with single character
+     */
+    private String removeEscapeSymbols(String str){
+        String result = str;
+        result = result.replace("\\b", "0");
+        result = result.replace("\\f", "0");
+        result = result.replace("\\n", "0");
+        result = result.replace("\\r", "0");
+        result = result.replace("\\t", "0");
+        result = result.replace("\\v", "0");
+
+        return result;
+    }
+
+
 }

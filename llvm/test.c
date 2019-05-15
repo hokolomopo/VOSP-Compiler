@@ -4,10 +4,10 @@ int main()
     int n, i = 0;
      unsigned long long factorial = 1;
 
-    /*if(0 > 1)
+    if(i > 0)
         n = 2;
     else
-        n = 3;
+        n = 3;/*
 
 
     if(0 > 1)

@@ -92,6 +92,8 @@ public class Call extends Expr {
 
     @Override
     public ExprEval evalExpr(InstrCounter counter) {
+        //TODO call marche pas quand on apelle une fonction qui renvoie un void, on peut pas assigner qqc a un void
+
         ArrayList<String> argumentsIds = new ArrayList<>();
         ArrayList<String> argumentsTypes = new ArrayList<>();
         Method called = classTable.get(objExpr.typeName).lookupMethod(methodId);

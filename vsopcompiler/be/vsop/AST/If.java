@@ -6,7 +6,6 @@ import be.vsop.exceptions.semantic.SemanticException;
 import be.vsop.exceptions.semantic.TypeNotExpectedException;
 import be.vsop.semantic.LanguageSpecs;
 import be.vsop.semantic.VSOPTypes;
-import javafx.util.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -128,7 +127,7 @@ public class If extends Expr {
 					elseEval.llvmCode;
 			if(retFormal != null)
 				llvm += retFormal.llvmStore(elseEval.llvmId, counter);
-			llvm += "br label %" + labels.get(InstrCounter.COND_END_LABEL) + endLine + endLine;//TODO  useful?
+			llvm += "br label %" + labels.get(InstrCounter.COND_END_LABEL) + endLine + endLine;//TODO  useful? CLang le fait donc moi aussi
 		}
 
 		//End of condition
