@@ -93,17 +93,23 @@ ret i32 %returned
 define i32 @Main.main(%class.Main* %self) {
 %self.ptr = alloca %class.Main* 
 store %class.Main* %self, %class.Main** %self.ptr 
-%1 = load %class.Main*, %class.Main** %self.ptr 
-%2 = ptrtoint %class.Main* %1 to i64
-%3 = inttoptr i64 %2 to %class.IO*
-%4 = getelementptr %class.Main, %class.Main* %self, i32 0, i32 3 
-%5 = load %class.X*, %class.X** %4 
-%6 = icmp eq %class.X* null, %5
-%7 = call %class.IO* @IO.printBool(%class.IO* %3, i1 %6)
-%8 = load %class.Main*, %class.Main** %self.ptr 
-%9 = getelementptr %class.Main, %class.Main* %self, i32 0, i32 2 
-%10 = load i8*, i8** %9 
-%11 = call %class.Main* @Main.testString(%class.Main* %8, i8* %10)
+%1 = call %class.X* @.New.X()
+%2 = getelementptr %class.Main, %class.Main* %self, i32 0, i32 3 
+store %class.X* %1, %class.X** %2 
+%3 = getelementptr %class.Main, %class.Main* %self, i32 0, i32 3 
+%4 = load %class.X*, %class.X** %3 
+call void @X.xfun(%class.X* %4)
+%5 = load %class.Main*, %class.Main** %self.ptr 
+%6 = ptrtoint %class.Main* %5 to i64
+%7 = inttoptr i64 %6 to %class.IO*
+%8 = getelementptr %class.Main, %class.Main* %self, i32 0, i32 3 
+%9 = load %class.X*, %class.X** %8 
+%10 = icmp eq %class.X* null, %9
+%11 = call %class.IO* @IO.printBool(%class.IO* %7, i1 %10)
+%12 = load %class.Main*, %class.Main** %self.ptr 
+%13 = getelementptr %class.Main, %class.Main* %self, i32 0, i32 2 
+%14 = load i8*, i8** %13 
+%15 = call %class.Main* @Main.testString(%class.Main* %12, i8* %14)
 ret i32 0 
 }
 
@@ -152,12 +158,16 @@ ret %class.Main* %5
 
 %class.X = type { i32 }
 
-define i32 @X.xfun(%class.X* %self) {
+define void @X.xfun(%class.X* %self) {
 %self.ptr = alloca %class.X* 
 store %class.X* %self, %class.X** %self.ptr 
-%1 = getelementptr %class.X, %class.X* %self, i32 0, i32 0 
-%2 = load i32, i32* %1 
-ret i32 %2 
+%1 = load %class.X*, %class.X** %self.ptr 
+%2 = ptrtoint %class.X* %1 to i64
+%3 = inttoptr i64 %2 to %class.IO*
+%4 = getelementptr %class.X, %class.X* %self, i32 0, i32 0 
+%5 = load i32, i32* %4 
+%6 = call %class.IO* @IO.printInt32(%class.IO* %3, i32 %5)
+ret void  
 }
 
 
