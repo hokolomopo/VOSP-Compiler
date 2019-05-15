@@ -7,6 +7,7 @@ import be.vsop.semantic.LanguageSpecs;
 import be.vsop.semantic.ScopeTable;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Formal extends ASTNode{
     private Id id;
@@ -27,6 +28,15 @@ public class Formal extends ASTNode{
         this.children = new ArrayList<>();
         this.children.add(id);
         this.children.add(type);
+    }
+
+    public Formal(Formal formal){
+        this.id = formal.id;
+        this.type = formal.type;
+
+        this.children = formal.children;
+        this.isClassField = formal.isClassField;
+        this.parentClass = formal.parentClass;
     }
 
     @Override
@@ -154,5 +164,19 @@ public class Formal extends ASTNode{
 
     public void setParentClass(String parentClass) {
         this.parentClass = parentClass;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Formal formal = (Formal) o;
+        return this.id.getName().equals(((Formal) o).id.getName())
+                && this.type.getName().equals(formal.type.getName());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, type);
     }
 }

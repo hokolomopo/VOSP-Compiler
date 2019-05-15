@@ -173,4 +173,8 @@ public abstract class ASTNode {
         ret.append(")").append(endLine);
         return ret.toString();
     }
+
+    public void setScopeTable(ScopeTable scopeTable) {
+        this.scopeTable = scopeTable;
+    }
 }

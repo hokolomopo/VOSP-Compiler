@@ -12,6 +12,16 @@ define %class.IO* @IO.print(%class.IO* %self, i8*) {
   ret %class.IO* %self
 }
 
+define %class.IO* @.New.IO() {
+%1 = getelementptr %class.IO, %class.IO* null, i32 1
+%2 = ptrtoint %class.IO* %1 to i64
+%3 = call i8* @malloc(i64 %2)
+%4 = ptrtoint i8* %3 to i64
+%5 = inttoptr i64 %4 to %class.IO*
+ret %class.IO* %5
+}
+
+
 define %class.IO* @IO.printBool(%class.IO* %self, i1) {
   br i1 %0, label %print_true, label %print_false
   print_true:
@@ -279,7 +289,7 @@ store %class.X* %9, %class.X** %10
 ret %class.Main* %5
 }
 
-%class.X = type { i32 }
+%class.X = type { i32, i1 }
 
 define i32 @X.xfun(%class.X* %self) {
 %self.ptr = alloca %class.X* 
@@ -297,20 +307,28 @@ define %class.X* @.New.X() {
 %4 = ptrtoint i8* %3 to i64
 %5 = inttoptr i64 %4 to %class.X*
 %6 = getelementptr %class.X, %class.X* %5, i32 0, i32 0 
-store i32 42, i32* %6 
+store i32 547894165, i32* %6 
+%7 = getelementptr %class.X, %class.X* %5, i32 0, i32 1 
+store i1 1, i1* %7 
 ret %class.X* %5
 }
 
-%class.Y = type {  }
+%class.Y = type { i32, i1, i32 }
 
 define i32 @Y.yfun(%class.Y* %self) {
 %self.ptr = alloca %class.Y* 
 store %class.Y* %self, %class.Y** %self.ptr 
-%1 = load %class.Y*, %class.Y** %self.ptr 
-%2 = ptrtoint %class.Y* %1 to i64
-%3 = inttoptr i64 %2 to %class.X*
-%4 = call i32 @X.xfun(%class.X* %3)
-ret i32 %4 
+%1 = getelementptr %class.Y, %class.Y* %self, i32 0, i32 2 
+%2 = load i32, i32* %1 
+%3 = getelementptr %class.Y, %class.Y* %self, i32 0, i32 0 
+%4 = load i32, i32* %3 
+%5 = getelementptr %class.Y, %class.Y* %self, i32 0, i32 0 
+store i32 %4, i32* %5 
+%6 = load %class.Y*, %class.Y** %self.ptr 
+%7 = ptrtoint %class.Y* %6 to i64
+%8 = inttoptr i64 %7 to %class.X*
+%9 = call i32 @X.xfun(%class.X* %8)
+ret i32 %9 
 }
 
 
@@ -320,6 +338,12 @@ define %class.Y* @.New.Y() {
 %3 = call i8* @malloc(i64 %2)
 %4 = ptrtoint i8* %3 to i64
 %5 = inttoptr i64 %4 to %class.Y*
+%6 = getelementptr %class.Y, %class.Y* %5, i32 0, i32 0 
+store i32 547894165, i32* %6 
+%7 = getelementptr %class.Y, %class.Y* %5, i32 0, i32 1 
+store i1 1, i1* %7 
+%8 = getelementptr %class.Y, %class.Y* %5, i32 0, i32 2 
+store i32 89, i32* %8 
 ret %class.Y* %5
 }
 

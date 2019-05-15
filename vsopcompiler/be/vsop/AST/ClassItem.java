@@ -125,23 +125,8 @@ public class ClassItem extends ASTNode{
         StringBuilder fieldsTypeList = new StringBuilder();
 
         //Get all class fields
-        ArrayList<Formal> fieldFormals = scopeTable.getAllVariables(ScopeTable.Scope.LOCAL);
+        ArrayList<Formal> fieldFormals = getFormalsList();
 
-        //Remove self from fields
-        Formal self = null;
-        for(Formal field : fieldFormals)
-            if(field.getName().equals(LanguageSpecs.SELF)) {
-                self = field;
-                break;
-            }
-        fieldFormals.remove(self);
-
-        //Give id and parent class to fields
-        int k = 0;
-        for(Formal field : fieldFormals) {
-            field.setClassFieldId(k++);
-            field.setParentClass("%class." + this.getName());
-        }
 
         //Generate list of types of fields to define the Structure representing the Object  in llvm
         for(int i = 0; i < fieldFormals.size(); i++){
@@ -158,6 +143,20 @@ public class ClassItem extends ASTNode{
                 .append(cel.getLlvm(counter)).append(endLine);
 
         // Generate initialization method
+        String init  = getInitializer(fieldFormals);
+        llvm.append(init);
+
+        return llvm.toString();
+    }
+
+    /**
+     * Get the constructor function in llvm
+     *
+     * @param fieldFormals the list of formals of the Structure representing the class
+     * @return the llvm code
+     */
+    private String getInitializer(ArrayList<Formal> fieldFormals){
+        StringBuilder llvm = new StringBuilder();
 
         // Header of initialization method
         llvm.append(LLVMKeywords.DEFINE.getLlvmName()).append(" ")
@@ -169,21 +168,119 @@ public class ClassItem extends ASTNode{
         String retLlvmId = heapAllocationExpr.llvmId;
         llvm.append(heapAllocationExpr.llvmCode);
 
-        ExprEval evalFieldInitExpr;
-        ArrayList<Field> fields = cel.getFields();
-        for (int i = 0; i < fields.size(); i++) {
-            evalFieldInitExpr = fields.get(i).getInitLlvm(newCounter);
+        //Build fields initializing expressions
+        for(Formal formal : fieldFormals){
+
+            //Get the field corresponding to the formal
+            Field field = getField(formal);
+
+            //Initialize the field and store it
+            ExprEval evalFieldInitExpr = field.getInitLlvm(newCounter);
             llvm.append(evalFieldInitExpr.llvmCode);
-            llvm.append(fieldFormals.get(i).llvmStore(evalFieldInitExpr.llvmId, retLlvmId, newCounter));
+            String store = formal.llvmStore(evalFieldInitExpr.llvmId, retLlvmId, newCounter);
+            llvm.append(store);
         }
 
-        // return initialized object
+
+//        ExprEval evalFieldInitExpr;
+//        ArrayList<Field> fields = cel.getFields();
+//        int i;
+//        for (i = 0; i < fields.size(); i++) {
+//            evalFieldInitExpr = fields.get(i).getInitLlvm(newCounter);
+//            llvm.append(evalFieldInitExpr.llvmCode);
+//            llvm.append(fieldFormals.get(i).llvmStore(evalFieldInitExpr.llvmId, retLlvmId, newCounter));
+//        }
+
+        //Initialize parent
+//        evalFieldInitExpr = new New(parentType).evalExpr(newCounter);
+//        llvm.append(evalFieldInitExpr.llvmCode);
+//        llvm.append(fieldFormals.get(i).llvmStore(evalFieldInitExpr.llvmId, retLlvmId, newCounter));
+
+
+        //Return initialized object
         llvm.append(LLVMKeywords.RET.getLlvmName()).append(" ").append(VSOPTypes.getLlvmTypeName(type.getName(), true))
                 .append(" ").append(retLlvmId).append(endLine);
 
-        // End of initialization method
+        //End of initialization method
         llvm.append("}").append(endLine).append(endLine);
 
         return llvm.toString();
+    }
+
+    /**
+     * Get the Field object corresponding to a formal, searching in this class and all its parent
+     *
+     * @param formal the formal to search
+     * @return the corresponding field
+     */
+    private Field getField(Formal formal){
+
+        ClassItem current = this;
+
+        while(true) {
+            ArrayList<Field> fields = current.cel.getFields();
+
+            for (Field field : fields) {
+                if (field.getFormal().equals(formal))
+                    return field;
+            }
+
+            current = classTable.get(current.parentType.getName());
+        }
+
+
+    }
+
+    /**
+     * Get the list of formals representing the field of this class and all its parents
+     * @return the list of formals
+     */
+    private ArrayList<Formal> getFormalsList(){
+
+        //ArrayList of ArrayList because the order of the formals matters
+        ArrayList<ArrayList<Formal>> fieldFormalsList = new ArrayList<>();
+
+        ScopeTable scope = this.scopeTable;
+
+        //Get the fields of all the parents of the class
+        while(scope != null){
+            fieldFormalsList.add(scope.getAllVariables(ScopeTable.Scope.LOCAL));
+            scope = scope.getParent();
+        }
+
+        //Insert in reverted order. That way, when we have class A extends B, and that we cast A to B (for a method call)
+        //the fields are exactly is the same oder and ca be accessed from B
+        ArrayList<Formal> fieldFormals = new ArrayList<>();
+        for(int i = fieldFormalsList.size() - 1;i >= 0;i--)
+            fieldFormals.addAll(fieldFormalsList.get(i));
+
+        //Remove self from fields
+        ArrayList<Formal> self = new ArrayList<>();
+        for(Formal field : fieldFormals) {
+            if (field.getName().equals(LanguageSpecs.SELF)) {
+                self.add(field);
+            }
+        }
+        fieldFormals.removeAll(self);
+
+        //Add a pointer to parent to the class fields
+//        Formal parent = new Formal(new Id("parent"), parentType);
+//        parent.setParentClass(this.type.getName());
+//        parent.setClassField(true);
+//        fieldFormals.add(parent);
+//        scopeTable.addVariable(parent);
+
+
+
+        //Give id and parent class to fields
+        int k = 0;
+        for(Formal formal : fieldFormals) {
+            formal.setClassFieldId(k++);
+            formal.setParentClass("%class." + this.getName());
+            formal.setScopeTable(this.scopeTable);
+        }
+
+        return fieldFormals;
+
     }
 }

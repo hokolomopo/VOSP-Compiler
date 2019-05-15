@@ -101,4 +101,8 @@ public class Field extends ASTNode {
         }
         return initExpr.evalExpr(counter);
     }
+
+    public Formal getFormal(){
+        return new Formal(id, type);
+    }
 }

@@ -27,10 +27,6 @@ public abstract class Expr extends ASTNode{
         return typeName;
     }
 
-    protected void setScopeTable(ScopeTable scopeTable){
-        this.scopeTable = scopeTable;
-    }
-
     protected boolean isLlvmLiteral(){
         return false;
     }

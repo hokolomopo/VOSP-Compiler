@@ -58,15 +58,19 @@ class Main extends IO {
 
  class X extends IO {
     xval : int32 <- 42;
+    boolTest : bool <- true;
 
     xfun() : int32 {
         xval
     }
- }
+ }  
 
   class Y extends X {
+    yval : int32 <- 89;
 
     yfun() : int32 {
+        yval;
+        xval <- xval;
         xfun()
     }
  }

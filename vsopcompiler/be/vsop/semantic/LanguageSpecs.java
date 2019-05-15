@@ -43,7 +43,7 @@ public class LanguageSpecs {
             // We assume that there is no error in the default files. If there is, putting null here
             // will trigger an exception, differentiating in this way errors in input files from errors in default files.
             curItem.updateClassTable(classTable, null);
-            curItem.fillScopeTable(null, null);
+            curItem.fillScopeTable(new ScopeTable(), null);
         }
     }
 
