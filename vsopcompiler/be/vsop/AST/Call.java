@@ -7,6 +7,7 @@ import be.vsop.exceptions.semantic.MethodNotDeclaredException;
 import be.vsop.exceptions.semantic.SemanticException;
 import be.vsop.semantic.LLVMKeywords;
 import be.vsop.semantic.LLVMTypes;
+import be.vsop.semantic.LlvmWrappers;
 import be.vsop.semantic.VSOPTypes;
 
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public class Call extends Expr {
             Method called = classTable.get(object).lookupMethod(methodId);
 
             //No such method
-            if(called == null){
+            if (called == null) {
                 errorList.add(new MethodNotDeclaredException(methodId.getName(), methodId.line, methodId.column));
                 return;
             }
@@ -52,7 +53,7 @@ public class Call extends Expr {
                     if (curArgType != null) {
                         if (isNotChild(curArgType, called.getArgument(i).getType().getName())) {
                             invalid = true;
-                            messageEnd.append((i+1)).append(", ");
+                            messageEnd.append((i + 1)).append(", ");
                         }
                     }
                 }
@@ -69,7 +70,7 @@ public class Call extends Expr {
     }
 
     @Override
-    public void checkScope(ArrayList<SemanticException> errorList){
+    public void checkScope(ArrayList<SemanticException> errorList) {
         Method called = classTable.get(objExpr.typeName).lookupMethod(methodId);
         if (called == null) {
             errorList.add(new MethodNotDeclaredException(methodId.getName(), line, column));
@@ -80,7 +81,7 @@ public class Call extends Expr {
 
     @Override
     public void print(int tabLevel, boolean doTab) {
-        if(doTab)
+        if (doTab)
             System.out.print(getTab(tabLevel));
 
         System.out.print("Call(");
@@ -92,31 +93,48 @@ public class Call extends Expr {
 
     @Override
     public ExprEval evalExpr(InstrCounter counter) {
-        //TODO call marche pas quand on apelle une fonction qui renvoie un void, on peut pas assigner qqc a un void
+        //TODO call marche pas quand on apelle une fonction qui renvoie un void, on peut pas assigner qqc a un voi
 
+        // Ids of the arguments, obtained by recursively evaluating the expressions defining their values
         ArrayList<String> argumentsIds = new ArrayList<>();
+        // Llvm types of the arguments, obtained through the argList instance variable
         ArrayList<String> argumentsTypes = new ArrayList<>();
+        // Called method, containing the return type as well as the (first, in the order of inheritance)
+        // class containing its definition
         Method called = classTable.get(objExpr.typeName).lookupMethod(methodId);
         String implementedBy = called.scopeTable.getScopeClassType().getName();
+        StringBuilder llvm = new StringBuilder();
 
         ExprEval curArgEval = objExpr.evalExpr(counter);
-        StringBuilder llvm = new StringBuilder();
+        // Evaluate the expression defining the object on which the function is called
         llvm.append(curArgEval.llvmCode);
+
         if (!implementedBy.equals(objExpr.typeName)) {
-            // Turn self pointer into a compatible pointer for the inherited function
+            // If the function is inherited (i.e., not implemented by the current object type), we need to
+            // turn the type of the self pointer into the type of the implementer, before calling the function
+            // It won't hurt inside the body of the function, as any variable existing in the parent type
+            // also exists in the child type, and at the same place
+            // It does not actually change anything in the state of the code, but it is needed to be compliant
+            // with llvm type-checking
             String intPointer = counter.getNextLlvmId();
             String pointerNewType = counter.getNextLlvmId();
+            // First, cast the pointer to the current object into an int, using the ptrtoint function of llvm
+            // We use i64 because an i32 could overflow on most current machines
             llvm.append(llvmCast(intPointer, LLVMKeywords.PTRTOINT, VSOPTypes.getLlvmTypeName(objExpr.typeName, true),
                     LLVMTypes.INT64, curArgEval.llvmId));
+            // Then, cast the obtained int into a new pointer (using inttoptr), giving it the new type
             llvm.append(llvmCast(pointerNewType, LLVMKeywords.INTTOPTR, LLVMTypes.INT64,
                     VSOPTypes.getLlvmTypeName(implementedBy, true), intPointer));
+            // Add the new type pointer as first argument
             argumentsIds.add(pointerNewType);
             argumentsTypes.add(VSOPTypes.getLlvmTypeName(implementedBy, true));
         } else {
+            // If the function is not inherited, simply add calling object as first argument
             argumentsIds.add(curArgEval.llvmId);
             argumentsTypes.add(VSOPTypes.getLlvmTypeName(objExpr.typeName, true));
         }
 
+        // Append code generating all other arguments, and add them into the list of arguments
         for (int i = 0; i < argList.size(); i++) {
             curArgEval = argList.get(i).evalExpr(counter);
             llvm.append(curArgEval.llvmCode);
@@ -124,9 +142,17 @@ public class Call extends Expr {
             argumentsTypes.add(VSOPTypes.getLlvmTypeName(argList.get(i).typeName, true));
         }
 
-        String llvmId = counter.getNextLlvmId();
-        String funcName = "@" + called.scopeTable.getScopeClassType().getName() + "." + methodId.getName();
-        llvm.append(llvmCall(llvmId, VSOPTypes.getLlvmTypeName(called.returnType(), true), funcName, argumentsIds, argumentsTypes));
+        String llvmId;
+        if (called.returnType().equals(VSOPTypes.UNIT.getName())) {
+            // If the return type is unit (void), we don't save the result anywhere
+            llvmId = null;
+        } else {
+            llvmId = counter.getNextLlvmId();
+        }
+        // Append code actually calling the function (which as a unique name)
+        String funcName = "@" + implementedBy + "." + methodId.getName();
+        llvm.append(LlvmWrappers.call(llvmId, VSOPTypes.getLlvmTypeName(called.returnType(), true),
+                funcName, argumentsIds, argumentsTypes));
 
         return new ExprEval(llvmId, llvm.toString());
     }

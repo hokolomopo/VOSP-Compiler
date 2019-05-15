@@ -5,6 +5,8 @@ class Main extends IO {
     x : X;
 
     main() : int32{
+        x <- new X;
+        x.xfun();
         printBool(isnull x);
         testString(mainString);
         0
@@ -25,7 +27,8 @@ class Main extends IO {
  class X extends IO {
     xval : int32 <- 42;
 
-    xfun() : int32 {
-        xval
+    xfun() : unit {
+        printInt32(xval);
+        ()
     }
  }

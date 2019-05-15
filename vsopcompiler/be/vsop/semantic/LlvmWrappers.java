@@ -105,9 +105,14 @@ public class LlvmWrappers {
                 " " + fromValue + " " + LLVMKeywords.TO.getLlvmName() + " " + toType + endLine;
     }
 
-    public static String call(String result, String retType, String funcName, ArrayList<String> argumentsIds, ArrayList<String> argumentsTypes) {
+    public static String call(String result, String retType, String funcName,
+                              ArrayList<String> argumentsIds, ArrayList<String> argumentsTypes) {
+        // If result is null, that means that we don't need to save the result of the call in a variable
         StringBuilder ret = new StringBuilder();
-        ret.append(result).append(" = ").append(LLVMKeywords.CALL.getLlvmName()).append(" ").append(retType)
+        if (result != null) {
+            ret.append(result).append(" = ");
+        }
+        ret.append(LLVMKeywords.CALL.getLlvmName()).append(" ").append(retType)
                 .append(" ").append(funcName).append("(");
         for (int i = 0; i < argumentsIds.size(); i++) {
             ret.append(argumentsTypes.get(i)).append(" ").append(argumentsIds.get(i)).append(", ");
