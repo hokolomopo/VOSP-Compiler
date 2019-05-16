@@ -8,13 +8,14 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.File;
 
 public class vsopc {
     public static void main(String[] args) {
         String fileName = null;
         String mode = "";
         boolean skipNext = false;
-        String languageDirPath = "";
+        String languageDirPath = ".";
         for (String arg : args) {
             if (!skipNext) {
                 if (arg.startsWith("-")) {
@@ -45,7 +46,7 @@ public class vsopc {
             System.exit(-1);
         }
 
-        Compiler compiler = new Compiler(fileName);
+        Compiler compiler = new Compiler(fileName, languageDirPath);
 
         if (mode.contentEquals("-lex")) {
             VSOPLexer lexer = new VSOPLexer(reader);
@@ -100,6 +101,11 @@ public class vsopc {
             System.out.println(llvm);
 
         } else {
+            // generate executable
+            File submissionDir = new File("submission");
+            if (!submissionDir.exists()) {
+                submissionDir.mkdir();
+            }
             if (args.length > 2) {
                 compiler.doSemanticAnalysis(null, languageDirPath + "/language/", false);
             } else {
@@ -111,14 +117,14 @@ public class vsopc {
             String executableFileName = fileName.substring(fileName.lastIndexOf("/") + 1, fileName.indexOf(".vsop"));
             FileWriter writer;
             try {
-                writer = new FileWriter(languageDirPath + "/llvm/result.ll", false);
+                writer = new FileWriter("submission/" + executableFileName + ".ll", false);
                 writer.write(llvm);
                 writer.close();
 
-                writer = new FileWriter(languageDirPath + "/" + executableFileName, false);
+                writer = new FileWriter(executableFileName, false);
                 writer.write("#!/bin/bash\n" +
                         "DIR=\"$(dirname \"$(readlink -f \"$0\")\")\"\n" +
-                        "lli $DIR/llvm/result.ll");
+                        "lli $DIR/" + "submission/" + executableFileName + ".ll");
                 writer.close();
             } catch (IOException e) {
                 e.printStackTrace();

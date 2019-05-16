@@ -21,10 +21,16 @@ import java.nio.file.Paths;
 
 public class Compiler {
     private String fileName;
+    private String languageDirPath;
     private Program program;
 
     public Compiler(String fileName) {
+        this(fileName, ".");
+    }
+
+    public Compiler(String fileName, String languageDirPath) {
         this.fileName = fileName;
+        this.languageDirPath = languageDirPath;
     }
 
     public Program buildAST(){
@@ -99,7 +105,7 @@ public class Compiler {
 
     private String writeIOCode() {
         try {
-            return new String(Files.readAllBytes(Paths.get("language/llcode.ll")), StandardCharsets.UTF_8);
+            return new String(Files.readAllBytes(Paths.get(languageDirPath + "/language/llcode.ll")), StandardCharsets.UTF_8);
         } catch (IOException e) {
             e.printStackTrace();
             System.err.println("In Compiler.java writeIOCode : file language/llcode.ll not found (containing implementation of IO's functions");

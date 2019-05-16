@@ -33,7 +33,7 @@ public class LanguageSpecs {
         ClassItem curItem;
         for(DefaultClasses d : DefaultClasses.values()) {
             if (languageDirPath != null) {
-                compiler = new Compiler(languageDirPath + d.fileName);
+                compiler = new Compiler(languageDirPath + d.fileName, languageDirPath);
             } else {
                 compiler = new Compiler("language/" + d.fileName);
             }

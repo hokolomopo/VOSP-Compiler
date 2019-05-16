@@ -2,12 +2,10 @@
 
 /* JFlex file for VSOP language */
 package be.vsop.lexer;
-
 import be.vsop.exceptions.LexerException;
-import be.vsop.tokens.Token;
-import be.vsop.tokens.Token.Tokens;
-
 import java.util.HashMap;
+import be.vsop.tokens.Token.Tokens;
+import be.vsop.tokens.Token;
 import java.util.Stack;
 
 /**

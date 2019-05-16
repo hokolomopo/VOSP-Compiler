@@ -77,9 +77,11 @@ define i32 @IO.inputInt32(%class.IO* %self) {
 @.str.n = private unnamed_addr constant [2 x i8] c"n\00"
 @.str.bad_bool = private unnamed_addr constant [43 x i8] c"Boolean input should be either 'y' or 'n'\0a\00"
 @.str.bad_int32 = private unnamed_addr constant [50 x i8] c"Error while loading int32 value, maybe too long?\0a\00"
-@.str = private unnamed_addr constant [38 x i8] c"Viva la vida baby and keep on Rockin'\00"
-@.str.1 = private unnamed_addr constant [38 x i8] c"Viva la vida baby and keep on Rockin'\00"
-@.str.2 = private unnamed_addr constant [4 x i8] c"lol\00"
+@.str = private unnamed_addr constant [46 x i8] c"Enter an integer greater-than or equal to 0: \00"
+@.str.1 = private unnamed_addr constant [51 x i8] c"Error: number must be greater-than or equal to 0.\0a\00"
+@.str.2 = private unnamed_addr constant [18 x i8] c"The factorial of \00"
+@.str.3 = private unnamed_addr constant [5 x i8] c" is \00"
+@.str.4 = private unnamed_addr constant [2 x i8] c"\0a\00"
 
 
 define i32 @main () { 
@@ -88,54 +90,86 @@ define i32 @main () {
 ret i32 %returned
 }
 
-%class.Main = type { i8*, i1, i32, i8*, %class.X* }
+%class.Main = type { i8* }
+
+define i32 @Main.factorial(%class.Main* %self, i32 %n) {
+%self.ptr = alloca %class.Main* 
+%n.ptr = alloca i32 
+store %class.Main* %self, %class.Main** %self.ptr 
+store i32 %n, i32* %n.ptr 
+%cond.ptr = alloca i32 
+%1 = load i32, i32* %n.ptr 
+%2 = icmp slt i32 %1, 2
+br i1 %2, label %cond.true, label %cond.false
+
+cond.true:
+store i32 1, i32* %cond.ptr 
+br label %cond.end
+
+cond.false:
+%3 = load i32, i32* %n.ptr 
+%4 = load %class.Main*, %class.Main** %self.ptr 
+%5 = load i32, i32* %n.ptr 
+%6 = sub i32 %5, 1
+%7 = call i32 @Main.factorial(%class.Main* %4, i32 %6)
+%8 = mul i32 %3, %7
+store i32 %8, i32* %cond.ptr 
+br label %cond.end
+
+cond.end:
+%9 = load i32, i32* %cond.ptr 
+ret i32 %9 
+}
 
 define i32 @Main.main(%class.Main* %self) {
 %self.ptr = alloca %class.Main* 
 store %class.Main* %self, %class.Main** %self.ptr 
-%1 = call %class.X* @.New.X()
-%2 = getelementptr %class.Main, %class.Main* %self, i32 0, i32 4 
-store %class.X* %1, %class.X** %2 
-%3 = getelementptr %class.Main, %class.Main* %self, i32 0, i32 4 
-%4 = load %class.X*, %class.X** %3 
-call void @X.xfun(%class.X* %4)
+%1 = load %class.Main*, %class.Main** %self.ptr 
+%2 = ptrtoint %class.Main* %1 to i64
+%3 = inttoptr i64 %2 to %class.IO*
+%4 = call %class.IO* @IO.print(%class.IO* %3, i8* getelementptr inbounds ([46 x i8], [46 x i8]* @.str, i32 0, i32 0))
+%n.ptr = alloca i32 
 %5 = load %class.Main*, %class.Main** %self.ptr 
 %6 = ptrtoint %class.Main* %5 to i64
 %7 = inttoptr i64 %6 to %class.IO*
-%8 = getelementptr %class.Main, %class.Main* %self, i32 0, i32 4 
-%9 = load %class.X*, %class.X** %8 
-%10 = icmp eq %class.X* null, %9
-%11 = call %class.IO* @IO.printBool(%class.IO* %7, i1 %10)
-%12 = load %class.Main*, %class.Main** %self.ptr 
-%13 = getelementptr %class.Main, %class.Main* %self, i32 0, i32 3 
-%14 = load i8*, i8** %13 
-%15 = call %class.Main* @Main.testString(%class.Main* %12, i8* %14)
-ret i32 0 
-}
+%8 = call i32 @IO.inputInt32(%class.IO* %7)
+store i32 %8, i32* %n.ptr 
+%cond.ptr = alloca i32 
+%9 = load i32, i32* %n.ptr 
+%10 = icmp slt i32 %9, 0
+br i1 %10, label %cond.true, label %cond.false
 
-define %class.Main* @Main.testString(%class.Main* %self, i8* %myString) {
-%self.ptr = alloca %class.Main* 
-%myString.ptr = alloca i8* 
-store %class.Main* %self, %class.Main** %self.ptr 
-store i8* %myString, i8** %myString.ptr 
-store i8* getelementptr inbounds ([38 x i8], [38 x i8]* @.str.1, i32 0, i32 0), i8** %myString.ptr 
-%1 = load %class.Main*, %class.Main** %self.ptr 
-ret %class.Main* %1 
-}
+cond.true:
+%11 = load %class.Main*, %class.Main** %self.ptr 
+%12 = ptrtoint %class.Main* %11 to i64
+%13 = inttoptr i64 %12 to %class.IO*
+%14 = call %class.IO* @IO.print(%class.IO* %13, i8* getelementptr inbounds ([51 x i8], [51 x i8]* @.str.1, i32 0, i32 0))
+%15 = sub i32 0, 1
+store i32 %15, i32* %cond.ptr 
+br label %cond.end
 
-define i32 @Main.truc(%class.Main* %self, i32 %tail, %class.Main* %boolean) {
-%self.ptr = alloca %class.Main* 
-%tail.ptr = alloca i32 
-%boolean.ptr = alloca %class.Main* 
-store %class.Main* %self, %class.Main** %self.ptr 
-store i32 %tail, i32* %tail.ptr 
-store %class.Main* %boolean, %class.Main** %boolean.ptr 
-%1 = load i32, i32* %tail.ptr 
-%2 = add i32 %1, 3
-store i32 %2, i32* %tail.ptr 
-%3 = load i32, i32* %tail.ptr 
-store i32 %3, i32* %tail.ptr 
-ret i32 %3 
+cond.false:
+%16 = load %class.Main*, %class.Main** %self.ptr 
+%17 = ptrtoint %class.Main* %16 to i64
+%18 = inttoptr i64 %17 to %class.IO*
+%19 = call %class.IO* @IO.print(%class.IO* %18, i8* getelementptr inbounds ([18 x i8], [18 x i8]* @.str.2, i32 0, i32 0))
+%20 = load i32, i32* %n.ptr 
+%21 = call %class.IO* @IO.printInt32(%class.IO* %19, i32 %20)
+%22 = call %class.IO* @IO.print(%class.IO* %21, i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.3, i32 0, i32 0))
+%23 = load %class.Main*, %class.Main** %self.ptr 
+%24 = ptrtoint %class.Main* %23 to i64
+%25 = inttoptr i64 %24 to %class.IO*
+%26 = load %class.Main*, %class.Main** %self.ptr 
+%27 = load i32, i32* %n.ptr 
+%28 = call i32 @Main.factorial(%class.Main* %26, i32 %27)
+%29 = call %class.IO* @IO.printInt32(%class.IO* %25, i32 %28)
+%30 = call %class.IO* @IO.print(%class.IO* %29, i8* getelementptr inbounds ([2 x i8], [2 x i8]* @.str.4, i32 0, i32 0))
+store i32 0, i32* %cond.ptr 
+br label %cond.end
+
+cond.end:
+%31 = load i32, i32* %cond.ptr 
+ret i32 %31 
 }
 
 
@@ -147,42 +181,6 @@ define %class.Main* @.New.Main() {
 %5 = inttoptr i64 %4 to %class.Main*
 %6 = getelementptr %class.Main, %class.Main* %5, i32 0, i32 0 
 store i8* getelementptr inbounds ([5 x i8], [5 x i8]* null, i32 0, i32 0), i8** %6 
-%7 = getelementptr %class.Main, %class.Main* %5, i32 0, i32 1 
-store i1 1, i1* %7 
-%8 = getelementptr %class.Main, %class.Main* %5, i32 0, i32 2 
-store i32 0, i32* %8 
-%9 = getelementptr %class.Main, %class.Main* %5, i32 0, i32 3 
-store i8* getelementptr inbounds ([38 x i8], [38 x i8]* @.str, i32 0, i32 0), i8** %9 
-%10 = getelementptr %class.Main, %class.Main* %5, i32 0, i32 4 
-store %class.X* null, %class.X** %10 
 ret %class.Main* %5
-}
-
-%class.X = type { i8*, i32 }
-
-define void @X.xfun(%class.X* %self) {
-%self.ptr = alloca %class.X* 
-store %class.X* %self, %class.X** %self.ptr 
-%1 = load %class.X*, %class.X** %self.ptr 
-%2 = ptrtoint %class.X* %1 to i64
-%3 = inttoptr i64 %2 to %class.IO*
-%4 = getelementptr %class.X, %class.X* %self, i32 0, i32 1 
-%5 = load i32, i32* %4 
-%6 = call %class.IO* @IO.printInt32(%class.IO* %3, i32 %5)
-Todo nullret void  
-}
-
-
-define %class.X* @.New.X() {
-%1 = getelementptr %class.X, %class.X* null, i32 1
-%2 = ptrtoint %class.X* %1 to i64
-%3 = call i8* @malloc(i64 %2)
-%4 = ptrtoint i8* %3 to i64
-%5 = inttoptr i64 %4 to %class.X*
-%6 = getelementptr %class.X, %class.X* %5, i32 0, i32 0 
-store i8* getelementptr inbounds ([5 x i8], [5 x i8]* null, i32 0, i32 0), i8** %6 
-%7 = getelementptr %class.X, %class.X* %5, i32 0, i32 1 
-store i32 42, i32* %7 
-ret %class.X* %5
 }
 
