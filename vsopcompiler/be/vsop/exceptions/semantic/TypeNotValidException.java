@@ -1,6 +1,5 @@
 package be.vsop.exceptions.semantic;
 
-import be.vsop.semantic.LanguageSpecs;
 import be.vsop.semantic.VSOPTypes;
 
 public class TypeNotValidException extends SemanticException {

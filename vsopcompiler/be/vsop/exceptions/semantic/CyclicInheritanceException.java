@@ -1,7 +1,8 @@
 package be.vsop.exceptions.semantic;
 
-import java.util.ArrayList;
 import be.vsop.AST.ClassItem;
+
+import java.util.ArrayList;
 
 public class CyclicInheritanceException extends SemanticException {
     public CyclicInheritanceException(ArrayList<ClassItem> inCycle) {

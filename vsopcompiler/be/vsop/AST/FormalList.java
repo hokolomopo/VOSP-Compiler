@@ -1,8 +1,8 @@
 package be.vsop.AST;
 
 import be.vsop.codegenutil.InstrCounter;
-import be.vsop.exceptions.semantic.VariableAlreadyDeclaredException;
 import be.vsop.exceptions.semantic.SemanticException;
+import be.vsop.exceptions.semantic.VariableAlreadyDeclaredException;
 
 import java.util.ArrayList;
 import java.util.HashSet;

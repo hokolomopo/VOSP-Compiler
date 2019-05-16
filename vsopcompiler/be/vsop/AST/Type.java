@@ -2,7 +2,6 @@ package be.vsop.AST;
 
 import be.vsop.exceptions.semantic.ClassNotDeclaredException;
 import be.vsop.exceptions.semantic.SemanticException;
-import be.vsop.exceptions.semantic.TypeNotValidException;
 import be.vsop.semantic.ScopeTable;
 import be.vsop.semantic.VSOPTypes;
 

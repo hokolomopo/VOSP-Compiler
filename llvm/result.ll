@@ -87,12 +87,9 @@ define i32 @IO.inputInt32(%class.IO* %self) {
 @.str.n = private unnamed_addr constant [2 x i8] c"n\00"
 @.str.bad_bool = private unnamed_addr constant [43 x i8] c"Boolean input should be either 'y' or 'n'\0a\00"
 @.str.bad_int32 = private unnamed_addr constant [50 x i8] c"Error while loading int32 value, maybe too long?\0a\00"
-@.str = private unnamed_addr constant [39 x i8] c"Viva la vida baby and keep on Rockin'\0a\00"
-@.str.1 = private unnamed_addr constant [39 x i8] c"Viva la vida baby and keep on Rockin'\0a\00"
+@.str = private unnamed_addr constant [38 x i8] c"Viva la vida baby and keep on Rockin'\00"
+@.str.1 = private unnamed_addr constant [38 x i8] c"Viva la vida baby and keep on Rockin'\00"
 @.str.2 = private unnamed_addr constant [4 x i8] c"lol\00"
-@.str.3 = private unnamed_addr constant [2 x i8] c"\0a\00"
-@.str.4 = private unnamed_addr constant [12 x i8] c"X is null \0a\00"
-@.str.5 = private unnamed_addr constant [2 x i8] c"\0a\00"
 
 
 define i32 @main () { 
@@ -106,21 +103,23 @@ ret i32 %returned
 define i32 @Main.main(%class.Main* %self) {
 %self.ptr = alloca %class.Main* 
 store %class.Main* %self, %class.Main** %self.ptr 
-%1 = load %class.Main*, %class.Main** %self.ptr 
-%2 = ptrtoint %class.Main* %1 to i64
-%3 = inttoptr i64 %2 to %class.IO*
-%4 = getelementptr %class.Main, %class.Main* %self, i32 0, i32 3 
-%5 = load %class.X*, %class.X** %4 
-%6 = icmp eq %class.X* null, %5
-%7 = call %class.IO* @IO.printBool(%class.IO* %3, i1 %6)
-%8 = load %class.Main*, %class.Main** %self.ptr 
-%9 = getelementptr %class.Main, %class.Main* %self, i32 0, i32 2 
-%10 = load i8*, i8** %9 
-%11 = call %class.Main* @Main.testString(%class.Main* %8, i8* %10)
+%1 = call %class.X* @.New.X()
+%2 = getelementptr %class.Main, %class.Main* %self, i32 0, i32 3 
+store %class.X* %1, %class.X** %2 
+%3 = getelementptr %class.Main, %class.Main* %self, i32 0, i32 3 
+%4 = load %class.X*, %class.X** %3 
+call void @X.xfun(%class.X* %4)
+%5 = load %class.Main*, %class.Main** %self.ptr 
+%6 = ptrtoint %class.Main* %5 to i64
+%7 = inttoptr i64 %6 to %class.IO*
+%8 = getelementptr %class.Main, %class.Main* %self, i32 0, i32 3 
+%9 = load %class.X*, %class.X** %8 
+%10 = icmp eq %class.X* null, %9
+%11 = call %class.IO* @IO.printBool(%class.IO* %7, i1 %10)
 %12 = load %class.Main*, %class.Main** %self.ptr 
-%13 = call i32 @Main.testLoopCond(%class.Main* %12, i32 0)
-%14 = load %class.Main*, %class.Main** %self.ptr 
-%15 = call i32 @Main.testNew(%class.Main* %14)
+%13 = getelementptr %class.Main, %class.Main* %self, i32 0, i32 2 
+%14 = load i8*, i8** %13 
+%15 = call %class.Main* @Main.testString(%class.Main* %12, i8* %14)
 ret i32 0 
 }
 
@@ -129,130 +128,9 @@ define %class.Main* @Main.testString(%class.Main* %self, i8* %myString) {
 %myString.ptr = alloca i8* 
 store %class.Main* %self, %class.Main** %self.ptr 
 store i8* %myString, i8** %myString.ptr 
-store i8* getelementptr inbounds ([39 x i8], [39 x i8]* @.str.1, i32 0, i32 0), i8** %myString.ptr 
+store i8* getelementptr inbounds ([38 x i8], [38 x i8]* @.str.1, i32 0, i32 0), i8** %myString.ptr 
 %1 = load %class.Main*, %class.Main** %self.ptr 
-%2 = ptrtoint %class.Main* %1 to i64
-%3 = inttoptr i64 %2 to %class.IO*
-%4 = load i8*, i8** %myString.ptr 
-%5 = call %class.IO* @IO.print(%class.IO* %3, i8* %4)
-%6 = load %class.Main*, %class.Main** %self.ptr 
-%7 = ptrtoint %class.Main* %6 to i64
-%8 = inttoptr i64 %7 to %class.IO*
-%9 = getelementptr %class.Main, %class.Main* %self, i32 0, i32 2 
-%10 = load i8*, i8** %9 
-%11 = call %class.IO* @IO.print(%class.IO* %8, i8* %10)
-%12 = load %class.Main*, %class.Main** %self.ptr 
-%13 = ptrtoint %class.Main* %12 to i64
-%14 = inttoptr i64 %13 to %class.IO*
-%15 = load i8*, i8** %myString.ptr 
-%16 = call %class.IO* @IO.print(%class.IO* %14, i8* %15)
-%17 = load %class.Main*, %class.Main** %self.ptr 
-ret %class.Main* %17 
-}
-
-define i32 @Main.testLoop(%class.Main* %self, i32 %i) {
-%self.ptr = alloca %class.Main* 
-%i.ptr = alloca i32 
-store %class.Main* %self, %class.Main** %self.ptr 
-store i32 %i, i32* %i.ptr 
-br label %loop.cond
-loop.cond:
-%1 = load i32, i32* %i.ptr 
-%2 = icmp slt i32 %1, 3
-br i1 %2, label %loop.start, label %loop.end
-
-loop.start:
-%3 = load %class.Main*, %class.Main** %self.ptr 
-%4 = ptrtoint %class.Main* %3 to i64
-%5 = inttoptr i64 %4 to %class.IO*
-%6 = load i32, i32* %i.ptr 
-%7 = call %class.IO* @IO.printInt32(%class.IO* %5, i32 %6)
-%8 = load i32, i32* %i.ptr 
-%9 = add i32 %8, 1
-store i32 %9, i32* %i.ptr 
-br label %loop.cond
-
-loop.end:
-%10 = load %class.Main*, %class.Main** %self.ptr 
-%11 = ptrtoint %class.Main* %10 to i64
-%12 = inttoptr i64 %11 to %class.IO*
-%13 = call %class.IO* @IO.print(%class.IO* %12, i8* getelementptr inbounds ([2 x i8], [2 x i8]* @.str.3, i32 0, i32 0))
-%14 = load i32, i32* %i.ptr 
-ret i32 %14 
-}
-
-define i32 @Main.testNew(%class.Main* %self) {
-%self.ptr = alloca %class.Main* 
-store %class.Main* %self, %class.Main** %self.ptr 
-%c.ptr = alloca %class.Y* 
-%1 = call %class.Y* @.New.Y()
-store %class.Y* %1, %class.Y** %c.ptr 
-%cond.ptr = alloca %class.IO* 
-%2 = getelementptr %class.Main, %class.Main* %self, i32 0, i32 3 
-%3 = load %class.X*, %class.X** %2 
-%4 = icmp eq %class.X* null, %3
-br i1 %4, label %cond.true, label %cond.false
-
-cond.true:
-%5 = load %class.Main*, %class.Main** %self.ptr 
-%6 = ptrtoint %class.Main* %5 to i64
-%7 = inttoptr i64 %6 to %class.IO*
-%8 = call %class.IO* @IO.print(%class.IO* %7, i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.4, i32 0, i32 0))
-store %class.IO* %8, %class.IO** %cond.ptr 
-br label %cond.end
-
-cond.false:
-%9 = load %class.Main*, %class.Main** %self.ptr 
-%10 = ptrtoint %class.Main* %9 to i64
-%11 = inttoptr i64 %10 to %class.IO*
-%12 = load %class.Y*, %class.Y** %c.ptr 
-%13 = call i32 @Y.yfun(%class.Y* %12)
-%14 = call %class.IO* @IO.printInt32(%class.IO* %11, i32 %13)
-store %class.IO* %14, %class.IO** %cond.ptr 
-br label %cond.end
-
-cond.end:
-%15 = load %class.IO*, %class.IO** %cond.ptr 
-ret i32 3 
-}
-
-define i32 @Main.testLoopCond(%class.Main* %self, i32 %i) {
-%self.ptr = alloca %class.Main* 
-%i.ptr = alloca i32 
-store %class.Main* %self, %class.Main** %self.ptr 
-store i32 %i, i32* %i.ptr 
-%1 = load i32, i32* %i.ptr 
-%2 = icmp eq i32 %1, 0
-br i1 %2, label %cond.true, label %cond.end
-
-cond.true:
-br label %loop.cond
-loop.cond:
-%3 = load i32, i32* %i.ptr 
-%4 = icmp slt i32 %3, 3
-br i1 %4, label %loop.start, label %loop.end
-
-loop.start:
-%5 = load %class.Main*, %class.Main** %self.ptr 
-%6 = ptrtoint %class.Main* %5 to i64
-%7 = inttoptr i64 %6 to %class.IO*
-%8 = load i32, i32* %i.ptr 
-%9 = call %class.IO* @IO.printInt32(%class.IO* %7, i32 %8)
-%10 = load i32, i32* %i.ptr 
-%11 = add i32 %10, 1
-store i32 %11, i32* %i.ptr 
-br label %loop.cond
-
-loop.end:
-br label %cond.end
-
-cond.end:
-%12 = load %class.Main*, %class.Main** %self.ptr 
-%13 = ptrtoint %class.Main* %12 to i64
-%14 = inttoptr i64 %13 to %class.IO*
-%15 = call %class.IO* @IO.print(%class.IO* %14, i8* getelementptr inbounds ([2 x i8], [2 x i8]* @.str.5, i32 0, i32 0))
-%16 = load i32, i32* %i.ptr 
-ret i32 %16 
+ret %class.Main* %1 
 }
 
 define i32 @Main.truc(%class.Main* %self, i32 %tail, %class.Main* %boolean) {
@@ -282,21 +160,24 @@ store i1 1, i1* %6
 %7 = getelementptr %class.Main, %class.Main* %5, i32 0, i32 1 
 store i32 0, i32* %7 
 %8 = getelementptr %class.Main, %class.Main* %5, i32 0, i32 2 
-store i8* getelementptr inbounds ([39 x i8], [39 x i8]* @.str, i32 0, i32 0), i8** %8 
-%9 = call %class.X* @.New.X()
-%10 = getelementptr %class.Main, %class.Main* %5, i32 0, i32 3 
-store %class.X* %9, %class.X** %10 
+store i8* getelementptr inbounds ([38 x i8], [38 x i8]* @.str, i32 0, i32 0), i8** %8 
+%9 = getelementptr %class.Main, %class.Main* %5, i32 0, i32 3 
+store %class.X* null, %class.X** %9 
 ret %class.Main* %5
 }
 
-%class.X = type { i32, i1 }
+%class.X = type { i32 }
 
-define i32 @X.xfun(%class.X* %self) {
+define void @X.xfun(%class.X* %self) {
 %self.ptr = alloca %class.X* 
 store %class.X* %self, %class.X** %self.ptr 
-%1 = getelementptr %class.X, %class.X* %self, i32 0, i32 0 
-%2 = load i32, i32* %1 
-ret i32 %2 
+%1 = load %class.X*, %class.X** %self.ptr 
+%2 = ptrtoint %class.X* %1 to i64
+%3 = inttoptr i64 %2 to %class.IO*
+%4 = getelementptr %class.X, %class.X* %self, i32 0, i32 0 
+%5 = load i32, i32* %4 
+%6 = call %class.IO* @IO.printInt32(%class.IO* %3, i32 %5)
+ret void  
 }
 
 
@@ -307,43 +188,7 @@ define %class.X* @.New.X() {
 %4 = ptrtoint i8* %3 to i64
 %5 = inttoptr i64 %4 to %class.X*
 %6 = getelementptr %class.X, %class.X* %5, i32 0, i32 0 
-store i32 547894165, i32* %6 
-%7 = getelementptr %class.X, %class.X* %5, i32 0, i32 1 
-store i1 1, i1* %7 
+store i32 42, i32* %6 
 ret %class.X* %5
-}
-
-%class.Y = type { i32, i1, i32 }
-
-define i32 @Y.yfun(%class.Y* %self) {
-%self.ptr = alloca %class.Y* 
-store %class.Y* %self, %class.Y** %self.ptr 
-%1 = getelementptr %class.Y, %class.Y* %self, i32 0, i32 2 
-%2 = load i32, i32* %1 
-%3 = getelementptr %class.Y, %class.Y* %self, i32 0, i32 0 
-%4 = load i32, i32* %3 
-%5 = getelementptr %class.Y, %class.Y* %self, i32 0, i32 0 
-store i32 %4, i32* %5 
-%6 = load %class.Y*, %class.Y** %self.ptr 
-%7 = ptrtoint %class.Y* %6 to i64
-%8 = inttoptr i64 %7 to %class.X*
-%9 = call i32 @X.xfun(%class.X* %8)
-ret i32 %9 
-}
-
-
-define %class.Y* @.New.Y() {
-%1 = getelementptr %class.Y, %class.Y* null, i32 1
-%2 = ptrtoint %class.Y* %1 to i64
-%3 = call i8* @malloc(i64 %2)
-%4 = ptrtoint i8* %3 to i64
-%5 = inttoptr i64 %4 to %class.Y*
-%6 = getelementptr %class.Y, %class.Y* %5, i32 0, i32 0 
-store i32 547894165, i32* %6 
-%7 = getelementptr %class.Y, %class.Y* %5, i32 0, i32 1 
-store i1 1, i1* %7 
-%8 = getelementptr %class.Y, %class.Y* %5, i32 0, i32 2 
-store i32 89, i32* %8 
-ret %class.Y* %5
 }
 

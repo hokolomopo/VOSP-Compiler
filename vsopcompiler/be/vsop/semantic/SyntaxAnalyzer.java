@@ -4,8 +4,8 @@ import be.vsop.AST.ClassItem;
 import be.vsop.AST.Program;
 import be.vsop.exceptions.semantic.ClassNotDeclaredException;
 import be.vsop.exceptions.semantic.CyclicInheritanceException;
-import be.vsop.exceptions.semantic.SemanticException;
 import be.vsop.exceptions.semantic.MainException;
+import be.vsop.exceptions.semantic.SemanticException;
 
 import java.util.ArrayList;
 import java.util.HashMap;

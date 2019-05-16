@@ -2,7 +2,6 @@ package be.vsop.semantic;
 
 import be.vsop.AST.ASTNode;
 import be.vsop.AST.ClassItem;
-import be.vsop.AST.Type;
 import be.vsop.Compiler;
 
 import java.util.HashMap;

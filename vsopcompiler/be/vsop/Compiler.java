@@ -15,9 +15,9 @@ import java_cup.runtime.ComplexSymbolFactory;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.nio.charset.StandardCharsets;
 
 public class Compiler {
     private String fileName;
