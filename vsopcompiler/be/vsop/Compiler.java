@@ -32,7 +32,7 @@ public class Compiler {
         try {
             reader = new FileReader(fileName);
         } catch (FileNotFoundException e) {
-            System.err.println("File " + fileName + " not found.");
+            System.err.println("In Compiler.java buildAST() : file " + fileName + " not found.");
             System.exit(-1);
         }
 
@@ -102,7 +102,7 @@ public class Compiler {
             return new String(Files.readAllBytes(Paths.get("language/llcode.ll")), StandardCharsets.UTF_8);
         } catch (IOException e) {
             e.printStackTrace();
-            System.err.println("File language/llcode.ll not found (containing implementation of IO's functions");
+            System.err.println("In Compiler.java writeIOCode : file language/llcode.ll not found (containing implementation of IO's functions");
             System.exit(-1);
             // IDE wants a return there
             return "";

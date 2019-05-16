@@ -2,10 +2,6 @@ package be.vsop.AST;
 
 import be.vsop.codegenutil.ExprEval;
 import be.vsop.codegenutil.InstrCounter;
-import be.vsop.semantic.ScopeTable;
-import javafx.util.Pair;
-
-import java.util.ArrayList;
 
 public abstract class Expr extends ASTNode{
     protected String typeName;

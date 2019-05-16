@@ -13,11 +13,22 @@ public class vsopc {
     public static void main(String[] args) {
         String fileName = null;
         String mode = "";
+        boolean skipNext = false;
+        String languageDirPath = "";
         for (String arg : args) {
-            if (arg.contains("-")) {
-                mode = arg;
+            if (!skipNext) {
+                if (arg.startsWith("-")) {
+                    if (arg.equals("-dir")) {
+                        skipNext = true;
+                        continue;
+                    }
+                    mode = arg;
+                } else {
+                    fileName = arg;
+                }
             } else {
-                fileName = arg;
+                languageDirPath = arg;
+                skipNext = false;
             }
         }
 
@@ -30,7 +41,7 @@ public class vsopc {
         try {
             reader = new FileReader(fileName);
         } catch (FileNotFoundException e) {
-            System.err.println("File " + fileName + " not found.");
+            System.err.println("In vsopc.java, reading input file : file " + fileName + " not found.");
             System.exit(-1);
         }
 
@@ -72,7 +83,7 @@ public class vsopc {
 
         else if(mode.contentEquals("-check")) {
             if (args.length > 2) {
-                compiler.doSemanticAnalysis(null, args[2] + "/language/");
+                compiler.doSemanticAnalysis(null, languageDirPath + "/language/");
             } else {
                 compiler.doSemanticAnalysis(null, null);
             }
@@ -80,7 +91,7 @@ public class vsopc {
 
         else if(mode.contentEquals("-llvm")) {
             if (args.length > 2) {
-                compiler.doSemanticAnalysis(null, args[2] + "/language/", false);
+                compiler.doSemanticAnalysis(null, languageDirPath + "/language/", false);
             } else {
                 compiler.doSemanticAnalysis(null, null, false);
             }
@@ -88,16 +99,31 @@ public class vsopc {
             String llvm = compiler.generateLlvm();
             System.out.println(llvm);
 
+        } else {
+            if (args.length > 2) {
+                compiler.doSemanticAnalysis(null, languageDirPath + "/language/", false);
+            } else {
+                compiler.doSemanticAnalysis(null, null, false);
+            }
+
+            String llvm = compiler.generateLlvm();
+
+            String executableFileName = fileName.substring(fileName.lastIndexOf("/") + 1, fileName.indexOf(".vsop"));
             FileWriter writer;
             try {
-                writer = new FileWriter("llvm/result.ll", false);
+                writer = new FileWriter(languageDirPath + "/llvm/result.ll", false);
                 writer.write(llvm);
+                writer.close();
+
+                writer = new FileWriter(languageDirPath + "/" + executableFileName, false);
+                writer.write("#!/bin/bash\n" +
+                        "DIR=\"$(dirname \"$(readlink -f \"$0\")\")\"\n" +
+                        "lli $DIR/llvm/result.ll");
                 writer.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-        }//TODO else generate executable
+        }
 
     }
 

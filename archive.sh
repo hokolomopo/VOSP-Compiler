@@ -1,2 +1,2 @@
 #!/bin/bash
-tar --exclude='*.class' -cJf vsopcompiler.tar.xz vsopcompiler/*
+tar --exclude='*.class' --exclude='TestMain.java' -cJf vsopcompiler.tar.xz vsopcompiler/*

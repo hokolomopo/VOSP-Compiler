@@ -4,7 +4,6 @@ import be.vsop.codegenutil.ExprEval;
 import be.vsop.codegenutil.InstrCounter;
 import be.vsop.exceptions.semantic.InvalidAssignException;
 import be.vsop.exceptions.semantic.SemanticException;
-import javafx.util.Pair;
 
 import java.util.ArrayList;
 
