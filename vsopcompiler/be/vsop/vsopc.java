@@ -4,13 +4,27 @@ import be.vsop.exceptions.LexerException;
 import be.vsop.lexer.VSOPLexer;
 import be.vsop.tokens.Token;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.File;
+import java.io.*;
+import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 
 public class vsopc {
+    // This class is needed to execute properly runtime commands.
+    private static class StreamGobbler implements Runnable {
+        private InputStream inputStream;
+        private Consumer<String> consumer;
+
+        StreamGobbler(InputStream inputStream, Consumer<String> consumer) {
+            this.inputStream = inputStream;
+            this.consumer = consumer;
+        }
+
+        @Override
+        public void run() {
+            new BufferedReader(new InputStreamReader(inputStream)).lines()
+                    .forEach(consumer);
+        }
+    }
     public static void main(String[] args) {
         String fileName = null;
         String mode = "";
@@ -102,10 +116,6 @@ public class vsopc {
 
         } else {
             // generate executable
-            File submissionDir = new File("submission");
-            if (!submissionDir.exists()) {
-                submissionDir.mkdir();
-            }
             if (args.length > 2) {
                 compiler.doSemanticAnalysis(null, languageDirPath + "/language/", false);
             } else {
@@ -115,19 +125,50 @@ public class vsopc {
             String llvm = compiler.generateLlvm();
 
             String executableFileName = fileName.substring(fileName.lastIndexOf("/") + 1, fileName.indexOf(".vsop"));
-            FileWriter writer;
             try {
-                writer = new FileWriter("submission/" + executableFileName + ".ll", false);
+                // Write llvm code in a temporary file
+                File tmpLlvmFile = File.createTempFile("vsop", executableFileName + ".ll");
+
+                tmpLlvmFile.deleteOnExit();
+                FileWriter writer = new FileWriter(tmpLlvmFile, false);
                 writer.write(llvm);
                 writer.close();
 
-                writer = new FileWriter(executableFileName, false);
-                writer.write("#!/bin/bash\n" +
-                        "DIR=\"$(dirname \"$(readlink -f \"$0\")\")\"\n" +
-                        "lli $DIR/" + "submission/" + executableFileName + ".ll");
-                writer.close();
-            } catch (IOException e) {
+                // Executes a clang command to generate an executable
+                boolean isWindows = System.getProperty("os.name")
+                        .toLowerCase().startsWith("windows");
+                Process process;
+
+                if (isWindows) {
+                    String[] cmd = {"wsl", "clang", "-Wno-override-module", "-o", executableFileName,
+                            windowsToWslAbsolutePath(tmpLlvmFile.getAbsolutePath())};
+                    process = Runtime.getRuntime().exec(cmd);
+                } else {
+                    String[] cmd = {"clang", "-Wno-override-module", "-o", executableFileName, tmpLlvmFile.getAbsolutePath()};
+                    process = Runtime.getRuntime().exec(cmd);
+                }
+
+                // Consumes process output stream with stdout (and stderr)
+                StreamGobbler streamGobbler =
+                        new StreamGobbler(process.getInputStream(), System.out::println);
+                Executors.newSingleThreadExecutor().submit(streamGobbler);
+                streamGobbler =
+                        new StreamGobbler(process.getErrorStream(), System.err::println);
+                Executors.newSingleThreadExecutor().submit(streamGobbler);
+
+                // Check if process executed normally
+                int exitCode = process.waitFor();
+                if (exitCode != 0) {
+                    System.err.println("cmd creating executable exited with error");
+                    System.exit(-1);
+                }
+
+                // JVM does not want to exit by itself after a call to getRuntime
+                System.exit(0);
+            } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
+                System.err.println("In vsopc while generating executable");
+                System.exit(-1);
             }
         }
 
@@ -143,6 +184,18 @@ public class vsopc {
         result = result.replace("\\v", "\\x0b");
 
         return result;
+    }
+
+    private static String windowsToWslAbsolutePath(String windowsPath) {
+        StringBuilder unixPath = new StringBuilder();
+        int columnIndex = windowsPath.indexOf(":");
+        if (columnIndex != -1) {
+            String driver = windowsPath.substring(columnIndex - 1, columnIndex).toLowerCase();
+            unixPath.append("/mnt/").append(driver);
+            windowsPath = windowsPath.substring(columnIndex + 1);
+        }
+        unixPath.append(windowsPath.replace("\\", "/"));
+        return  unixPath.toString();
     }
 
 }
