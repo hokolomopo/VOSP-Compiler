@@ -6,14 +6,17 @@ import be.vsop.exceptions.semantic.ClassAlreadyDeclaredException;
 import be.vsop.exceptions.semantic.MainException;
 import be.vsop.exceptions.semantic.SemanticException;
 import be.vsop.semantic.*;
+import sun.plugin.dom.css.Counter;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 
 public class ClassItem extends ASTNode{
     private Type type;
     private Type parentType;
     private ClassElementList cel;
+    private Formal vtable;
 
     public ClassItem(Type type, ClassElementList cel) {
         this(type, new Type("Object"), cel);
@@ -97,6 +100,8 @@ public class ClassItem extends ASTNode{
     }
 
     public String getParentName() {
+        if (parentType == null)
+            return null;
         return parentType.getName();
     }
 
@@ -121,12 +126,54 @@ public class ClassItem extends ASTNode{
     }
 
     @Override
+    public void prepareForLlvm() {
+//        Formal formal = new Formal(LlvmWrappers.vtableName(type.getName()), LlvmWrappers.vtableName(type.getName()));
+//        cel.getFields().add(new Field(new Id(formal.getName()), formal.getType()));
+//        this.scopeTable.addVariable(formal);
+
+        addVtable();
+        super.prepareForLlvm();
+    }
+
+    public ArrayList<Method> getMethods(){
+        return cel.getMethods();
+    }
+
+
+    public String getClassDeclaration(){
+        //Get all class fields
+        ArrayList<Formal> fieldFormals = getFormalsList();
+
+        StringBuilder llvm = new StringBuilder();
+        llvm.append(declareVtable());
+        llvm.append(declareClass(fieldFormals, new InstrCounter()));
+
+        return llvm.toString();
+    }
+
+    @Override
     public String getLlvm(InstrCounter counter) {
         StringBuilder fieldsTypeList = new StringBuilder();
 
         //Get all class fields
         ArrayList<Formal> fieldFormals = getFormalsList();
 
+        StringBuilder llvm = new StringBuilder();
+//        llvm.append(declareVtable());
+//        llvm.append(declareClass(fieldFormals, counter));
+
+
+        // Generate initialization method
+        llvm.append(getNew());
+        llvm.append(getInitializer(fieldFormals));
+
+        llvm.append(cel.getLlvm(new InstrCounter()));
+
+        return llvm.toString();
+    }
+
+    private String declareClass(ArrayList<Formal> fieldFormals, InstrCounter counter){
+        StringBuilder fieldsTypeList = new StringBuilder();
 
         //Generate list of types of fields to define the Structure representing the Object  in llvm
         for (Formal fieldFormal : fieldFormals) {
@@ -137,14 +184,103 @@ public class ClassItem extends ASTNode{
             fieldsTypeList.setLength(fieldsTypeList.length() - 2);
         }
 
-        //Declare Structure of the object in llvm
-        StringBuilder llvm = new StringBuilder();
-        llvm.append("%class.").append(getName()).append(" = type { ").append(fieldsTypeList).append(" }\n\n")
-                .append(cel.getLlvm(counter)).append(endLine);
 
-        // Generate initialization method
-        String init  = getInitializer(fieldFormals);
-        llvm.append(init);
+        StringBuilder llvm = new StringBuilder();
+        //Declare Structure of the object in llvm
+        llvm.append("%class.").append(getName()).append(" = type { ").append(fieldsTypeList).append(" }\n\n");
+
+        return llvm.toString();
+    }
+
+    private String declareVtable(){
+        ArrayList<Method> methods = getFullMethodList();
+
+        StringBuilder builder = new StringBuilder();
+
+        //Declare vtable in llvm
+        builder.append(LlvmWrappers.vtableName(type.getName())).append(" = type { ");
+
+        //Generate list of types of fields to define the Structure representing the Object  in llvm
+        ArrayList<Method> tmp = new ArrayList<>();
+        for(int i = 0; i < methods.size(); i++){
+            Method m = methods.get(i);
+
+            if(m.isOverride())
+                continue;
+
+            tmp.add(m);
+
+        }
+
+        tmp.sort(new Comparator<Method>() {
+            @Override
+            public int compare(Method o1, Method o2) {
+                return Integer.compare(o1.getLlvmNumber(), o2.getLlvmNumber());
+            }
+        });
+
+        //Replace overriden methods
+        for(Method method : methods){
+            if(!method.isOverride())
+                continue;
+            Method overrided = tmp.get(method.getLlvmNumber());
+
+            if(isNotChild(method.getParentClassName(), overrided.getParentClassName()))
+                continue;
+
+            tmp.remove(method.getLlvmNumber());
+            tmp.add(method.getLlvmNumber(), method);
+        }
+
+        for(Method m : tmp){
+            builder.append(m.getLlvmSignature(true));
+
+            builder.append(", ");
+        }
+
+        if(tmp.size() > 0)
+            builder.delete(builder.length() - 2, builder.length());
+
+        builder.append("}\n\n");
+
+        return builder.toString();
+
+    }
+
+    private String getNew(){
+        StringBuilder llvm = new StringBuilder();
+        InstrCounter counter = new InstrCounter();
+
+        // Header of initialization method
+        llvm.append(LLVMKeywords.DEFINE.getLlvmName()).append(" ")
+                .append(VSOPTypes.getLlvmTypeName(type.getName(), true)).append(" ")
+                .append(LlvmWrappers.newFunctionNameFromClassName(type.getName())).append("() {").append(endLine);
+
+        ExprEval heapAllocationExpr = LlvmWrappers.heapAllocation(counter, VSOPTypes.getLlvmTypeName(type.getName()));
+        String retLlvmId = heapAllocationExpr.llvmId;
+        llvm.append(heapAllocationExpr.llvmCode);
+
+        //Allocate memory for the vtable then store it in teh Object
+        ExprEval heapAllocationVtable = LlvmWrappers.heapAllocation(counter, this.vtable.getType().getName());
+        llvm.append(heapAllocationVtable.llvmCode);
+        llvm.append(vtable.llvmStore(heapAllocationVtable.llvmId, retLlvmId, counter));
+
+
+        //Call init function
+        String initCall = String.format("%s %s %s (%s %s)\n", LLVMKeywords.CALL.getLlvmName(),
+                VSOPTypes.UNIT.getLlvmName(), LlvmWrappers.initFunctionName(type.getName()),
+                VSOPTypes.getLlvmTypeName(type.getName(), true), retLlvmId);
+
+        llvm.append(initCall);
+
+
+        //Return initialized object
+        llvm.append(LLVMKeywords.RET.getLlvmName()).append(" ").append(VSOPTypes.getLlvmTypeName(type.getName(), true))
+                .append(" ").append(retLlvmId).append(endLine);
+
+        //End of initialization method
+        llvm.append("}").append(endLine).append(endLine);
+
 
         return llvm.toString();
     }
@@ -156,38 +292,85 @@ public class ClassItem extends ASTNode{
      * @return the llvm code
      */
     private String getInitializer(ArrayList<Formal> fieldFormals){
+
+
         StringBuilder llvm = new StringBuilder();
+        InstrCounter counter = new InstrCounter();
+        String self = "%self";
 
         // Header of initialization method
         llvm.append(LLVMKeywords.DEFINE.getLlvmName()).append(" ")
-                .append(VSOPTypes.getLlvmTypeName(type.getName(), true)).append(" ")
-                .append(LlvmWrappers.newFunctionNameFromClassName(type.getName())).append("() {").append(endLine);
+                .append(VSOPTypes.UNIT.getLlvmName()).append(" ")
+                .append(LlvmWrappers.initFunctionName(type.getName())).append("(")
+                .append(VSOPTypes.getLlvmTypeName(type.getName(), true)).append(" ").append(self)
+                .append(") {").append(endLine);
 
-        InstrCounter newCounter = new InstrCounter();
-        ExprEval heapAllocationExpr = LlvmWrappers.heapAllocation(newCounter, type.getName());
-        String retLlvmId = heapAllocationExpr.llvmId;
-        llvm.append(heapAllocationExpr.llvmCode);
+        //Initialize parent
+        if(parentType != null){
+            ExprEval casted = Expr.castExpr(type.getName(), parentType.getName(), self, counter);
+            llvm.append(casted.llvmCode);
+            String initCall = String.format("%s %s %s (%s %s)\n", LLVMKeywords.CALL.getLlvmName(),
+                    VSOPTypes.UNIT.getLlvmName(), LlvmWrappers.initFunctionName(parentType.getName()),
+                    VSOPTypes.getLlvmTypeName(parentType.getName(), true), casted.llvmId);
 
-        //Build fields initializing expressions
-        for(Formal formal : fieldFormals){
-
-            //Get the field corresponding to the formal
-            Field field = getField(formal);
-
-            //Initialize the field and store it
-            ExprEval evalFieldInitExpr = field.getInitLlvm(newCounter);
-            llvm.append(evalFieldInitExpr.llvmCode);
-            String store = formal.llvmStore(evalFieldInitExpr.llvmId, retLlvmId, newCounter);
-            llvm.append(store);
+            llvm.append(initCall);
         }
 
+        //Initialize the formals
+        llvm.append(initFields(fieldFormals, self, counter));
 
-        //Return initialized object
-        llvm.append(LLVMKeywords.RET.getLlvmName()).append(" ").append(VSOPTypes.getLlvmTypeName(type.getName(), true))
-                .append(" ").append(retLlvmId).append(endLine);
+        //Initialize the VTable
+        llvm.append(initVtable(counter, self));
+
+        //Return void
+        llvm.append(LLVMKeywords.RET.getLlvmName()).append(" ").append(VSOPTypes.UNIT.getLlvmName()).append(endLine);
 
         //End of initialization method
         llvm.append("}").append(endLine).append(endLine);
+
+        return llvm.toString();
+    }
+
+    private String initVtable(InstrCounter counter, String selfId){
+        StringBuilder llvm = new StringBuilder();
+
+        ExprEval vtableLoad = this.vtable.llvmLoad(selfId, counter);
+        String vtableId = vtableLoad.llvmId;
+        llvm.append(vtableLoad.llvmCode);
+
+        ArrayList<Method> methods = cel.getMethods();
+        for(Method method : methods){
+            llvm.append(method.storeInVtable(this.vtable, vtableId, counter));
+        }
+
+        return llvm.toString();
+    }
+
+    private String initFields(ArrayList<Formal> fieldFormals, String selfId, InstrCounter counter){
+        StringBuilder llvm = new StringBuilder();
+
+        //Get local fields, because we only want to initialize the local fields, the inherited fields will
+        // be initialized with the function parent.init
+        ArrayList<Formal> localFormals = new ArrayList<>();
+        for(Field field : this.cel.getFields())
+            for(Formal formal : fieldFormals)
+                if(field.getFormal().equals(formal))
+                    localFormals.add(formal);
+
+        //Build fields initializing expressions
+        for(Formal formal : localFormals){
+
+            //Get the field corresponding to the formal
+            Field field = getField(formal);
+            if(field == null)
+                continue;
+
+            //Initialize the field and store it
+            ExprEval evalFieldInitExpr = field.getInitLlvm(counter);
+            llvm.append(evalFieldInitExpr.llvmCode);
+            String store = formal.llvmStore(evalFieldInitExpr.llvmId, selfId, counter);
+            llvm.append(store);
+        }
 
         return llvm.toString();
     }
@@ -209,6 +392,9 @@ public class ClassItem extends ASTNode{
                 if (field.getFormal().equals(formal))
                     return field;
             }
+
+            if(current.parentType == null)
+                return null;
 
             current = classTable.get(current.parentType.getName());
         }
@@ -248,13 +434,8 @@ public class ClassItem extends ASTNode{
         }
         fieldFormals.removeAll(self);
 
-        //Add a pointer to parent to the class fields
-//        Formal parent = new Formal(new Id("parent"), parentType);
-//        parent.setParentClass(this.type.getName());
-//        parent.setClassField(true);
-//        fieldFormals.add(parent);
-//        scopeTable.addVariable(parent);
-
+//        fieldFormals.add(0, new Formal("vtable", "{}"));
+        fieldFormals.add(0, vtable);
 
 
         //Give id and parent class to fields
@@ -269,7 +450,52 @@ public class ClassItem extends ASTNode{
 
     }
 
+    /**
+     * Get the list of formals representing the field of this class and all its parents
+     * @return the list of formals
+     */
+    private ArrayList<Method> getFullMethodList(){
+
+        //ArrayList of ArrayList because the order of the formals matters
+        ArrayList<ArrayList<Method>> methodListList = new ArrayList<>();
+
+        Type currentType = type;
+
+        //Get the fields of all the parents of the class
+        while(currentType != null){
+            ClassItem currentClass = classTable.get(currentType.getName());
+            methodListList.add(currentClass.getMethods());
+            currentType = currentClass.parentType;
+        }
+
+        //Insert in reverted order. That way, when we have class A extends B, and that we cast A to B (for a method call)
+        //the fields are exactly is the same oder and ca be accessed from B
+        ArrayList<Method> methodList = new ArrayList<>();
+        for(int i = methodListList.size() - 1;i >= 0;i--)
+            methodList.addAll(methodListList.get(i));
+
+        return methodList;
+
+    }
+
+
     public Method getMethod(String methodName){
         return this.scopeTable.lookupMethod(methodName, ScopeTable.Scope.GLOBAL);
+    }
+
+    public Formal getVtable() {
+        return vtable;
+    }
+
+    public ExprEval loadVtable(InstrCounter counter){
+        return vtable.llvmLoad(counter);
+    }
+
+    private void addVtable(){
+        Formal vtable = new Formal(LlvmWrappers.vtableName(type.getName()), LlvmWrappers.vtableName(type.getName()));
+        vtable.setClassField(true);
+        vtable.setParentClass("%class." + this.getName());
+        vtable.setClassFieldId(0);
+        this.vtable = vtable;
     }
 }

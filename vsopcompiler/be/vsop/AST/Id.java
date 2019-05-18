@@ -59,7 +59,6 @@ public class Id extends Expr {
 
 		ExprEval eval = thisFormal.llvmLoad(counter);
 
-
 		return castEval(eval, typeName, expectedType, counter);
 	}
 

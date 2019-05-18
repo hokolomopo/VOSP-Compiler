@@ -15,6 +15,22 @@ public class LlvmWrappers {
         return "@.New." + className;
     }
 
+    public static String initFunctionName(String className) {
+        // leading . so that can't conflict with user-defined functions
+        return "@.Init." + className;
+    }
+
+    public static String vtableName(String className) {
+        // leading . so that can't conflict with user-defined functions
+        return "%Vtable." + className;
+    }
+
+    public static String getMethodName(String method, String parentClass){
+        return "@" + parentClass + "." + method;
+
+    }
+
+
     public static String callNew(String result, String className) {
         return result + " = " + LLVMKeywords.CALL.getLlvmName() + " " + VSOPTypes.getLlvmTypeName(className, true) +
                 " " + newFunctionNameFromClassName(className) + "()" + endLine;
@@ -24,13 +40,12 @@ public class LlvmWrappers {
         return result + " = " + LLVMKeywords.ALLOCATE.getLlvmName() + " " + type + endLine;
     }
 
-    public static ExprEval heapAllocation(InstrCounter counter, String vsopType) {
+    public static ExprEval heapAllocation(InstrCounter counter, String llvmType) {
         String sizePtrId = counter.getNextLlvmId();
         String sizeI64Id = counter.getNextLlvmId();
         String allocatedI8Id = counter.getNextLlvmId();
         String allocatedI64Id = counter.getNextLlvmId();
         String resultId = counter.getNextLlvmId();
-        String llvmType = VSOPTypes.getLlvmTypeName(vsopType);
         String llvmTypePtr = llvmType + "*";
         StringBuilder llvm = new StringBuilder();
 

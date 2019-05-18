@@ -1,0 +1,145 @@
+	.text
+	.file	"test.c"
+	.globl	newMethod
+	.align	16, 0x90
+	.type	newMethod,@function
+newMethod:                              # @newMethod
+	.cfi_startproc
+# BB#0:
+	pushq	%rbp
+.Ltmp0:
+	.cfi_def_cfa_offset 16
+.Ltmp1:
+	.cfi_offset %rbp, -16
+	movq	%rsp, %rbp
+.Ltmp2:
+	.cfi_def_cfa_register %rbp
+	movabsq	$.L.str, %rax
+	movq	%rdi, -8(%rbp)
+	movl	%esi, -12(%rbp)
+	popq	%rbp
+	retq
+.Lfunc_end0:
+	.size	newMethod, .Lfunc_end0-newMethod
+	.cfi_endproc
+
+	.globl	inheritedMethod
+	.align	16, 0x90
+	.type	inheritedMethod,@function
+inheritedMethod:                        # @inheritedMethod
+	.cfi_startproc
+# BB#0:
+	pushq	%rbp
+.Ltmp3:
+	.cfi_def_cfa_offset 16
+.Ltmp4:
+	.cfi_offset %rbp, -16
+	movq	%rsp, %rbp
+.Ltmp5:
+	.cfi_def_cfa_register %rbp
+	movabsq	$.L.str, %rax
+	movq	%rdi, -8(%rbp)
+	popq	%rbp
+	retq
+.Lfunc_end1:
+	.size	inheritedMethod, .Lfunc_end1-inheritedMethod
+	.cfi_endproc
+
+	.globl	overriddenMethod
+	.align	16, 0x90
+	.type	overriddenMethod,@function
+overriddenMethod:                       # @overriddenMethod
+	.cfi_startproc
+# BB#0:
+	pushq	%rbp
+.Ltmp6:
+	.cfi_def_cfa_offset 16
+.Ltmp7:
+	.cfi_offset %rbp, -16
+	movq	%rsp, %rbp
+.Ltmp8:
+	.cfi_def_cfa_register %rbp
+	subq	$16, %rsp
+	movabsq	$.L.str.1, %rax
+	movq	%rdi, -8(%rbp)
+	movq	%rax, %rdi
+	movb	$0, %al
+	callq	printf
+	movl	%eax, -12(%rbp)         # 4-byte Spill
+	addq	$16, %rsp
+	popq	%rbp
+	retq
+.Lfunc_end2:
+	.size	overriddenMethod, .Lfunc_end2-overriddenMethod
+	.cfi_endproc
+
+	.globl	main
+	.align	16, 0x90
+	.type	main,@function
+main:                                   # @main
+	.cfi_startproc
+# BB#0:
+	pushq	%rbp
+.Ltmp9:
+	.cfi_def_cfa_offset 16
+.Ltmp10:
+	.cfi_offset %rbp, -16
+	movq	%rsp, %rbp
+.Ltmp11:
+	.cfi_def_cfa_register %rbp
+	subq	$48, %rsp
+	movl	$16, %eax
+	movl	%eax, %edi
+	movl	$0, -4(%rbp)
+	movl	$0, -12(%rbp)
+	movq	$1, -24(%rbp)
+	callq	malloc
+	movl	$3, %esi
+	movabsq	$newMethod, %rdi
+	movq	%rax, -32(%rbp)
+	movq	-32(%rbp), %rax
+	movq	(%rax), %rax
+	movq	%rdi, 16(%rax)
+	movq	-32(%rbp), %rax
+	movq	(%rax), %rax
+	movq	16(%rax), %rax
+	movq	-32(%rbp), %rdi
+	callq	*%rax
+	movabsq	$.L.str.2, %rdi
+	movq	%rax, -40(%rbp)
+	movq	-40(%rbp), %rsi
+	movb	$0, %al
+	callq	printf
+	xorl	%ecx, %ecx
+	movabsq	$overriddenMethod, %rsi
+	movq	-32(%rbp), %rdi
+	movq	(%rdi), %rdi
+	movq	%rsi, 8(%rdi)
+	movl	%eax, -44(%rbp)         # 4-byte Spill
+	movl	%ecx, %eax
+	addq	$48, %rsp
+	popq	%rbp
+	retq
+.Lfunc_end3:
+	.size	main, .Lfunc_end3-main
+	.cfi_endproc
+
+	.type	.L.str,@object          # @.str
+	.section	.rodata.str1.1,"aMS",@progbits,1
+.L.str:
+	.asciz	"Someone"
+	.size	.L.str, 8
+
+	.type	.L.str.1,@object        # @.str.1
+.L.str.1:
+	.asciz	"Hey"
+	.size	.L.str.1, 4
+
+	.type	.L.str.2,@object        # @.str.2
+.L.str.2:
+	.asciz	"%s\n"
+	.size	.L.str.2, 4
+
+
+	.ident	"clang version 3.8.0-2ubuntu4 (tags/RELEASE_380/final)"
+	.section	".note.GNU-stack","",@progbits

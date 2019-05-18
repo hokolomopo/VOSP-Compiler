@@ -1,39 +1,47 @@
 #include <stdio.h>
+#include<stdlib.h>
+
+// A Child must be able to masquerade as a Parent
+typedef struct {
+struct ChildVTable *_vtable; // Virtual function table first
+int inheritedField; // Parent fields, in the same order as parent!
+int newField; // And, finally, Child's new fields
+} Child;
+
+// A ChildVTable must be able to masquerade as a ParentVTable
+struct ChildVTable {
+ // First, parent methods in the same order
+ char * (*inheritedMethod)(Child *); // Why not Parent * here?
+ void (*overriddenMethod)(int);
+ // Then child's new methods
+ char * (*newMethod)(Child *, int);
+ };
+
+ // Child VTable can mix inherited, overridden and new methods
+ //struct ChildVTable ChildVTable_inst {
+ // Necessary (but legit) cast for inherited method
+ //.inheritedMethod = (void (*)(Child *)) Parent_inheritedMethod;
+ //.overriddenMethod = Child_overriddenMethod;
+ //.newMethod = Child_newMethod;
+ //}
+
+char * newMethod(Child *self, int x) { return "Someone"; }
+char * inheritedMethod(Child *self) { return "Someone"; }
+void overriddenMethod(int x){printf("Hey\n");};
+
 int main()
 {
-    int n, i = 0;
-     unsigned long long factorial = 1;
+     Child* x = malloc(sizeof(Child));
+     x->_vtable = malloc(sizeof(struct ChildVTable));
+     x->_vtable->newMethod = &newMethod;
+     char* s = x->_vtable->newMethod(x, 3);
 
-    if(i > 0)
-        n = 2;
-    else
-        n = 3;/*
+     printf("%s\n", s);
 
 
-    if(0 > 1)
-        n = 2;
-    else
-        n = 3;
+    x->_vtable->overriddenMethod = &overriddenMethod;
+    x->_vtable->overriddenMethod(2);
 
-    printf("Enter an integer: ");
-    scanf("%d",&n);
-
-    // show error if the user enters a negative integer
-    if (n < 0)
-        printf("Error! Factorial of a negative number doesn't exist.");
-
-    else
-    {
-        for(i=1; i<=n; ++i)
-        {
-            factorial *= i;              // factorial = factorial*i;
-        }
-        printf("Factorial of %d = %llu", n, factorial);
-    }*/
-
-    while(i < 3){
-        i ++;
-    }
 
     return 0;
 }

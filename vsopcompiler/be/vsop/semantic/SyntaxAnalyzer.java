@@ -50,6 +50,11 @@ public class SyntaxAnalyzer {
         if (errors.size() == 0) {
             program.checkScope(errors);
         }
+
+//        program.fillScopeTable(null, errors);
+//        program.checkTypes(errors);
+//        program.checkScope(errors);
+
     }
 
     /**

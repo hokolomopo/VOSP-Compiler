@@ -14,6 +14,10 @@ public class Method extends ASTNode {
     private Type retType;
     private ExprList block;
 
+    //Fields for llvm generation
+    private int llvmNumber = -1;
+    private Method overriddenMethod = null;
+
     public Method(Id id, FormalList formals, Type retType, ExprList block) {
         this.scopeTable = new ScopeTable();
         this.id = id;
@@ -129,16 +133,22 @@ public class Method extends ASTNode {
     }
 
     @Override
-    public String getLlvm(InstrCounter counter) {
-        //The body of the function is a new scope, it needs a new counter
-        InstrCounter bodyCounter = new InstrCounter();
+    public void prepareForLlvm() {
         //Add self to formals
         Formal self = new Formal(new Id("self"), new Type(scopeTable.getScopeClassType().getName()));
         formals.addFormal(self, 0);
 
+        super.prepareForLlvm();
+    }
+
+    @Override
+    public String getLlvm(InstrCounter counter) {
+        //The body of the function is a new scope, it needs a new counter
+        InstrCounter bodyCounter = new InstrCounter();
+
         //Method header
-        String llvm =  LLVMKeywords.DEFINE.getLlvmName() + " " + retType.getLlvmName(true) +
-                " @" + scopeTable.getScopeClassType().getName() + "." + id.getName() +
+        String llvm =  LLVMKeywords.DEFINE.getLlvmName() + " " + retType.getLlvmName(true) + " " +
+                LlvmWrappers.getMethodName(id.getName(), this.getParentClassName()) +
                 "(";
         if(formals.getLength() > 0) {
             llvm +=  formals.getLlvm(counter);
@@ -175,5 +185,95 @@ public class Method extends ASTNode {
         llvm += "ret " + VSOPTypes.getLlvmTypeName(retType.getName(), true) + " " + bodyEval.llvmId + " " + endLine + "}";
 
         return llvm;
+    }
+
+    public String getLlvmSignature(boolean pointer){
+        StringBuilder llvm = new StringBuilder();
+
+        llvm.append(retType.getLlvmName(true)).append(" (");
+
+        for(int i = 0;i < formals.getLength();i++){
+            Formal f = formals.get(i);
+
+            llvm.append(f.getType().getLlvmName(true));
+
+            if(i != formals.getLength() - 1)
+                llvm.append(", ");
+        }
+
+        llvm.append(")");
+
+        if(pointer)
+            llvm.append("*");
+
+        return llvm.toString();
+    }
+
+    public String getParentClassName(){
+        return scopeTable.getScopeClassType().getName();
+    }
+
+    public int getLlvmNumber() {
+        return llvmNumber;
+    }
+
+    public void setLlvmNumber(int llvmNumber) {
+        this.llvmNumber = llvmNumber;
+    }
+
+    public String getLlvmName(){
+        return LlvmWrappers.getMethodName(id.getName(), getParentClassName());
+    }
+
+    private Formal getMethodFormal(String vtableName){
+        Formal methodFormal = new Formal(getLlvmName(), getLlvmSignature(false));
+        methodFormal.setClassField(true);
+        methodFormal.setClassFieldId(this.llvmNumber);
+        methodFormal.setParentClass(vtableName);
+
+        return methodFormal;
+    }
+
+    public String storeInVtable(Formal vtable, String vtableId, InstrCounter counter) {
+        String llvm = "";
+
+//        //Method is an override of another, we need to cast the first argument (self) to correspond to the original type
+//        if(isOverride()){
+//
+//        }
+
+        Formal methodFormal = getMethodFormal(vtable.getType().getName());
+
+        llvm += methodFormal.llvmStore(getLlvmName(), vtableId, counter);
+        ;
+        return llvm;
+    }
+
+    public ExprEval loadMethod(String parentClassId, InstrCounter counter){
+        Formal vtable = classTable.get(getParentClassName()).getVtable();
+        Formal methodFormal = getMethodFormal(vtable.getType().getName());
+
+        ExprEval loadVtable =  vtable.llvmLoad(parentClassId, counter);
+        ExprEval loadMethod = methodFormal.llvmLoad(loadVtable.llvmId, counter);
+
+
+        return new ExprEval(loadMethod.llvmId, loadVtable.llvmCode + loadMethod.llvmCode);
+    }
+
+    public void setOverriddenMethod(Method overriddenMethod) {
+        this.overriddenMethod = overriddenMethod;
+    }
+
+    public boolean isOverride(){
+        return this.overriddenMethod != null;
+    }
+
+    private Method getOriginalMethod(){
+        Method current = this;
+
+        while (current.overriddenMethod != null)
+            current = current.overriddenMethod;
+
+        return current;
     }
 }

@@ -21,7 +21,7 @@ public abstract class ASTNode {
     ScopeTable scopeTable;
     HashMap<String, ClassItem> classTable;
 
-    String endLine = "\n";
+    static final String endLine = "\n";
 
     protected ASTNode(){}
 
@@ -145,19 +145,19 @@ public abstract class ASTNode {
                 ", %" + labelIfTrue + "], [" + valIfFalse + ", %" + labelIfFalse + "]" + endLine;
     }
 
-    String llvmCast(String result, LLVMKeywords conversion, LLVMTypes fromType, LLVMTypes toType, String fromValue) {
+    static String llvmCast(String result, LLVMKeywords conversion, LLVMTypes fromType, LLVMTypes toType, String fromValue) {
         return llvmCast(result, conversion, fromType.getLlvmName(), toType.getLlvmName(), fromValue);
     }
 
-    String llvmCast(String result, LLVMKeywords conversion, String fromType, LLVMTypes toType, String fromValue) {
+    static String llvmCast(String result, LLVMKeywords conversion, String fromType, LLVMTypes toType, String fromValue) {
         return llvmCast(result, conversion, fromType, toType.getLlvmName(), fromValue);
     }
 
-    String llvmCast(String result, LLVMKeywords conversion, LLVMTypes fromType, String toType, String fromValue) {
+    static String llvmCast(String result, LLVMKeywords conversion, LLVMTypes fromType, String toType, String fromValue) {
         return llvmCast(result, conversion, fromType.getLlvmName(), toType, fromValue);
     }
 
-    private String llvmCast(String result, LLVMKeywords conversion, String fromType, String toType, String fromValue) {
+    static private String llvmCast(String result, LLVMKeywords conversion, String fromType, String toType, String fromValue) {
         return result + " = " + conversion.getLlvmName() + " " + fromType +
                 " " + fromValue + " " + LLVMKeywords.TO.getLlvmName() + " " + toType + endLine;
     }
@@ -176,5 +176,15 @@ public abstract class ASTNode {
 
     public void setScopeTable(ScopeTable scopeTable) {
         this.scopeTable = scopeTable;
+    }
+
+    public void prepareForLlvm(){
+        if(children != null)
+            for(ASTNode node : children)
+                node.prepareForLlvm();
+    }
+
+    public HashMap<String, ClassItem> getClassTable() {
+        return classTable;
     }
 }

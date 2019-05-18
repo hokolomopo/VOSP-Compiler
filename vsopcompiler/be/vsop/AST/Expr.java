@@ -57,7 +57,7 @@ public abstract class Expr extends ASTNode{
     protected ExprEval castEval(ExprEval eval, String realType, String expectedType, InstrCounter counter){
 
         //ExpectedType to null means anything is fine
-        if(expectedType == null)
+        if(expectedType == null || realType == null)
             return eval;
 
         if(!realType.equals(expectedType)) {
@@ -69,7 +69,7 @@ public abstract class Expr extends ASTNode{
         return eval;
     }
 
-    protected ExprEval castExpr(String originalType, String finalType, String llvmId, InstrCounter counter){
+    public static ExprEval castExpr(String originalType, String finalType, String llvmId, InstrCounter counter){
         StringBuilder llvm = new StringBuilder();
 
         String intPointer = counter.getNextLlvmId();

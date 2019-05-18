@@ -90,6 +90,10 @@ public class ClassElementList extends ASTNode {
         return fields;
     }
 
+    public ArrayList<Method> getMethods() {
+        return methods;
+    }
+
     @Override
     public String getLlvm(InstrCounter counter) {
         StringBuilder builder = new StringBuilder();

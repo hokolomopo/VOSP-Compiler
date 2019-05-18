@@ -9,6 +9,7 @@ class Main extends IO {
         testString(mainString);
         testLoopCond(0);
         testNew();
+        getSelf();
         0
     }
 
@@ -49,6 +50,9 @@ class Main extends IO {
         i
     }
 
+    getSelf() : Main {
+        self
+    }
 
     truc(tail : int32, boolean : Main) : int32 { 
         tail <- tail + 3;
@@ -71,6 +75,9 @@ class Main extends IO {
         self
     }
 
+    xfun() : int32 {
+        5
+    }
 
     yval : int32 <- 89;
 
@@ -81,3 +88,7 @@ class Main extends IO {
     }
 
  }
+
+ class A{   
+ }
+

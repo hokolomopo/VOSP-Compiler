@@ -37,6 +37,8 @@ public enum VSOPTypes{
         for (VSOPTypes type : VSOPTypes.values())
             if(type.typeName.equals(typeName))
                 return type.llvmName;
+        if(pointerOnClass && !Character.isUpperCase(typeName.charAt(0)))
+            return typeName + "*";
         if (pointerOnClass) {
             return "%class." + typeName + "*";
         }

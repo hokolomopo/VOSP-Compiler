@@ -1,8 +1,10 @@
 package be.vsop;
 
+import be.vsop.AST.ClassItem;
 import be.vsop.AST.ClassList;
 import be.vsop.AST.Program;
 import be.vsop.codegenutil.InstrCounter;
+import be.vsop.codegenutil.MethodSetter;
 import be.vsop.exceptions.LexerException;
 import be.vsop.exceptions.ParserException;
 import be.vsop.exceptions.semantic.SemanticException;
@@ -96,7 +98,19 @@ public class Compiler {
 
 
     String generateLlvm() {
-        return writeIOCode() + this.program.getLlvm(new InstrCounter());
+        //Set number to methods
+        new MethodSetter(program.getClassTable()).setupMethods();
+
+        StringBuilder classDeclarations = new StringBuilder();
+
+        //Prepare classes for llvm (add self to methods, numerate fields, ...)
+        for(ClassItem classItem : program.getClassTable().values())
+            classItem.prepareForLlvm();
+
+        for(ClassItem classItem : program.getClassTable().values())
+            classDeclarations.append(classItem.getClassDeclaration());
+
+            return classDeclarations.toString() + writeIOCode() + this.program.getLlvm(new InstrCounter());
     }
 
     public Program getAST(){

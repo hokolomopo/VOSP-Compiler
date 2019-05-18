@@ -158,6 +158,10 @@ public class Call extends Expr {
             argumentsTypes.add(VSOPTypes.getLlvmTypeName(argument.getType().getName(), true));
         }
 
+        //Load the method from the vtable
+        ExprEval loadMethod = called.loadMethod(argumentsIds.get(0), counter);
+        llvm.append(loadMethod.llvmCode);
+
         String llvmId;
         if (called.returnType().equals(VSOPTypes.UNIT.getName())) {
             // If the return type is unit (void), we don't save the result anywhere
@@ -166,10 +170,13 @@ public class Call extends Expr {
             llvmId = counter.getNextLlvmId();
         }
 
-        // Append code actually calling the function (which as a unique name)
-        String funcName = "@" + implementedBy + "." + methodId.getName();
-        llvm.append(LlvmWrappers.call(llvmId, VSOPTypes.getLlvmTypeName(called.returnType(), true),
-                funcName, argumentsIds, argumentsTypes));
+
+        // Append code actually calling the function
+            llvm.append(LlvmWrappers.call(llvmId, VSOPTypes.getLlvmTypeName(called.returnType(), true),
+                loadMethod.llvmId, argumentsIds, argumentsTypes));
+//        String funcName = "@" + implementedBy + "." + methodId.getName();
+//        llvm.append(LlvmWrappers.call(llvmId, VSOPTypes.getLlvmTypeName(called.returnType(), true),
+//                funcName, argumentsIds, argumentsTypes));
 
         ExprEval callEval = new ExprEval(llvmId, llvm.toString());
         return castEval(callEval, typeName, expectedType, counter);
