@@ -5,10 +5,7 @@ import be.vsop.codegenutil.InstrCounter;
 import be.vsop.exceptions.semantic.InvalidCallException;
 import be.vsop.exceptions.semantic.MethodNotDeclaredException;
 import be.vsop.exceptions.semantic.SemanticException;
-import be.vsop.semantic.LLVMKeywords;
-import be.vsop.semantic.LLVMTypes;
-import be.vsop.semantic.LlvmWrappers;
-import be.vsop.semantic.VSOPTypes;
+import be.vsop.semantic.*;
 
 import java.util.ArrayList;
 
@@ -92,7 +89,7 @@ public class Call extends Expr {
     }
 
     @Override
-    public ExprEval evalExpr(InstrCounter counter) {
+    public ExprEval evalExpr(InstrCounter counter, String expectedType) {
         // Ids of the arguments, obtained by recursively evaluating the expressions defining their values
         ArrayList<String> argumentsIds = new ArrayList<>();
 
@@ -105,7 +102,7 @@ public class Call extends Expr {
         String implementedBy = called.scopeTable.getScopeClassType().getName();
         StringBuilder llvm = new StringBuilder();
 
-        ExprEval curArgEval = objExpr.evalExpr(counter);
+        ExprEval curArgEval = objExpr.evalExpr(counter, objExpr.typeName);
 
         // Evaluate the expression defining the object on which the function is called
         llvm.append(curArgEval.llvmCode);
@@ -140,11 +137,25 @@ public class Call extends Expr {
         }
 
         // Append code generating all other arguments, and add them into the list of arguments
+
+        //Get the called method definition
+        ClassItem classItem = this.classTable.get(objExpr.typeName);
+        Method method = classItem.getMethod(methodId.getName());
+
+        int firstArgIndex = 0;
+        if(method.nbArguments() > 0 && method.getArgument(0).getName().equals(LanguageSpecs.SELF))
+            firstArgIndex = 1;
+
         for (int i = 0; i < argList.size(); i++) {
-            curArgEval = argList.get(i).evalExpr(counter);
+            curArgEval = argList.get(i).evalExpr(counter, argList.get(i).typeName);
+
+            //Cast the argument to the type defined in the definition of the method
+            Formal argument = method.getArgument(firstArgIndex + i);
+            curArgEval = castEval(curArgEval, argList.get(i).typeName, argument.getType().getName(), counter);
+
             llvm.append(curArgEval.llvmCode);
             argumentsIds.add(curArgEval.llvmId);
-            argumentsTypes.add(VSOPTypes.getLlvmTypeName(argList.get(i).typeName, true));
+            argumentsTypes.add(VSOPTypes.getLlvmTypeName(argument.getType().getName(), true));
         }
 
         String llvmId;
@@ -162,7 +173,8 @@ public class Call extends Expr {
         llvm.append(LlvmWrappers.call(llvmId, VSOPTypes.getLlvmTypeName(called.returnType(), true),
                 funcName, argumentsIds, argumentsTypes));
 
-        return new ExprEval(llvmId, llvm.toString());
+        ExprEval callEval = new ExprEval(llvmId, llvm.toString());
+        return castEval(callEval, typeName, expectedType, counter);
     }
 
 }

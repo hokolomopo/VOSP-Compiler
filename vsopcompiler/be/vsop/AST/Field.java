@@ -99,7 +99,7 @@ public class Field extends ASTNode {
         if (initExpr == null) {
             return new ExprEval(VSOPTypes.getLlvmDefaultInit(type.getName()), "");
         }
-        return initExpr.evalExpr(counter);
+        return initExpr.evalExpr(counter, type.getName());
     }
 
     public Formal getFormal(){

@@ -97,9 +97,9 @@ public class UnOp extends Expr {
     }
 
     @Override
-    public ExprEval evalExpr(InstrCounter counter) {
+    public ExprEval evalExpr(InstrCounter counter, String expectedType) {
         //Evaluate expression
-        ExprEval eval = expr.evalExpr(counter);
+        ExprEval eval = expr.evalExpr(counter, null);
 
         //Get an id
         String id = counter.getNextLlvmId();

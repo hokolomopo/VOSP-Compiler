@@ -130,7 +130,7 @@ public abstract class ASTNode {
     }
 
     String llvmBranch(String label) {
-        return LLVMKeywords.BRANCH.getLlvmName() + " " + LLVMKeywords.LABEL.getLlvmName() + " " + label + endLine;
+        return LLVMKeywords.BRANCH.getLlvmName() + " " + LLVMKeywords.LABEL.getLlvmName() + " %" + label + endLine;
     }
 
     String llvmBranch(String cond, String labelTrue, String labelFalse) {
@@ -142,7 +142,7 @@ public abstract class ASTNode {
     String llvmPhi(String result, LLVMTypes type, String valIfTrue, String labelIfTrue,
                    String valIfFalse, String labelIfFalse) {
         return result + " = " + LLVMKeywords.PHI.getLlvmName() + " " + type.getLlvmName() + " [" + valIfTrue +
-                ", %" + labelIfTrue + "], [" + valIfFalse + ", " + labelIfFalse + "]" + endLine;
+                ", %" + labelIfTrue + "], [" + valIfFalse + ", %" + labelIfFalse + "]" + endLine;
     }
 
     String llvmCast(String result, LLVMKeywords conversion, LLVMTypes fromType, LLVMTypes toType, String fromValue) {

@@ -4,6 +4,7 @@ import be.vsop.codegenutil.ExprEval;
 import be.vsop.codegenutil.InstrCounter;
 import be.vsop.exceptions.semantic.SemanticException;
 import be.vsop.exceptions.semantic.TypeNotExpectedException;
+import be.vsop.semantic.VSOPTypes;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,7 +47,7 @@ public class While extends Expr {
 	}
 
 	@Override
-	public ExprEval evalExpr(InstrCounter counter) {
+	public ExprEval evalExpr(InstrCounter counter, String expectedType) {
 
 		String llvm = "";
 		HashMap<String, String> labels = counter.getNextLoopLabel();
@@ -57,7 +58,7 @@ public class While extends Expr {
 
 		//Evaluate loop condition
 		llvm += labels.get(InstrCounter.LOOP_COND_LABEL) + ":" + endLine;
-		ExprEval condEval = condExpr.evalExpr(counter);
+		ExprEval condEval = condExpr.evalExpr(counter, VSOPTypes.BOOL.getName());
 		llvm += condEval.llvmCode;
 		llvm += "br i1 " + condEval.llvmId + ", label %" + labels.get(InstrCounter.LOOP_START_LABEL) + ", label %" + labels.get(InstrCounter.LOOP_END_LABEL)
 				+ endLine + endLine;
@@ -66,7 +67,7 @@ public class While extends Expr {
 		llvm += labels.get(InstrCounter.LOOP_START_LABEL) + ":" + endLine;
 
 		//Evaluate body of loop
-		ExprEval bodyEval = bodyExpr.evalExpr(counter);
+		ExprEval bodyEval = bodyExpr.evalExpr(counter, null);
 		llvm += bodyEval.llvmCode;
 		llvm += "br label %" + labels.get(InstrCounter.LOOP_COND_LABEL) + endLine + endLine;
 

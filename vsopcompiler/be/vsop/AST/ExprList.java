@@ -71,20 +71,27 @@ public class ExprList extends Expr {
     }
 
     @Override
-    public ExprEval evalExpr(InstrCounter counter) {
+    public ExprEval evalExpr(InstrCounter counter, String expectedType) {
         StringBuilder builder = new StringBuilder();
 
 
-
         ExprEval lastEval = null;
-        for(Expr e : expressions){
-            lastEval = e.evalExpr(counter);
+        for(int i = 0;i < expressions.size();i++){
+            Expr e = expressions.get(i);
+
+            //We don't care of the return types of the expressions expept for the last one
+            String type = null;
+            if(i == (expressions.size() - 1))
+                type = this.typeName;
+
+            lastEval = e.evalExpr(counter, type);
             builder.append(lastEval.llvmCode);
         }
 
         if(lastEval == null)
             return new ExprEval("", "");
-        return new ExprEval(lastEval.llvmId, builder.toString(), lastEval.isLiteral());
+        ExprEval eval = new ExprEval(lastEval.llvmId, builder.toString(), lastEval.isLiteral());
+        return castEval(eval, expressions.get(expressions.size() - 1).typeName, expectedType, counter);
     }
 
 }

@@ -2,6 +2,7 @@ package be.vsop.AST;
 
 import be.vsop.codegenutil.ExprEval;
 import be.vsop.codegenutil.InstrCounter;
+import be.vsop.codegenutil.LlvmVar;
 import be.vsop.exceptions.semantic.SemanticException;
 import be.vsop.exceptions.semantic.TypeNotExpectedException;
 import be.vsop.semantic.LanguageSpecs;
@@ -84,11 +85,16 @@ public class If extends Expr {
 	}
 
 	@Override
-	public ExprEval evalExpr(InstrCounter counter) {
+	public ExprEval evalExpr(InstrCounter counter, String expectedType) {
 		HashMap<String, String> labels = counter.getNextCondLabels();
 
 		String llvm = "";
 		String retId = null;
+
+		String type = typeName;
+		if(type.equals(VSOPTypes.UNIT.getName()))//TODO vu les codes du prof, j'ai l'impression que machin = () c'est toujours vrai ????
+			type = null;
+
 
 		//Allocate return value
 		Formal retFormal = null;
@@ -101,7 +107,7 @@ public class If extends Expr {
 		}
 
 		//Evaluate the condition
-		ExprEval condEval = condExpr.evalExpr(counter);
+		ExprEval condEval = condExpr.evalExpr(counter, VSOPTypes.BOOL.getName());
 		llvm += condEval.llvmCode;
 
 		//Else label == End of condition label if there is no else branch
@@ -113,21 +119,21 @@ public class If extends Expr {
 		llvm += "br i1 " + condEval.llvmId + ", label %" + labels.get(InstrCounter.COND_IF_LABEL) + ", label %" + elseLabel + endLine + endLine;
 
 		//Then condition
-		ExprEval thenEval = thenExpr.evalExpr(counter);
+		ExprEval thenEval = thenExpr.evalExpr(counter, type);
 		llvm += labels.get(InstrCounter.COND_IF_LABEL) + ":" + endLine +
 				thenEval.llvmCode;
 		if(retFormal != null)
-			llvm += retFormal.llvmStore(thenEval.llvmId, counter);
+			llvm += retFormal.llvmStore(new LlvmVar(thenEval.llvmId, thenExpr), counter);
 		llvm += "br label %" + labels.get(InstrCounter.COND_END_LABEL) + endLine + endLine;
 
 		//Else condition
 		if(elseExpr != null){
-			ExprEval elseEval = elseExpr.evalExpr(counter);
+			ExprEval elseEval = elseExpr.evalExpr(counter, type);
 			llvm += labels.get(InstrCounter.COND_ELSE_LABEL) + ":" + endLine +
 					elseEval.llvmCode;
 			if(retFormal != null)
-				llvm += retFormal.llvmStore(elseEval.llvmId, counter);
-			llvm += "br label %" + labels.get(InstrCounter.COND_END_LABEL) + endLine + endLine;//TODO  useful? CLang le fait donc moi aussi
+				llvm += retFormal.llvmStore(new LlvmVar(elseEval.llvmId, elseExpr), counter);
+			llvm += "br label %" + labels.get(InstrCounter.COND_END_LABEL) + endLine + endLine;
 		}
 
 		//End of condition
@@ -140,7 +146,10 @@ public class If extends Expr {
 			retId = ret.llvmId;
 		}
 
-		return new ExprEval(retId, llvm);
+		ExprEval finalEval = new ExprEval(retId, llvm);
+
+
+		return castEval(finalEval, thenExpr.typeName, expectedType, counter);//TODO unt ruc qui march vraiment
 	}
 
 }

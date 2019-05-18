@@ -61,7 +61,7 @@ public class Program extends ASTNode{
 
         //Create a new Main class
         String mainTypeName = "Main";
-        ExprEval newMain = new New(new Type(mainTypeName)).evalExpr(new InstrCounter());
+        ExprEval newMain = new New(new Type(mainTypeName)).evalExpr(new InstrCounter(), mainTypeName);
 
         //Call main function of Main class
         String result = "%returned";

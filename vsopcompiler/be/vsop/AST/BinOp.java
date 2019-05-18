@@ -111,12 +111,13 @@ public class BinOp extends Expr {
     }
 
     @Override
-    public ExprEval evalExpr(InstrCounter counter) {
+    public ExprEval evalExpr(InstrCounter counter, String expectedType) {
+
         //Evaluate left expression
-        ExprEval leftPair = lhs.evalExpr(counter);
+        ExprEval leftPair = lhs.evalExpr(counter, null);
 
         //Evaluate right expression
-        ExprEval rightPair = rhs.evalExpr(counter);
+        ExprEval rightPair = rhs.evalExpr(counter, null);
 
         if (type == BinOpTypes.AND) {
             // Particular case useful for short-circuiting
@@ -154,19 +155,25 @@ public class BinOp extends Expr {
         String ret;
         switch (type){
             case EQUAL:
+                //Both operand are unit type, condition always true
+                if(rhs.getTypeName().equals(VSOPTypes.UNIT.getName())){
+                    return llvmBinOp(llvmId, "0", "0", LLVMKeywords.EQ, LLVMTypes.BOOL.getLlvmName());//TODO, Greg, tu sais comment faire plus propore que 0 == 0 ?
+                }
+
+
                 if (primitiveOps) {
                     return llvmBinOp(llvmId, leftId, rightId, LLVMKeywords.EQ, VSOPTypes.getLlvmTypeName(rhs.typeName));
                 }
                 String llvmTypeLeft = VSOPTypes.getLlvmTypeName(lhs.typeName, true);
                 String llvmTypeRight = VSOPTypes.getLlvmTypeName(rhs.typeName, true);
-                llvmId = counter.getNextLlvmId();
                 String leftPointerValue = llvmId;
-                String rightPointerValue = counter.getNextLlvmId();
                 // Turn class pointers to i64, then compare the i64 values (i.e., check if addresses are equal)
                 ret = llvmCast(leftPointerValue, LLVMKeywords.PTRTOINT, llvmTypeLeft,
                         LLVMTypes.INT64, leftId);
+                String rightPointerValue = counter.getNextLlvmId();
                 ret += llvmCast(rightPointerValue, LLVMKeywords.PTRTOINT, llvmTypeRight,
                         LLVMTypes.INT64, rightId);
+                llvmId = counter.getNextLlvmId();
                 ret += llvmBinOp(llvmId, leftPointerValue, rightPointerValue, LLVMKeywords.EQ, LLVMTypes.INT64.getLlvmName());
                 return ret;
             case LOWEREQ:
@@ -183,8 +190,6 @@ public class BinOp extends Expr {
                 return llvmBinOp(llvmId, leftId, rightId, LLVMKeywords.DIV);
             case POW:
                 String firstArgFloatId = llvmId;
-                String resultFloatId = counter.getNextLlvmId();
-                llvmId = counter.getNextLlvmId();
                 ret = llvmCast(firstArgFloatId, LLVMKeywords.INTTOFLOAT, LLVMTypes.INT32, LLVMTypes.FLOAT, leftId);
 
                 ArrayList<String> argumentsIds = new ArrayList<>();
@@ -193,9 +198,11 @@ public class BinOp extends Expr {
                 ArrayList<String> argumentsTypes = new ArrayList<>();
                 argumentsTypes.add(LLVMTypes.FLOAT.getLlvmName());
                 argumentsTypes.add(LLVMTypes.INT32.getLlvmName());
+                String resultFloatId = counter.getNextLlvmId();
                 ret += llvmCall(resultFloatId, LLVMTypes.FLOAT.getLlvmName(), LLVMIntrinsics.POW.getLlvmName(),
                         argumentsIds, argumentsTypes);
 
+                llvmId = counter.getNextLlvmId();
                 ret += llvmCast(llvmId, LLVMKeywords.FLOATTOINT, LLVMTypes.FLOAT, LLVMTypes.INT32, resultFloatId);
 
                 return ret;

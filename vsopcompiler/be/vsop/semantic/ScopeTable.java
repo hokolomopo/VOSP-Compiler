@@ -1,5 +1,6 @@
 package be.vsop.semantic;
 
+import be.vsop.AST.ClassItem;
 import be.vsop.AST.Formal;
 import be.vsop.AST.Method;
 import be.vsop.AST.Type;

@@ -30,7 +30,7 @@ public class New extends Expr {
     }
 
     @Override
-    public ExprEval evalExpr(InstrCounter counter) {
+    public ExprEval evalExpr(InstrCounter counter, String expectedType) {
         String llvmId = counter.getNextLlvmId();
         String llvm = LlvmWrappers.callNew(llvmId, typeName);
 

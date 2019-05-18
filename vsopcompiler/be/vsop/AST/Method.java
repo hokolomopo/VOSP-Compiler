@@ -147,10 +147,10 @@ public class Method extends ASTNode {
         llvm += formals.llvmAllocate();
         llvm += formals.llvmStore(counter);
 
-        ExprEval bodyEval = block.evalExpr(new InstrCounter());
+        ExprEval bodyEval = block.evalExpr(new InstrCounter(), retType.getName());
         llvm += bodyEval.llvmCode;
 
-        llvm += "ret " + VSOPTypes.getLlvmTypeName(block.typeName, true) + " " + bodyEval.llvmId + " " + endLine + "}";
+        llvm += "ret " + VSOPTypes.getLlvmTypeName(retType.getName(), true) + " " + bodyEval.llvmId + " " + endLine + "}";
 
         return llvm;
     }

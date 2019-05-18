@@ -83,19 +83,22 @@ public class Let extends Expr {
 	}
 
 	@Override
-	public ExprEval evalExpr(InstrCounter counter) {
+	public ExprEval evalExpr(InstrCounter counter, String expectedType) {
+		formal.setLlvmId(counter.getNextLlvmId());
 		String llvm =  formal.llvmAllocate();
 
 		if(initExpr != null){
 			Assign init = new Assign(new Id(formal.getName()), initExpr);
 			init.setScopeTable(this.scopeTable);
+			init.setTypeName(initExpr.getTypeName());
 			llvm += init.getLlvm(counter);
 		}
 
-		ExprEval bodyEval = bodyExpr.evalExpr(counter);
+		ExprEval bodyEval = bodyExpr.evalExpr(counter, typeName);
 		llvm += bodyEval.llvmCode;
 
-		return new ExprEval(bodyEval.llvmId, llvm);
+		ExprEval exprEval = new ExprEval(bodyEval.llvmId, llvm);
+		return castEval(exprEval, bodyExpr.typeName, expectedType, counter);
 	}
 
 }

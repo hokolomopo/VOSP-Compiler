@@ -7,6 +7,16 @@ declare float @llvm.powi.f32(float  %Val, i32 %power)
 ; The IO class has no variable only functions
 %class.IO = type {}
 
+define %class.IO* @.New.IO() {
+%1 = getelementptr %class.IO, %class.IO* null, i32 1
+%2 = ptrtoint %class.IO* %1 to i64
+%3 = call i8* @malloc(i64 %2)
+%4 = ptrtoint i8* %3 to i64
+%5 = inttoptr i64 %4 to %class.IO*
+ret %class.IO* %5
+}
+
+
 define %class.IO* @IO.print(%class.IO* %self, i8*) {
   call i32 (i8*, ...) @printf(i8* %0)
   ret %class.IO* %self
@@ -77,3 +87,14 @@ define i32 @IO.inputInt32(%class.IO* %self) {
 @.str.n = private unnamed_addr constant [2 x i8] c"n\00"
 @.str.bad_bool = private unnamed_addr constant [43 x i8] c"Boolean input should be either 'y' or 'n'\0a\00"
 @.str.bad_int32 = private unnamed_addr constant [50 x i8] c"Error while loading int32 value, maybe too long?\0a\00"
+
+%class.Object = type {  }
+
+define %class.Object* @.New.Object() {
+%1 = getelementptr %class.Object, %class.Object* null, i32 1
+%2 = ptrtoint %class.Object* %1 to i64
+%3 = call i8* @malloc(i64 %2)
+%4 = ptrtoint i8* %3 to i64
+%5 = inttoptr i64 %4 to %class.Object*
+ret %class.Object* %5
+}

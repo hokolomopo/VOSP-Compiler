@@ -2,6 +2,7 @@ package be.vsop.AST;
 
 import be.vsop.codegenutil.ExprEval;
 import be.vsop.codegenutil.InstrCounter;
+import be.vsop.codegenutil.LlvmVar;
 import be.vsop.exceptions.semantic.ClassAlreadyDeclaredException;
 import be.vsop.exceptions.semantic.MainException;
 import be.vsop.exceptions.semantic.SemanticException;
@@ -177,24 +178,9 @@ public class ClassItem extends ASTNode{
             //Initialize the field and store it
             ExprEval evalFieldInitExpr = field.getInitLlvm(newCounter);
             llvm.append(evalFieldInitExpr.llvmCode);
-            String store = formal.llvmStore(evalFieldInitExpr.llvmId, retLlvmId, newCounter);
+            String store = formal.llvmStore(new LlvmVar(evalFieldInitExpr.llvmId, field.getType().getName()), retLlvmId, newCounter);
             llvm.append(store);
         }
-
-
-//        ExprEval evalFieldInitExpr;
-//        ArrayList<Field> fields = cel.getFields();
-//        int i;
-//        for (i = 0; i < fields.size(); i++) {
-//            evalFieldInitExpr = fields.get(i).getInitLlvm(newCounter);
-//            llvm.append(evalFieldInitExpr.llvmCode);
-//            llvm.append(fieldFormals.get(i).llvmStore(evalFieldInitExpr.llvmId, retLlvmId, newCounter));
-//        }
-
-        //Initialize parent
-//        evalFieldInitExpr = new New(parentType).evalExpr(newCounter);
-//        llvm.append(evalFieldInitExpr.llvmCode);
-//        llvm.append(fieldFormals.get(i).llvmStore(evalFieldInitExpr.llvmId, retLlvmId, newCounter));
 
 
         //Return initialized object
@@ -282,5 +268,9 @@ public class ClassItem extends ASTNode{
 
         return fieldFormals;
 
+    }
+
+    public Method getMethod(String methodName){
+        return this.scopeTable.lookupMethod(methodName, ScopeTable.Scope.GLOBAL);
     }
 }

@@ -1,6 +1,7 @@
 package be.vsop.AST;
 
 import be.vsop.codegenutil.InstrCounter;
+import be.vsop.codegenutil.LlvmVar;
 import be.vsop.exceptions.semantic.SemanticException;
 import be.vsop.exceptions.semantic.VariableAlreadyDeclaredException;
 
@@ -101,7 +102,7 @@ public class FormalList extends ASTNode{
         StringBuilder builder = new StringBuilder();
 
         for(Formal formal : formals)
-            builder.append(formal.llvmStore(formal.getLlvmId(), counter));
+            builder.append(formal.llvmStore(new LlvmVar(formal.getLlvmId(), formal.getType().getName()), counter));
 
         return builder.toString();
 

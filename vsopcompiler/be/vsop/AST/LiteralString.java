@@ -50,7 +50,7 @@ public class LiteralString extends Literal{
     }
 
     @Override
-    public ExprEval evalExpr(InstrCounter counter) {
+    public ExprEval evalExpr(InstrCounter counter, String expectedType) {
         String value = String.format("getelementptr inbounds ([%d x i8], [%d x i8]* %s, i32 0, i32 0)", getLlvmLength(), getLlvmLength(), stringId);
         return new ExprEval(value, "", true);
     }
@@ -119,6 +119,7 @@ public class LiteralString extends Literal{
         result = result.replace("\\r", "\\0d");
         result = result.replace("\\t", "\\09");
         result = result.replace("\\v", "\\0b");
+        result = result.replace("\\\"", "\\22");
 
         return result;
     }
@@ -134,6 +135,7 @@ public class LiteralString extends Literal{
         result = result.replace("\\r", "0");
         result = result.replace("\\t", "0");
         result = result.replace("\\v", "0");
+        result = result.replace("\\\"", "0");
 
         return result;
     }

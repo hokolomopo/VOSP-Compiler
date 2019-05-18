@@ -2,6 +2,7 @@ package be.vsop.AST;
 
 import be.vsop.codegenutil.ExprEval;
 import be.vsop.codegenutil.InstrCounter;
+import be.vsop.codegenutil.LlvmVar;
 import be.vsop.exceptions.semantic.SemanticException;
 import be.vsop.semantic.LanguageSpecs;
 import be.vsop.semantic.ScopeTable;
@@ -21,6 +22,8 @@ public class Formal extends ASTNode{
     //For formals with same name, we add a number to uniquely identify them
     private int number = 1;
 
+    String llvmId = null;
+
     public Formal(Id id, Type type) {
         this.id = id;
         this.type = type;
@@ -28,6 +31,10 @@ public class Formal extends ASTNode{
         this.children = new ArrayList<>();
         this.children.add(id);
         this.children.add(type);
+    }
+
+    public Formal(String id, String typeName){
+        this(new Id(id), new Type(typeName));
     }
 
     public Formal(Formal formal){
@@ -77,10 +84,16 @@ public class Formal extends ASTNode{
         return "%" + id.getName();
     }
 
-    public String getLlvmPtr(){
-        return getLlvmId()  + ".ptr";
+    public void setLlvmId(String llvmId) {
+        this.llvmId = llvmId;
     }
 
+    public String getLlvmPtr(){
+        if(llvmId != null)
+            return llvmId;
+
+        return getLlvmId()  + ".ptr";
+    }
 
     public int getNumber() {
         return number;
@@ -128,17 +141,17 @@ public class Formal extends ASTNode{
         return new ExprEval(id, llvm);
     }
 
-    public String llvmStore(String toStore, String parentClassId, InstrCounter counter){
+    public String llvmStore(LlvmVar toStore, String parentClassId, InstrCounter counter){
         if(isClassField){
             ExprEval eval = getFieldPtr(parentClassId, counter);
             String llvm = eval.llvmCode;
-            llvm += String.format("store %s %s, %s %s \n", type.getLlvmName(true), toStore, type.getLlvmPtr(true), eval.llvmId);
+            llvm += String.format("store %s %s, %s %s \n", type.getLlvmName(true), toStore.llvmId, type.getLlvmPtr(true), eval.llvmId);
             return llvm;
         }
-        return String.format("store %s %s, %s %s \n", type.getLlvmName(true), toStore, type.getLlvmPtr(true), getLlvmPtr());
+        return String.format("store %s %s, %s %s \n", type.getLlvmName(true), toStore.llvmId, type.getLlvmPtr(true), getLlvmPtr());
     }
 
-    public String llvmStore(String toStore, InstrCounter counter){
+    public String llvmStore(LlvmVar toStore, InstrCounter counter){
         return llvmStore(toStore, "%" + LanguageSpecs.SELF, counter);
     }
 
