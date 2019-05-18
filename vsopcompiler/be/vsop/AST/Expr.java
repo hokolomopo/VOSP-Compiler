@@ -87,6 +87,10 @@ public abstract class Expr extends ASTNode{
 
     }
 
+    boolean isUnit() {
+        return typeName.equals(VSOPTypes.UNIT.getName());
+    }
+
 //    /**
 //     * Evaluate an expressiona nd return a pair (id of variable in llvm, llvm code of evaluation)
 //     *

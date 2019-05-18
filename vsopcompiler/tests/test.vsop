@@ -12,6 +12,8 @@ class Main extends IO {
         x.xfun();
         printBool(isnull x);
         testString(mainString);
+        tail <- 0;
+        while tail < 10 do {printInt32(tail); tail <- tail + 1};
         0
     }
 

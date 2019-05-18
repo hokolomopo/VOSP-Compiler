@@ -68,4 +68,8 @@ public class Type extends ASTNode {
 	boolean isPointer() {
 		return isPointer;
 	}
+
+	boolean isUnit() {
+		return name.equals(VSOPTypes.UNIT.getName());
+	}
 }

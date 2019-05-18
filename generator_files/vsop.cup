@@ -145,8 +145,8 @@ exprList ::=
 ;
 
 expr ::=
-  IF:i expr:e1 THEN expr:e2                                               {: RESULT = new If(e1, e2); :}
-| IF:i expr:e1 THEN expr:e2 ELSE expr:e3                                  {: RESULT = new If(e1, e2, e3); :}
+  IF:i expr:e1 THEN expr:e2                                               {: RESULT = new If(e1, e2); RESULT.line = i.getLine(); RESULT.column = i.getColumn(); :}
+| IF:i expr:e1 THEN expr:e2 ELSE expr:e3                                  {: RESULT = new If(e1, e2, e3); RESULT.line = i.getLine(); RESULT.column = i.getColumn(); :}
 | WHILE:w expr:e1 DO expr:e2                                              {: RESULT = new While(e1, e2); :}
 | LET:l identifier:id COLON type:ty IN expr:e                             {: RESULT = new Let(id, ty, e); :}
 | LET:l identifier:id COLON type:ty ASSIGN expr:e1 IN expr:e2             {: RESULT = new Let(id, ty, e1, e2); :}

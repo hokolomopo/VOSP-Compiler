@@ -130,12 +130,12 @@ public class ClassItem extends ASTNode{
 
 
         //Generate list of types of fields to define the Structure representing the Object  in llvm
-        for(int i = 0; i < fieldFormals.size(); i++){
-            fieldsTypeList.append(fieldFormals.get(i).getType().getLlvmName(true));
-
-            if(i < fieldFormals.size() - 1)
-                fieldsTypeList.append(", ");
-
+        for (Formal fieldFormal : fieldFormals) {
+            fieldsTypeList.append(fieldFormal.getType().getLlvmName(true));
+            fieldsTypeList.append(", ");
+        }
+        if (fieldFormals.size() > 0) {
+            fieldsTypeList.setLength(fieldsTypeList.length() - 2);
         }
 
         //Declare Structure of the object in llvm
@@ -240,10 +240,10 @@ public class ClassItem extends ASTNode{
         for(int i = fieldFormalsList.size() - 1;i >= 0;i--)
             fieldFormals.addAll(fieldFormalsList.get(i));
 
-        //Remove self from fields
+        //Remove self and units from fields
         ArrayList<Formal> self = new ArrayList<>();
         for(Formal field : fieldFormals) {
-            if (field.getName().equals(LanguageSpecs.SELF)) {
+            if (field.getName().equals(LanguageSpecs.SELF) || field.getType().getName().equals(VSOPTypes.UNIT.getName())) {
                 self.add(field);
             }
         }

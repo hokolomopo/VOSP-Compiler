@@ -84,8 +84,11 @@ public class Let extends Expr {
 
 	@Override
 	public ExprEval evalExpr(InstrCounter counter, String expectedType) {
-		formal.setLlvmId(counter.getNextLlvmId());
-		String llvm =  formal.llvmAllocate();
+		String llvm = "";
+		if (!formal.getType().isUnit()) {
+			formal.setLlvmId(counter.getNextLlvmId());
+			llvm += formal.llvmAllocate();
+		}
 
 		if(initExpr != null){
 			Assign init = new Assign(new Id(formal.getName()), initExpr);

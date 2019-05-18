@@ -155,9 +155,9 @@ public class BinOp extends Expr {
         String ret;
         switch (type){
             case EQUAL:
-                //Both operand are unit type, condition always true
+                // Both operands are unit type, condition always true
                 if(rhs.getTypeName().equals(VSOPTypes.UNIT.getName())){
-                    return llvmBinOp(llvmId, "0", "0", LLVMKeywords.EQ, LLVMTypes.BOOL.getLlvmName());//TODO, Greg, tu sais comment faire plus propore que 0 == 0 ?
+                    return LlvmWrappers.setBool(llvmId, true);
                 }
 
 
@@ -167,6 +167,7 @@ public class BinOp extends Expr {
                 String llvmTypeLeft = VSOPTypes.getLlvmTypeName(lhs.typeName, true);
                 String llvmTypeRight = VSOPTypes.getLlvmTypeName(rhs.typeName, true);
                 String leftPointerValue = llvmId;
+
                 // Turn class pointers to i64, then compare the i64 values (i.e., check if addresses are equal)
                 ret = llvmCast(leftPointerValue, LLVMKeywords.PTRTOINT, llvmTypeLeft,
                         LLVMTypes.INT64, leftId);

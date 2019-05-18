@@ -2,7 +2,6 @@ package be.vsop.AST;
 
 import be.vsop.codegenutil.ExprEval;
 import be.vsop.codegenutil.InstrCounter;
-import be.vsop.codegenutil.LlvmVar;
 import be.vsop.exceptions.semantic.InvalidAssignException;
 import be.vsop.exceptions.semantic.SemanticException;
 
@@ -56,7 +55,11 @@ public class Assign extends Expr {
         Formal toAssign = scopeTable.lookupVariable(id.getName());
 
         ExprEval eval = expr.evalExpr(counter, toAssign.getType().getName());
-        ExprEval assignEval = new ExprEval(eval.llvmId, eval.llvmCode  + toAssign.llvmStore(eval.llvmId, counter));
+        String store = "";
+        if (!isUnit()) {
+            store = toAssign.llvmStore(eval.llvmId, counter);
+        }
+        ExprEval assignEval = new ExprEval(eval.llvmId, eval.llvmCode  + store);
 
         return castEval(assignEval, typeName, expectedType, counter);
     }

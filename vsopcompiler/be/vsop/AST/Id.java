@@ -52,6 +52,9 @@ public class Id extends Expr {
 
 	@Override
 	public ExprEval evalExpr(InstrCounter counter, String expectedType) {
+		if (isUnit()) {
+			return new ExprEval("","");
+		}
 		Formal thisFormal =  this.scopeTable.lookupVariable(name);
 
 		ExprEval eval = thisFormal.llvmLoad(counter);

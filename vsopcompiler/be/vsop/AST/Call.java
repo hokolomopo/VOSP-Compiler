@@ -160,10 +160,8 @@ public class Call extends Expr {
 
         String llvmId;
         if (called.returnType().equals(VSOPTypes.UNIT.getName())) {
-
             // If the return type is unit (void), we don't save the result anywhere
             llvmId = null;
-
         } else {
             llvmId = counter.getNextLlvmId();
         }
