@@ -123,7 +123,7 @@ public class If extends Expr {
 		llvm += labels.get(InstrCounter.COND_IF_LABEL) + ":" + endLine +
 				thenEval.llvmCode;
 		if(retFormal != null)
-			llvm += retFormal.llvmStore(new LlvmVar(thenEval.llvmId, thenExpr), counter);
+			llvm += retFormal.llvmStore(thenEval.llvmId, counter);
 		llvm += "br label %" + labels.get(InstrCounter.COND_END_LABEL) + endLine + endLine;
 
 		//Else condition
@@ -132,7 +132,7 @@ public class If extends Expr {
 			llvm += labels.get(InstrCounter.COND_ELSE_LABEL) + ":" + endLine +
 					elseEval.llvmCode;
 			if(retFormal != null)
-				llvm += retFormal.llvmStore(new LlvmVar(elseEval.llvmId, elseExpr), counter);
+				llvm += retFormal.llvmStore(elseEval.llvmId, counter);
 			llvm += "br label %" + labels.get(InstrCounter.COND_END_LABEL) + endLine + endLine;
 		}
 

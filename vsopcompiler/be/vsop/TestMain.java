@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public class TestMain {
     public static void main(String[] args) {
-        String fileName = "llvm/testp.vsop";
+        String fileName = "llvm/test.vsop";
         Compiler compiler = new Compiler(fileName);
         Program program = compiler.buildAST();
         System.out.println();

@@ -56,7 +56,7 @@ public class Assign extends Expr {
         Formal toAssign = scopeTable.lookupVariable(id.getName());
 
         ExprEval eval = expr.evalExpr(counter, toAssign.getType().getName());
-        ExprEval assignEval = new ExprEval(eval.llvmId, eval.llvmCode  + toAssign.llvmStore(new LlvmVar(eval.llvmId, expr.getTypeName()), counter));
+        ExprEval assignEval = new ExprEval(eval.llvmId, eval.llvmCode  + toAssign.llvmStore(eval.llvmId, counter));
 
         return castEval(assignEval, typeName, expectedType, counter);
     }

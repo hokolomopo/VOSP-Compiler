@@ -2,7 +2,6 @@ package be.vsop.exceptions;
 
 import be.vsop.tokens.Token;
 import java_cup.runtime.ComplexSymbolFactory;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 

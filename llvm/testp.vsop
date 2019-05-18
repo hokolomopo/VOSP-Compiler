@@ -1,15 +1,15 @@
+class Parent {
+    name() : string { "Parent" }
+}
+class Child extends Parent {
+    name() : string { "Child" }
+}
 class Main extends IO {
     main() : int32 {
-        if self = self then print("OK\n") else print("KO\n");
-        if self = new Main then print("KO\n") // = is equality, not assignment
-        else print("OK\n");
-        let o : Object in {
-            if o = self then print("KO\n") else print("OK\n");
-            if self = o then print("KO\n") else print("OK\n");
-            o <- self;
-            if o = self then print("OK\n") else print("KO\n");
-            if self = o then print("OK\n") else print("KO\n")
-        };
+        print((if true then new Parent else new Child).name());
+        print("\n");
+        print((if false then new Parent else new Child).name());
+        print("\n");
         0
     }
 }

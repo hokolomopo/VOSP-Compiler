@@ -178,7 +178,7 @@ public class ClassItem extends ASTNode{
             //Initialize the field and store it
             ExprEval evalFieldInitExpr = field.getInitLlvm(newCounter);
             llvm.append(evalFieldInitExpr.llvmCode);
-            String store = formal.llvmStore(new LlvmVar(evalFieldInitExpr.llvmId, field.getType().getName()), retLlvmId, newCounter);
+            String store = formal.llvmStore(evalFieldInitExpr.llvmId, retLlvmId, newCounter);
             llvm.append(store);
         }
 

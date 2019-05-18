@@ -34,7 +34,8 @@ public class New extends Expr {
         String llvmId = counter.getNextLlvmId();
         String llvm = LlvmWrappers.callNew(llvmId, typeName);
 
-        return new ExprEval(llvmId, llvm);
+        ExprEval eval = new ExprEval(llvmId, llvm);
+        return castEval(eval, typeName, expectedType, counter);
     }
 
 }

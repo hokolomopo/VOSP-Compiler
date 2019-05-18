@@ -102,7 +102,7 @@ public class FormalList extends ASTNode{
         StringBuilder builder = new StringBuilder();
 
         for(Formal formal : formals)
-            builder.append(formal.llvmStore(new LlvmVar(formal.getLlvmId(), formal.getType().getName()), counter));
+            builder.append(formal.llvmStore(formal.getLlvmId(), counter));
 
         return builder.toString();
 

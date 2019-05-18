@@ -141,17 +141,17 @@ public class Formal extends ASTNode{
         return new ExprEval(id, llvm);
     }
 
-    public String llvmStore(LlvmVar toStore, String parentClassId, InstrCounter counter){
+    public String llvmStore(String toStore, String parentClassId, InstrCounter counter){
         if(isClassField){
             ExprEval eval = getFieldPtr(parentClassId, counter);
             String llvm = eval.llvmCode;
-            llvm += String.format("store %s %s, %s %s \n", type.getLlvmName(true), toStore.llvmId, type.getLlvmPtr(true), eval.llvmId);
+            llvm += String.format("store %s %s, %s %s \n", type.getLlvmName(true), toStore, type.getLlvmPtr(true), eval.llvmId);
             return llvm;
         }
-        return String.format("store %s %s, %s %s \n", type.getLlvmName(true), toStore.llvmId, type.getLlvmPtr(true), getLlvmPtr());
+        return String.format("store %s %s, %s %s \n", type.getLlvmName(true), toStore, type.getLlvmPtr(true), getLlvmPtr());
     }
 
-    public String llvmStore(LlvmVar toStore, InstrCounter counter){
+    public String llvmStore(String toStore, InstrCounter counter){
         return llvmStore(toStore, "%" + LanguageSpecs.SELF, counter);
     }
 
