@@ -1,10 +1,6 @@
-%Vtable.Nil = type { i1 (%class.List*)*, i32 (%class.List*)*}
+%Vtable.Parent = type { i8* (%class.Parent*)*}
 
-%class.Nil = type { %Vtable.Nil* }
-
-%Vtable.Cons = type { i1 (%class.Cons*)*, i32 (%class.Cons*)*, %class.Cons* (%class.Cons*, i32, %class.List*)*, i32 (%class.Cons*)*}
-
-%class.Cons = type { %Vtable.Cons*, i32, %class.List* }
+%class.Parent = type { %Vtable.Parent* }
 
 %Vtable.IO = type { %class.IO* (%class.IO*, i8*)*, %class.IO* (%class.IO*, i1)*, %class.IO* (%class.IO*, i32)*, i8* (%class.IO*)*, i1 (%class.IO*)*, i32 (%class.IO*)*}
 
@@ -14,13 +10,13 @@
 
 %class.Object = type { %Vtable.Object* }
 
-%Vtable.List = type { i1 (%class.List*)*, i32 (%class.List*)*}
+%Vtable.Child = type { i8* (%class.Child*)*}
 
-%class.List = type { %Vtable.List* }
+%class.Child = type { %Vtable.Child* }
 
-%Vtable.Main = type { %class.IO* (%class.IO*, i8*)*, %class.IO* (%class.IO*, i1)*, %class.IO* (%class.IO*, i32)*, i8* (%class.IO*)*, i1 (%class.IO*)*, i32 (%class.IO*)*, i32 (%class.Main*)*}
+%Vtable.Main = type { %class.IO* (%class.IO*, i8*)*, %class.IO* (%class.Main*, i1)*, %class.IO* (%class.IO*, i32)*, i8* (%class.IO*)*, i1 (%class.IO*)*, i32 (%class.IO*)*, i32 (%class.Main*)*}
 
-%class.Main = type { %Vtable.Main*, i32 }
+%class.Main = type { %Vtable.Main* }
 
 declare i32 @printf(i8*, ...)
 declare i8* @malloc(i64)
@@ -167,8 +163,9 @@ define void @.Init.Object(%class.Object* %self) {
 ret void
 }
 
-@.str = private unnamed_addr constant [17 x i8] c"List has length \00"
-@.str.1 = private unnamed_addr constant [2 x i8] c"\0a\00"
+@.str = private unnamed_addr constant [8 x i8] c"Parent\0a\00"
+@.str.1 = private unnamed_addr constant [7 x i8] c"Child\0a\00"
+@.str.2 = private unnamed_addr constant [17 x i8] c"Overriden bitch\0a\00"
 
 
 define i32 @main () { 
@@ -177,215 +174,92 @@ define i32 @main () {
 ret i32 %returned
 }
 
-define %class.List* @.New.List() {
-%1 = getelementptr %class.List, %class.List* null, i32 1
-%2 = ptrtoint %class.List* %1 to i64
+define %class.Parent* @.New.Parent() {
+%1 = getelementptr %class.Parent, %class.Parent* null, i32 1
+%2 = ptrtoint %class.Parent* %1 to i64
 %3 = call i8* @malloc(i64 %2)
 %4 = ptrtoint i8* %3 to i64
-%5 = inttoptr i64 %4 to %class.List*
-%6 = getelementptr %Vtable.List, %Vtable.List* null, i32 1
-%7 = ptrtoint %Vtable.List* %6 to i64
+%5 = inttoptr i64 %4 to %class.Parent*
+%6 = getelementptr %Vtable.Parent, %Vtable.Parent* null, i32 1
+%7 = ptrtoint %Vtable.Parent* %6 to i64
 %8 = call i8* @malloc(i64 %7)
 %9 = ptrtoint i8* %8 to i64
-%10 = inttoptr i64 %9 to %Vtable.List*
-%11 = getelementptr %class.List, %class.List* %5, i32 0, i32 0 
-store %Vtable.List* %10, %Vtable.List** %11 
-call void @.Init.List (%class.List* %5)
-ret %class.List* %5
+%10 = inttoptr i64 %9 to %Vtable.Parent*
+%11 = getelementptr %class.Parent, %class.Parent* %5, i32 0, i32 0 
+store %Vtable.Parent* %10, %Vtable.Parent** %11 
+call void @.Init.Parent (%class.Parent* %5)
+ret %class.Parent* %5
 }
 
-define void @.Init.List(%class.List* %self) {
-%1 = ptrtoint %class.List* %self to i64
+define void @.Init.Parent(%class.Parent* %self) {
+%1 = ptrtoint %class.Parent* %self to i64
 %2 = inttoptr i64 %1 to %class.Object*
 call void @.Init.Object (%class.Object* %2)
-%3 = getelementptr %class.List, %class.List* %self, i32 0, i32 0 
-%4 = load %Vtable.List*, %Vtable.List** %3 
-%5 = getelementptr %Vtable.List, %Vtable.List* %4, i32 0, i32 0 
-store i1 (%class.List*)* @List.isNil, i1 (%class.List*)** %5 
-%6 = getelementptr %Vtable.List, %Vtable.List* %4, i32 0, i32 1 
-store i32 (%class.List*)* @List.length, i32 (%class.List*)** %6 
+%3 = getelementptr %class.Parent, %class.Parent* %self, i32 0, i32 0 
+%4 = load %Vtable.Parent*, %Vtable.Parent** %3 
+%5 = getelementptr %Vtable.Parent, %Vtable.Parent* %4, i32 0, i32 0 
+store i8* (%class.Parent*)* @Parent.name, i8* (%class.Parent*)** %5 
 ret void
 }
 
-define i1 @List.isNil(%class.List* %self) {
-%1 = icmp eq %class.List* null, %self
-br i1 %1, label %cond.true, label %cond.false
-cond.true:
-%2 = alloca [81 x i8]
-store [81 x i8] c"Segmentation fault : dispatch on null when calling function isNil on class List\0a\00", [81 x i8]* %2
-%3 = getelementptr inbounds [81 x i8], [81 x i8]* %2, i32 0, i32 0
-%4 = call i32 (i8*, ...) @printf(i8* %3)
-call void @exit(i32 -1)
-ret i1 0
-cond.false:
-%self.ptr = alloca %class.List* 
-store %class.List* %self, %class.List** %self.ptr 
-ret i1 1 
-}
-
-define i32 @List.length(%class.List* %self) {
-%1 = icmp eq %class.List* null, %self
+define i8* @Parent.name(%class.Parent* %self) {
+%1 = icmp eq %class.Parent* null, %self
 br i1 %1, label %cond.true, label %cond.false
 cond.true:
 %2 = alloca [82 x i8]
-store [82 x i8] c"Segmentation fault : dispatch on null when calling function length on class List\0a\00", [82 x i8]* %2
+store [82 x i8] c"Segmentation fault : dispatch on null when calling function name on class Parent\0a\00", [82 x i8]* %2
 %3 = getelementptr inbounds [82 x i8], [82 x i8]* %2, i32 0, i32 0
 %4 = call i32 (i8*, ...) @printf(i8* %3)
 call void @exit(i32 -1)
-ret i32 0
+ret i8* getelementptr inbounds ([1 x i8], [1 x i8]* @.str.emptyStr, i32 0, i32 0)
 cond.false:
-%self.ptr = alloca %class.List* 
-store %class.List* %self, %class.List** %self.ptr 
-ret i32 0 
+%self.ptr = alloca %class.Parent* 
+store %class.Parent* %self, %class.Parent** %self.ptr 
+ret i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str, i32 0, i32 0) 
 }
 
-define %class.Nil* @.New.Nil() {
-%1 = getelementptr %class.Nil, %class.Nil* null, i32 1
-%2 = ptrtoint %class.Nil* %1 to i64
+define %class.Child* @.New.Child() {
+%1 = getelementptr %class.Child, %class.Child* null, i32 1
+%2 = ptrtoint %class.Child* %1 to i64
 %3 = call i8* @malloc(i64 %2)
 %4 = ptrtoint i8* %3 to i64
-%5 = inttoptr i64 %4 to %class.Nil*
-%6 = getelementptr %Vtable.Nil, %Vtable.Nil* null, i32 1
-%7 = ptrtoint %Vtable.Nil* %6 to i64
+%5 = inttoptr i64 %4 to %class.Child*
+%6 = getelementptr %Vtable.Child, %Vtable.Child* null, i32 1
+%7 = ptrtoint %Vtable.Child* %6 to i64
 %8 = call i8* @malloc(i64 %7)
 %9 = ptrtoint i8* %8 to i64
-%10 = inttoptr i64 %9 to %Vtable.Nil*
-%11 = getelementptr %class.Nil, %class.Nil* %5, i32 0, i32 0 
-store %Vtable.Nil* %10, %Vtable.Nil** %11 
-call void @.Init.Nil (%class.Nil* %5)
-ret %class.Nil* %5
+%10 = inttoptr i64 %9 to %Vtable.Child*
+%11 = getelementptr %class.Child, %class.Child* %5, i32 0, i32 0 
+store %Vtable.Child* %10, %Vtable.Child** %11 
+call void @.Init.Child (%class.Child* %5)
+ret %class.Child* %5
 }
 
-define void @.Init.Nil(%class.Nil* %self) {
-%1 = ptrtoint %class.Nil* %self to i64
-%2 = inttoptr i64 %1 to %class.List*
-call void @.Init.List (%class.List* %2)
-%3 = getelementptr %class.Nil, %class.Nil* %self, i32 0, i32 0 
-%4 = load %Vtable.Nil*, %Vtable.Nil** %3 
+define void @.Init.Child(%class.Child* %self) {
+%1 = ptrtoint %class.Child* %self to i64
+%2 = inttoptr i64 %1 to %class.Parent*
+call void @.Init.Parent (%class.Parent* %2)
+%3 = getelementptr %class.Child, %class.Child* %self, i32 0, i32 0 
+%4 = load %Vtable.Child*, %Vtable.Child** %3 
+%5 = getelementptr %Vtable.Child, %Vtable.Child* %4, i32 0, i32 0 
+store i8* (%class.Child*)* @Child.name, i8* (%class.Child*)** %5 
 ret void
 }
 
-define %class.Cons* @.New.Cons() {
-%1 = getelementptr %class.Cons, %class.Cons* null, i32 1
-%2 = ptrtoint %class.Cons* %1 to i64
-%3 = call i8* @malloc(i64 %2)
-%4 = ptrtoint i8* %3 to i64
-%5 = inttoptr i64 %4 to %class.Cons*
-%6 = getelementptr %Vtable.Cons, %Vtable.Cons* null, i32 1
-%7 = ptrtoint %Vtable.Cons* %6 to i64
-%8 = call i8* @malloc(i64 %7)
-%9 = ptrtoint i8* %8 to i64
-%10 = inttoptr i64 %9 to %Vtable.Cons*
-%11 = getelementptr %class.Cons, %class.Cons* %5, i32 0, i32 0 
-store %Vtable.Cons* %10, %Vtable.Cons** %11 
-call void @.Init.Cons (%class.Cons* %5)
-ret %class.Cons* %5
-}
-
-define void @.Init.Cons(%class.Cons* %self) {
-%1 = ptrtoint %class.Cons* %self to i64
-%2 = inttoptr i64 %1 to %class.List*
-call void @.Init.List (%class.List* %2)
-%3 = getelementptr %class.Cons, %class.Cons* %self, i32 0, i32 1 
-store i32 0, i32* %3 
-%4 = getelementptr %class.Cons, %class.Cons* %self, i32 0, i32 2 
-store %class.List* null, %class.List** %4 
-%5 = getelementptr %class.Cons, %class.Cons* %self, i32 0, i32 0 
-%6 = load %Vtable.Cons*, %Vtable.Cons** %5 
-%7 = getelementptr %Vtable.Cons, %Vtable.Cons* %6, i32 0, i32 2 
-store %class.Cons* (%class.Cons*, i32, %class.List*)* @Cons.init, %class.Cons* (%class.Cons*, i32, %class.List*)** %7 
-%8 = getelementptr %Vtable.Cons, %Vtable.Cons* %6, i32 0, i32 3 
-store i32 (%class.Cons*)* @Cons.head, i32 (%class.Cons*)** %8 
-%9 = getelementptr %Vtable.Cons, %Vtable.Cons* %6, i32 0, i32 0 
-store i1 (%class.Cons*)* @Cons.isNil, i1 (%class.Cons*)** %9 
-%10 = getelementptr %Vtable.Cons, %Vtable.Cons* %6, i32 0, i32 1 
-store i32 (%class.Cons*)* @Cons.length, i32 (%class.Cons*)** %10 
-ret void
-}
-
-define %class.Cons* @Cons.init(%class.Cons* %self, i32 %hd, %class.List* %tl) {
-%1 = icmp eq %class.Cons* null, %self
-br i1 %1, label %cond.true, label %cond.false
-cond.true:
-%2 = alloca [80 x i8]
-store [80 x i8] c"Segmentation fault : dispatch on null when calling function init on class Cons\0a\00", [80 x i8]* %2
-%3 = getelementptr inbounds [80 x i8], [80 x i8]* %2, i32 0, i32 0
-%4 = call i32 (i8*, ...) @printf(i8* %3)
-call void @exit(i32 -1)
-ret %class.Cons* null
-cond.false:
-%self.ptr = alloca %class.Cons* 
-%hd.ptr = alloca i32 
-%tl.ptr = alloca %class.List* 
-store %class.Cons* %self, %class.Cons** %self.ptr 
-store i32 %hd, i32* %hd.ptr 
-store %class.List* %tl, %class.List** %tl.ptr 
-%5 = load i32, i32* %hd.ptr 
-%6 = getelementptr %class.Cons, %class.Cons* %self, i32 0, i32 1 
-store i32 %5, i32* %6 
-%7 = load %class.List*, %class.List** %tl.ptr 
-%8 = getelementptr %class.Cons, %class.Cons* %self, i32 0, i32 2 
-store %class.List* %7, %class.List** %8 
-%9 = load %class.Cons*, %class.Cons** %self.ptr 
-ret %class.Cons* %9 
-}
-
-define i32 @Cons.head(%class.Cons* %self) {
-%1 = icmp eq %class.Cons* null, %self
-br i1 %1, label %cond.true, label %cond.false
-cond.true:
-%2 = alloca [80 x i8]
-store [80 x i8] c"Segmentation fault : dispatch on null when calling function head on class Cons\0a\00", [80 x i8]* %2
-%3 = getelementptr inbounds [80 x i8], [80 x i8]* %2, i32 0, i32 0
-%4 = call i32 (i8*, ...) @printf(i8* %3)
-call void @exit(i32 -1)
-ret i32 0
-cond.false:
-%self.ptr = alloca %class.Cons* 
-store %class.Cons* %self, %class.Cons** %self.ptr 
-%5 = getelementptr %class.Cons, %class.Cons* %self, i32 0, i32 1 
-%6 = load i32, i32* %5 
-ret i32 %6 
-}
-
-define i1 @Cons.isNil(%class.Cons* %self) {
-%1 = icmp eq %class.Cons* null, %self
+define i8* @Child.name(%class.Child* %self) {
+%1 = icmp eq %class.Child* null, %self
 br i1 %1, label %cond.true, label %cond.false
 cond.true:
 %2 = alloca [81 x i8]
-store [81 x i8] c"Segmentation fault : dispatch on null when calling function isNil on class Cons\0a\00", [81 x i8]* %2
+store [81 x i8] c"Segmentation fault : dispatch on null when calling function name on class Child\0a\00", [81 x i8]* %2
 %3 = getelementptr inbounds [81 x i8], [81 x i8]* %2, i32 0, i32 0
 %4 = call i32 (i8*, ...) @printf(i8* %3)
 call void @exit(i32 -1)
-ret i1 0
+ret i8* getelementptr inbounds ([1 x i8], [1 x i8]* @.str.emptyStr, i32 0, i32 0)
 cond.false:
-%self.ptr = alloca %class.Cons* 
-store %class.Cons* %self, %class.Cons** %self.ptr 
-ret i1 0 
-}
-
-define i32 @Cons.length(%class.Cons* %self) {
-%1 = icmp eq %class.Cons* null, %self
-br i1 %1, label %cond.true, label %cond.false
-cond.true:
-%2 = alloca [82 x i8]
-store [82 x i8] c"Segmentation fault : dispatch on null when calling function length on class Cons\0a\00", [82 x i8]* %2
-%3 = getelementptr inbounds [82 x i8], [82 x i8]* %2, i32 0, i32 0
-%4 = call i32 (i8*, ...) @printf(i8* %3)
-call void @exit(i32 -1)
-ret i32 0
-cond.false:
-%self.ptr = alloca %class.Cons* 
-store %class.Cons* %self, %class.Cons** %self.ptr 
-%5 = getelementptr %class.Cons, %class.Cons* %self, i32 0, i32 2 
-%6 = load %class.List*, %class.List** %5 
-%7 = getelementptr %class.List, %class.List* %6, i32 0, i32 0 
-%8 = load %Vtable.List*, %Vtable.List** %7 
-%9 = getelementptr %Vtable.List, %Vtable.List* %8, i32 0, i32 1 
-%10 = load i32 (%class.List*)*, i32 (%class.List*)** %9 
-%11 = call i32 %10(%class.List* %6)
-%12 = add i32 1, %11
-ret i32 %12 
+%self.ptr = alloca %class.Child* 
+store %class.Child* %self, %class.Child** %self.ptr 
+ret i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.1, i32 0, i32 0) 
 }
 
 define %class.Main* @.New.Main() {
@@ -409,13 +283,39 @@ define void @.Init.Main(%class.Main* %self) {
 %1 = ptrtoint %class.Main* %self to i64
 %2 = inttoptr i64 %1 to %class.IO*
 call void @.Init.IO (%class.IO* %2)
-%3 = getelementptr %class.Main, %class.Main* %self, i32 0, i32 1 
-store i32 457, i32* %3 
-%4 = getelementptr %class.Main, %class.Main* %self, i32 0, i32 0 
-%5 = load %Vtable.Main*, %Vtable.Main** %4 
-%6 = getelementptr %Vtable.Main, %Vtable.Main* %5, i32 0, i32 6 
+%3 = getelementptr %class.Main, %class.Main* %self, i32 0, i32 0 
+%4 = load %Vtable.Main*, %Vtable.Main** %3 
+%5 = getelementptr %Vtable.Main, %Vtable.Main* %4, i32 0, i32 1 
+store %class.IO* (%class.Main*, i1)* @Main.printBool, %class.IO* (%class.Main*, i1)** %5 
+%6 = getelementptr %Vtable.Main, %Vtable.Main* %4, i32 0, i32 6 
 store i32 (%class.Main*)* @Main.main, i32 (%class.Main*)** %6 
 ret void
+}
+
+define %class.IO* @Main.printBool(%class.Main* %self, i1 %b) {
+%1 = icmp eq %class.Main* null, %self
+br i1 %1, label %cond.true, label %cond.false
+cond.true:
+%2 = alloca [85 x i8]
+store [85 x i8] c"Segmentation fault : dispatch on null when calling function printBool on class Main\0a\00", [85 x i8]* %2
+%3 = getelementptr inbounds [85 x i8], [85 x i8]* %2, i32 0, i32 0
+%4 = call i32 (i8*, ...) @printf(i8* %3)
+call void @exit(i32 -1)
+ret %class.IO* null
+cond.false:
+%self.ptr = alloca %class.Main* 
+%b.ptr = alloca i1 
+store %class.Main* %self, %class.Main** %self.ptr 
+store i1 %b, i1* %b.ptr 
+%5 = load %class.Main*, %class.Main** %self.ptr 
+%6 = ptrtoint %class.Main* %5 to i64
+%7 = inttoptr i64 %6 to %class.IO*
+%8 = getelementptr %class.IO, %class.IO* %7, i32 0, i32 0 
+%9 = load %Vtable.IO*, %Vtable.IO** %8 
+%10 = getelementptr %Vtable.IO, %Vtable.IO* %9, i32 0, i32 0 
+%11 = load %class.IO* (%class.IO*, i8*)*, %class.IO* (%class.IO*, i8*)** %10 
+%12 = call %class.IO* %11(%class.IO* %7, i8* getelementptr inbounds ([17 x i8], [17 x i8]* @.str.2, i32 0, i32 0))
+ret %class.IO* %12 
 }
 
 define i32 @Main.main(%class.Main* %self) {
@@ -431,65 +331,72 @@ ret i32 0
 cond.false:
 %self.ptr = alloca %class.Main* 
 store %class.Main* %self, %class.Main** %self.ptr 
-%5 = alloca %class.List* 
-%6 = call %class.Cons* @.New.Cons()
-%7 = call %class.Cons* @.New.Cons()
-%8 = call %class.Cons* @.New.Cons()
-%9 = call %class.Nil* @.New.Nil()
-%10 = ptrtoint %class.Nil* %9 to i64
-%11 = inttoptr i64 %10 to %class.List*
-%12 = getelementptr %class.Cons, %class.Cons* %8, i32 0, i32 0 
-%13 = load %Vtable.Cons*, %Vtable.Cons** %12 
-%14 = getelementptr %Vtable.Cons, %Vtable.Cons* %13, i32 0, i32 2 
-%15 = load %class.Cons* (%class.Cons*, i32, %class.List*)*, %class.Cons* (%class.Cons*, i32, %class.List*)** %14 
-%16 = call %class.Cons* %15(%class.Cons* %8, i32 2, %class.List* %11)
-%17 = ptrtoint %class.Cons* %16 to i64
-%18 = inttoptr i64 %17 to %class.List*
-%19 = getelementptr %class.Cons, %class.Cons* %7, i32 0, i32 0 
-%20 = load %Vtable.Cons*, %Vtable.Cons** %19 
-%21 = getelementptr %Vtable.Cons, %Vtable.Cons* %20, i32 0, i32 2 
-%22 = load %class.Cons* (%class.Cons*, i32, %class.List*)*, %class.Cons* (%class.Cons*, i32, %class.List*)** %21 
-%23 = call %class.Cons* %22(%class.Cons* %7, i32 1, %class.List* %18)
-%24 = ptrtoint %class.Cons* %23 to i64
-%25 = inttoptr i64 %24 to %class.List*
-%26 = getelementptr %class.Cons, %class.Cons* %6, i32 0, i32 0 
-%27 = load %Vtable.Cons*, %Vtable.Cons** %26 
-%28 = getelementptr %Vtable.Cons, %Vtable.Cons* %27, i32 0, i32 2 
-%29 = load %class.Cons* (%class.Cons*, i32, %class.List*)*, %class.Cons* (%class.Cons*, i32, %class.List*)** %28 
-%30 = call %class.Cons* %29(%class.Cons* %6, i32 0, %class.List* %25)
-%31 = ptrtoint %class.Cons* %30 to i64
-%32 = inttoptr i64 %31 to %class.List*
-store %class.List* %32, %class.List** %5 
-%33 = load %class.Main*, %class.Main** %self.ptr 
-%34 = ptrtoint %class.Main* %33 to i64
-%35 = inttoptr i64 %34 to %class.IO*
-%36 = getelementptr %class.IO, %class.IO* %35, i32 0, i32 0 
-%37 = load %Vtable.IO*, %Vtable.IO** %36 
-%38 = getelementptr %Vtable.IO, %Vtable.IO* %37, i32 0, i32 0 
-%39 = load %class.IO* (%class.IO*, i8*)*, %class.IO* (%class.IO*, i8*)** %38 
-%40 = call %class.IO* %39(%class.IO* %35, i8* getelementptr inbounds ([17 x i8], [17 x i8]* @.str, i32 0, i32 0))
-%41 = load %class.Main*, %class.Main** %self.ptr 
-%42 = ptrtoint %class.Main* %41 to i64
-%43 = inttoptr i64 %42 to %class.IO*
-%44 = load %class.List*, %class.List** %5 
-%45 = getelementptr %class.List, %class.List* %44, i32 0, i32 0 
-%46 = load %Vtable.List*, %Vtable.List** %45 
-%47 = getelementptr %Vtable.List, %Vtable.List* %46, i32 0, i32 1 
-%48 = load i32 (%class.List*)*, i32 (%class.List*)** %47 
-%49 = call i32 %48(%class.List* %44)
-%50 = getelementptr %class.IO, %class.IO* %43, i32 0, i32 0 
-%51 = load %Vtable.IO*, %Vtable.IO** %50 
-%52 = getelementptr %Vtable.IO, %Vtable.IO* %51, i32 0, i32 2 
-%53 = load %class.IO* (%class.IO*, i32)*, %class.IO* (%class.IO*, i32)** %52 
-%54 = call %class.IO* %53(%class.IO* %43, i32 %49)
-%55 = load %class.Main*, %class.Main** %self.ptr 
-%56 = ptrtoint %class.Main* %55 to i64
-%57 = inttoptr i64 %56 to %class.IO*
-%58 = getelementptr %class.IO, %class.IO* %57, i32 0, i32 0 
-%59 = load %Vtable.IO*, %Vtable.IO** %58 
-%60 = getelementptr %Vtable.IO, %Vtable.IO* %59, i32 0, i32 0 
-%61 = load %class.IO* (%class.IO*, i8*)*, %class.IO* (%class.IO*, i8*)** %60 
-%62 = call %class.IO* %61(%class.IO* %57, i8* getelementptr inbounds ([2 x i8], [2 x i8]* @.str.1, i32 0, i32 0))
+%5 = load %class.Main*, %class.Main** %self.ptr 
+%6 = getelementptr %class.Main, %class.Main* %5, i32 0, i32 0 
+%7 = load %Vtable.Main*, %Vtable.Main** %6 
+%8 = getelementptr %Vtable.Main, %Vtable.Main* %7, i32 0, i32 1 
+%9 = load %class.IO* (%class.Main*, i1)*, %class.IO* (%class.Main*, i1)** %8 
+%10 = call %class.IO* %9(%class.Main* %5, i1 1)
+%11 = load %class.Main*, %class.Main** %self.ptr 
+%12 = ptrtoint %class.Main* %11 to i64
+%13 = inttoptr i64 %12 to %class.IO*
+%cond2.ptr = alloca %class.Parent* 
+br i1 1, label %cond2.true, label %cond2.false
+
+cond2.true:
+%14 = call %class.Parent* @.New.Parent()
+store %class.Parent* %14, %class.Parent** %cond2.ptr 
+br label %cond2.end
+
+cond2.false:
+%15 = call %class.Child* @.New.Child()
+%16 = ptrtoint %class.Child* %15 to i64
+%17 = inttoptr i64 %16 to %class.Parent*
+store %class.Parent* %17, %class.Parent** %cond2.ptr 
+br label %cond2.end
+
+cond2.end:
+%18 = load %class.Parent*, %class.Parent** %cond2.ptr 
+%19 = getelementptr %class.Parent, %class.Parent* %18, i32 0, i32 0 
+%20 = load %Vtable.Parent*, %Vtable.Parent** %19 
+%21 = getelementptr %Vtable.Parent, %Vtable.Parent* %20, i32 0, i32 0 
+%22 = load i8* (%class.Parent*)*, i8* (%class.Parent*)** %21 
+%23 = call i8* %22(%class.Parent* %18)
+%24 = getelementptr %class.IO, %class.IO* %13, i32 0, i32 0 
+%25 = load %Vtable.IO*, %Vtable.IO** %24 
+%26 = getelementptr %Vtable.IO, %Vtable.IO* %25, i32 0, i32 0 
+%27 = load %class.IO* (%class.IO*, i8*)*, %class.IO* (%class.IO*, i8*)** %26 
+%28 = call %class.IO* %27(%class.IO* %13, i8* %23)
+%29 = load %class.Main*, %class.Main** %self.ptr 
+%30 = ptrtoint %class.Main* %29 to i64
+%31 = inttoptr i64 %30 to %class.IO*
+%cond3.ptr = alloca %class.Parent* 
+br i1 0, label %cond3.true, label %cond3.false
+
+cond3.true:
+%32 = call %class.Parent* @.New.Parent()
+store %class.Parent* %32, %class.Parent** %cond3.ptr 
+br label %cond3.end
+
+cond3.false:
+%33 = call %class.Child* @.New.Child()
+%34 = ptrtoint %class.Child* %33 to i64
+%35 = inttoptr i64 %34 to %class.Parent*
+store %class.Parent* %35, %class.Parent** %cond3.ptr 
+br label %cond3.end
+
+cond3.end:
+%36 = load %class.Parent*, %class.Parent** %cond3.ptr 
+%37 = getelementptr %class.Parent, %class.Parent* %36, i32 0, i32 0 
+%38 = load %Vtable.Parent*, %Vtable.Parent** %37 
+%39 = getelementptr %Vtable.Parent, %Vtable.Parent* %38, i32 0, i32 0 
+%40 = load i8* (%class.Parent*)*, i8* (%class.Parent*)** %39 
+%41 = call i8* %40(%class.Parent* %36)
+%42 = getelementptr %class.IO, %class.IO* %31, i32 0, i32 0 
+%43 = load %Vtable.IO*, %Vtable.IO** %42 
+%44 = getelementptr %Vtable.IO, %Vtable.IO* %43, i32 0, i32 0 
+%45 = load %class.IO* (%class.IO*, i8*)*, %class.IO* (%class.IO*, i8*)** %44 
+%46 = call %class.IO* %45(%class.IO* %31, i8* %41)
 ret i32 0 
 }
 
