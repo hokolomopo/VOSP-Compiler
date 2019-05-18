@@ -2,7 +2,6 @@ package be.vsop.AST;
 
 import be.vsop.codegenutil.ExprEval;
 import be.vsop.codegenutil.InstrCounter;
-import be.vsop.codegenutil.LlvmVar;
 import be.vsop.exceptions.semantic.SemanticException;
 import be.vsop.exceptions.semantic.TypeNotExpectedException;
 import be.vsop.semantic.LanguageSpecs;
