@@ -1,5 +1,6 @@
 package be.vsop.semantic;
 
+import be.vsop.AST.Type;
 import be.vsop.codegenutil.ExprEval;
 import be.vsop.codegenutil.InstrCounter;
 
@@ -77,7 +78,7 @@ public class LlvmWrappers {
     }
 
     public static String branch(String cond, String labelTrue, String labelFalse) {
-        return LLVMKeywords.BRANCH.getLlvmName() + " " + LLVMTypes.BOOL.getLlvmName() + " " + cond + " " + ", " +
+        return LLVMKeywords.BRANCH.getLlvmName() + " " + LLVMTypes.BOOL.getLlvmName() + " " + cond + ", " +
                 LLVMKeywords.LABEL.getLlvmName() + " %" + labelTrue + ", " + LLVMKeywords.LABEL.getLlvmName() + " %" +
                 labelFalse + endLine;
     }
@@ -131,5 +132,45 @@ public class LlvmWrappers {
 
     public static String binOp(String result, String operand1, String operand2, LLVMKeywords operation, String llvmType) {
         return result + " = " + operation.getLlvmName() + " " + llvmType + " " + operand1 + ", " + operand2 + endLine;
+    }
+
+    public static String printErrorString(InstrCounter counter, String content, boolean addEndLine) {
+        // +1 for \00 as we use C strings
+        int nbChars = content.length() + 1;
+        if (addEndLine) {
+            nbChars++;
+        }
+        String type = "[" + nbChars + " x i8]";
+        String llvmString = "c\"" + content;
+        if (addEndLine) {
+            llvmString += "\\0a";
+        }
+        llvmString += "\\00\"";
+        String toPrintId = counter.getNextLlvmId();
+        String toPrintPtrId = counter.getNextLlvmId();
+        String unusedPrintfReturnId = counter.getNextLlvmId();
+
+        return stackAllocation(toPrintId, type) +
+                store(type, llvmString, toPrintId) +
+
+                // get a pointer on the string to print, to pass to the printf method
+                toPrintPtrId + " = " + LLVMKeywords.GETPTR.getLlvmName() + " " +
+                LLVMKeywords.INBOUNDS.getLlvmName() + " " + type + ", " + type + "* " +
+                toPrintId + ", " + LLVMTypes.INT32.getLlvmName() + " 0, " +
+                LLVMTypes.INT32.getLlvmName() + " 0" + endLine +
+
+                // call printf
+                unusedPrintfReturnId + " = " + LLVMKeywords.CALL.getLlvmName() +
+                " " + LLVMTypes.PRINTF.getLlvmName() + " " + LLVMIntrinsics.PRINTF.getLlvmName() +
+                "(" + LLVMTypes.STRING.getLlvmName() + " " + toPrintPtrId + ")" + endLine;
+    }
+
+    public static String exit(int exitCode) {
+        return "call void @exit(i32 " + exitCode + ")" + endLine;
+    }
+
+    public static String returnDefault(Type type) {
+        return "ret " + VSOPTypes.getLlvmTypeName(type.getName(), true) + " " +
+                VSOPTypes.getLlvmDefaultInit(type.getName()) + endLine;
     }
 }

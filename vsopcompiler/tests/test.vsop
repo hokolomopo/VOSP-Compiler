@@ -1,8 +1,22 @@
 class Main {
-    io : IO; // should be default-initialized to null
+    io : X; // should be default-initialized to null
 
     main() : int32 {
-        io.print("Never to be printed\n"); // Dispatch to null should error
+        io.dontModifyIt(45); // Dispatch to null should error
         0
+    }
+}
+
+class X extends IO {
+    someVar : int32;
+
+    modifyTheVar() : int32 {
+        someVar <- 48;
+        56
+    }
+
+    dontModifyIt(i : int32) : int32 {
+        print("Never to be printed\n");
+        3
     }
 }

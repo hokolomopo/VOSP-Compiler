@@ -3,11 +3,10 @@ package be.vsop.AST;
 import be.vsop.codegenutil.ExprEval;
 import be.vsop.codegenutil.InstrCounter;
 import be.vsop.exceptions.semantic.*;
-import be.vsop.semantic.LLVMKeywords;
-import be.vsop.semantic.ScopeTable;
-import be.vsop.semantic.VSOPTypes;
+import be.vsop.semantic.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Method extends ASTNode {
     private Id id;
@@ -131,6 +130,8 @@ public class Method extends ASTNode {
 
     @Override
     public String getLlvm(InstrCounter counter) {
+        //The body of the function is a new scope, it needs a new counter
+        InstrCounter bodyCounter = new InstrCounter();
         //Add self to formals
         Formal self = new Formal(new Id("self"), new Type(scopeTable.getScopeClassType().getName()));
         formals.addFormal(self, 0);
@@ -145,12 +146,30 @@ public class Method extends ASTNode {
         llvm += ") {\n";
 
         //Method body
+        //First check that self is not null
+        String isNullId = bodyCounter.getNextLlvmId();
+        HashMap<String, String> condLabels = bodyCounter.getNextCondLabels();
+        llvm += LlvmWrappers.binOp(isNullId, "null", "%" + LanguageSpecs.SELF, LLVMKeywords.EQ,
+                VSOPTypes.getLlvmTypeName(scopeTable.getScopeClassType().getName(), true));
+        llvm += LlvmWrappers.branch(isNullId, condLabels.get(InstrCounter.COND_IF_LABEL),
+                condLabels.get(InstrCounter.COND_ELSE_LABEL));
+
+        //Will be executed if self is null
+        llvm += LlvmWrappers.label(condLabels.get(InstrCounter.COND_IF_LABEL));
+        String stringErrorContent = "Segmentation fault : dispatch on null when calling function " + id.getName() +
+                " on class " + scopeTable.getScopeClassType().getName();
+        llvm += LlvmWrappers.printErrorString(bodyCounter, stringErrorContent, true);
+        llvm += LlvmWrappers.exit(-1);
+        llvm += LlvmWrappers.returnDefault(retType);
+
+        //Will be executed if self is not null
+        llvm += LlvmWrappers.label(condLabels.get(InstrCounter.COND_ELSE_LABEL));
 
         //Allocate and store all arguments into pointers
         llvm += formals.llvmAllocate();
         llvm += formals.llvmStore(counter);
 
-        ExprEval bodyEval = block.evalExpr(new InstrCounter(), retType.getName());
+        ExprEval bodyEval = block.evalExpr(bodyCounter, retType.getName());
         llvm += bodyEval.llvmCode;
 
         llvm += "ret " + VSOPTypes.getLlvmTypeName(retType.getName(), true) + " " + bodyEval.llvmId + " " + endLine + "}";

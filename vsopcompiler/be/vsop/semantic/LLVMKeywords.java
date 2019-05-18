@@ -1,6 +1,7 @@
 package be.vsop.semantic;
 
 public enum LLVMKeywords {
+    INBOUNDS("inbounds"),
     GETPTR("getelementptr"),
     RET("ret"),
     DEFINE("define"),

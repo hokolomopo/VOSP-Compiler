@@ -1,6 +1,7 @@
 package be.vsop.semantic;
 
 public enum LLVMIntrinsics {
+    PRINTF("@printf"),
     MALLOC("@malloc"),
     POW("@llvm.powi.f32");
 
