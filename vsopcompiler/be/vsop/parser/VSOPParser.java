@@ -418,7 +418,7 @@ public class VSOPParser extends java_cup.runtime.lr_parser {
     }
 
 
-    // Connect this be.vsop.parser to a scanner!
+    // Connect this parser to a scanner!
     Scanner s;
     ComplexSymbolFactory sf;
     ASTNode abstractTree;

@@ -117,7 +117,10 @@ public class LlvmWrappers {
         for (int i = 0; i < argumentsIds.size(); i++) {
             ret.append(argumentsTypes.get(i)).append(" ").append(argumentsIds.get(i)).append(", ");
         }
+
+        // Remove last ", "
         ret.setLength(ret.length() - 2);
+        
         ret.append(")").append(endLine);
         return ret.toString();
     }

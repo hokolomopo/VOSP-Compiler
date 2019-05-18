@@ -9,7 +9,7 @@ import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 public class vsopc {
-    // This class is needed to execute properly runtime commands.
+    // This class is used to redirect runtime commands' outputs to stdout / stderr
     private static class StreamGobbler implements Runnable {
         private InputStream inputStream;
         private Consumer<String> consumer;
@@ -163,7 +163,7 @@ public class vsopc {
                     System.exit(-1);
                 }
 
-                // JVM does not want to exit by itself after a call to getRuntime
+                // After a call to getRuntime, auto-exit is disabled (or seems to be)
                 System.exit(0);
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
@@ -188,9 +188,10 @@ public class vsopc {
 
     private static String windowsToWslAbsolutePath(String windowsPath) {
         StringBuilder unixPath = new StringBuilder();
+        // A windows fileName can't contain : (in theory, we could face problems with wsl)
         int columnIndex = windowsPath.indexOf(":");
-        if (columnIndex != -1) {
-            String driver = windowsPath.substring(columnIndex - 1, columnIndex).toLowerCase();
+        if (columnIndex == 1) {
+            String driver = windowsPath.substring(0, 1).toLowerCase();
             unixPath.append("/mnt/").append(driver);
             windowsPath = windowsPath.substring(columnIndex + 1);
         }

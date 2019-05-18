@@ -63,6 +63,9 @@ public class Method extends ASTNode {
 
     @Override
     public void checkScope(ArrayList<SemanticException> errorList){
+        // getParent() because the scopeTable of this object is a fresh one containing local variables, its parent
+        // is the scopeTable of the VSOP class implementing the method.
+        // outer is used to avoid getting the current method through the scope table.
         Method previousDeclaration = scopeTable.getParent().lookupMethod(getName(), ScopeTable.Scope.OUTER);
         if (previousDeclaration != null) {
             if (previousDeclaration.formals.size() != this.formals.size()) {

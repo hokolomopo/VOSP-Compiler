@@ -2,9 +2,12 @@ class Main extends IO {
     head : bool <- true;
     tail : int32;
     mainString : string <- "Viva la vida baby and keep on Rockin'";
+    mainString2TestConcat : string <- "but rock less loudly please it is late\n";
     x : X;
 
     main() : int32{
+        //let testConcat : string <- mainString + mainString2TestConcat in {3 };
+        if head then print(mainString2TestConcat);
         x <- new X;
         x.xfun();
         printBool(isnull x);

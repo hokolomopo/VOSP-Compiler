@@ -13,7 +13,7 @@ import java.util.HashSet;
 
 public abstract class ASTNode {
 
-    // Public so that the parser can set them without having to implement dedicated constructors each time
+    // Public because a private variable + a getter and a setter would be non-sense
     public int line = 0;
     public int column = 0;
 

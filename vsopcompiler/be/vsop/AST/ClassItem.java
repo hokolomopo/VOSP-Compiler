@@ -77,7 +77,7 @@ public class ClassItem extends ASTNode{
             if (mainMethod == null) {
                 errorList.add(new MainException("The class \"Main\" should contain a \"main\" method", 0, 0));
             } else if (mainMethod.nbArguments() != 0 || !mainMethod.returnType().equals("int32")) {
-                errorList.add(new MainException("The class \"Main\" should have no arguments and return an int32",
+                errorList.add(new MainException("The method \"main\" should have no arguments and return an int32",
                         mainMethod.line, mainMethod.column));
             }
         }

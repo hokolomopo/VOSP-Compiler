@@ -2,6 +2,7 @@ package be.vsop.exceptions;
 
 import be.vsop.tokens.Token;
 import java_cup.runtime.ComplexSymbolFactory;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -37,8 +38,7 @@ public class ParserException extends Error {
             s.append(t.toString()).append(", ");
         }
         if (expected.size() > 0) {
-            s.deleteCharAt(s.length() - 1);
-            s.deleteCharAt(s.length() - 1);
+            s.setLength(s.length() - 2);
         }
         s.append("]");
 

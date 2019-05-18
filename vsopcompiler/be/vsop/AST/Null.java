@@ -15,7 +15,7 @@ public class Null extends Expr {
 
 	@Override
 	public ExprEval evalExpr(InstrCounter counter, String expectedType) {
-		return new ExprEval("","");//TODO null;
+		return new ExprEval("","");
 	}
 
 	@Override

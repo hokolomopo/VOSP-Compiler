@@ -8,5 +8,4 @@ Ok donc basiquement dans l'ordre ce que je fais :
 - pour stocker tous les résultats intermédiares je passe résursivement un compteur qui va etre utilisé pour créer des variables llvm ou mettre les résultats intermédiaires (%1, %2, %3, ...)
 
 Ce qui reste a faire : 
-- Pas mal d'opérateurs et de trucs du genre a traduire en llvm (j'ai mis des TODO) 
 - Le dispatch dynamique/l'héritage

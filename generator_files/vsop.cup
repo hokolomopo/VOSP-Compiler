@@ -8,7 +8,7 @@ import be.vsop.exceptions.ParserException;
 import java.util.List;
 
 parser code {:
-    // Connect this be.vsop.parser to a scanner!
+    // Connect this parser to a scanner!
     Scanner s;
     ComplexSymbolFactory sf;
     ASTNode abstractTree;
@@ -39,7 +39,7 @@ parser code {:
 init with {: :};
 scan with {: return s.next_token(); :};
 
-/* Terminals (be.vsop.tokens returned by the scanner). */
+/* Terminals (tokens returned by the scanner). */
 terminal Token      AND, BOOL, CLASS, DO, ELSE, EXTENDS, FALSE, IF, IN, INT32, ISNULL, LET, NEW, NOT, STRING, THEN, TRUE, UNIT, WHILE;
 terminal Token      LBRACE, RBRACE, LPAR, RPAR, COLON, SEMICOLON, COMMA, PLUS, MINUS, TIMES, DIV, POW, DOT, EQUAL, LOWER, LOWER_EQUAL, ASSIGN;
 terminal Token      STRING_LITERAL, IDENTIFIER, TYPE_IDENTIFIER, INT_LITERAL;
