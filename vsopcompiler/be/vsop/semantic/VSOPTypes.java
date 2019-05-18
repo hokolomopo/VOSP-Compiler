@@ -50,6 +50,8 @@ public enum VSOPTypes{
             return LlvmWrappers.emptyString;
         } else if (typeName.equals(INT32.getName())) {
             return "0";
+        } else if (typeName.equals(UNIT.getName())) {
+            return "";
         } else {
             return "null";
         }

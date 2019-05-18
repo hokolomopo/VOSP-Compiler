@@ -18,140 +18,201 @@ ret %class.IO* %5
 }
 
 
-define %class.IO* @IO.print(%class.IO* %self, i8*) {
-  call i32 (i8*, ...) @printf(i8* %0)
-  ret %class.IO* %self
-}
-
-define %class.IO* @IO.printBool(%class.IO* %self, i1) {
-  br i1 %0, label %print_true, label %print_false
-  print_true:
-    call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.true.print, i32 0, i32 0))
-    br label %end_print
-  print_false:
-    call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.str.false.print, i32 0, i32 0))
-    br label %end_print
-  end_print:
+define %class.IO* @IO.print(%class.IO* %self, i8* %toprint) {
+  %1 = icmp eq %class.IO* null, %self
+  br i1 %1, label %cond.true, label %cond.false
+  cond.true:
+    %2 = alloca [79 x i8]
+    store [79 x i8] c"Segmentation fault : dispatch on null when calling function print on class IO\0a\00", [79 x i8]* %2
+    %3 = getelementptr inbounds [79 x i8], [79 x i8]* %2, i32 0, i32 0
+    %4 = call i32 (i8*, ...) @printf(i8* %3)
+    call void @exit(i32 -1)
+    ret %class.IO* null
+  cond.false:
+    call i32 (i8*, ...) @printf(i8* %toprint)
     ret %class.IO* %self
 }
 
-define %class.IO* @IO.printInt32(%class.IO* %self, i32) {
-  call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.formatInt32, i32 0, i32 0), i32 %0)
-  ret %class.IO* %self
+define %class.IO* @IO.printBool(%class.IO* %self, i1 %toprint) {
+  %1 = icmp eq %class.IO* null, %self
+  br i1 %1, label %cond.true, label %cond.false
+  cond.true:
+    %2 = alloca [83 x i8]
+    store [83 x i8] c"Segmentation fault : dispatch on null when calling function printBool on class IO\0a\00", [83 x i8]* %2
+    %3 = getelementptr inbounds [83 x i8], [83 x i8]* %2, i32 0, i32 0
+    %4 = call i32 (i8*, ...) @printf(i8* %3)
+    call void @exit(i32 -1)
+    ret %class.IO* null
+  cond.false:
+    br i1 %toprint, label %print_true, label %print_false
+    print_true:
+      call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.true.print, i32 0, i32 0))
+      br label %end_print
+    print_false:
+      call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.str.false.print, i32 0, i32 0))
+      br label %end_print
+    end_print:
+      ret %class.IO* %self
+}
+
+define %class.IO* @IO.printInt32(%class.IO* %self, i32 %toprint) {
+  %1 = icmp eq %class.IO* null, %self
+  br i1 %1, label %cond.true, label %cond.false
+  cond.true:
+    %2 = alloca [84 x i8]
+    store [84 x i8] c"Segmentation fault : dispatch on null when calling function printInt32 on class IO\0a\00", [84 x i8]* %2
+    %3 = getelementptr inbounds [84 x i8], [84 x i8]* %2, i32 0, i32 0
+    %4 = call i32 (i8*, ...) @printf(i8* %3)
+    call void @exit(i32 -1)
+    ret %class.IO* null
+  cond.false:
+    call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.formatInt32, i32 0, i32 0), i32 %toprint)
+    ret %class.IO* %self
 }
 
 define i8* @IO.inputLine(%class.IO* %self) {
-  %1 = call i8* @malloc(i64 1000)
-  %2 = icmp eq i8* %1, null
-  br i1 %2, label %bad_malloc, label %good_malloc
-  good_malloc:
-    %i = alloca i32
-    store i32 0, i32* %i
-    br label %input_line_loop_start
-    input_line_loop_start:
-      %3 = call i8 @getchar()
-      %4 = load i32, i32* %i
-      %5 = getelementptr inbounds i8, i8* %1, i32 %4
-      store i8 %3, i8* %5
-      %6 = add i32 %4, 1
-      store i32 %6, i32* %i
-      ; 10 is newline
-      %7 = icmp eq i8 %3, 10
-      br i1 %7, label %input_line_loop_end, label %input_line_loop_start
+  %1 = icmp eq %class.IO* null, %self
+  br i1 %1, label %cond.true, label %cond.false
+  cond.true:
+    %2 = alloca [83 x i8]
+    store [83 x i8] c"Segmentation fault : dispatch on null when calling function inputLine on class IO\0a\00", [83 x i8]* %2
+    %3 = getelementptr inbounds [83 x i8], [83 x i8]* %2, i32 0, i32 0
+    %4 = call i32 (i8*, ...) @printf(i8* %3)
+    call void @exit(i32 -1)
+    ret i8* null
+  cond.false:
+    %5 = call i8* @malloc(i64 1000)
+    %6 = icmp eq i8* %5, null
+    br i1 %6, label %bad_malloc, label %good_malloc
+    good_malloc:
+      %i = alloca i32
+      store i32 0, i32* %i
+      br label %input_line_loop_start
+      input_line_loop_start:
+        %7 = call i8 @getchar()
+        %8 = load i32, i32* %i
+        %9 = getelementptr inbounds i8, i8* %5, i32 %8
+        store i8 %7, i8* %9
+        %10 = add i32 %8, 1
+        store i32 %10, i32* %i
+        ; 10 is newline
+        %11 = icmp eq i8 %7, 10
+        br i1 %11, label %input_line_loop_end, label %input_line_loop_start
 
-    input_line_loop_end:
-      ret i8* %1
+      input_line_loop_end:
+        ret i8* %5
 
-  bad_malloc:
-    ret i8* getelementptr inbounds ([1 x i8], [1 x i8]* @.str.emptyStr, i32 0, i32 0)
+    bad_malloc:
+      ret i8* getelementptr inbounds ([1 x i8], [1 x i8]* @.str.emptyStr, i32 0, i32 0)
 }
 
 define i1 @IO.inputBool(%class.IO* %self) {
-  %1 = call i8* @IO.inputLine(%class.IO* %self)
-  ; This will return the first character
-  %2 = load i8, i8* %1
-  %3 = load i8, i8* getelementptr inbounds ([2 x i8], [2 x i8]* @.str.y, i32 0, i32 0)
-  %4 = icmp eq i8 %3, %2
-  br i1 %4, label %input_yes, label %input_not_yes
-  input_yes:
-    ret i1 1
-  input_not_yes:
-    %5 = load i8, i8* getelementptr inbounds ([2 x i8], [2 x i8]* @.str.n, i32 0, i32 0)
-    %6 = icmp eq i8 %5, %2
-    br i1 %6, label %input_no, label %second_chance
-    input_no:
-      ret i1 0
-
-  second_chance:
-    %7 = load i8, i8* getelementptr inbounds ([2 x i8], [2 x i8]* @.str.one, i32 0, i32 0)
-    %8 = icmp eq i8 %7, %2
-    br i1 %8, label %input_yes, label %input_not_one
-
-    input_not_one:
-      %9 = load i8, i8* getelementptr inbounds ([2 x i8], [2 x i8]* @.str.zero, i32 0, i32 0)
-      %10 = icmp eq i8 %9, %2
-      br i1 %10, label %input_no, label %third_chance
-
-  third_chance:
-    %i = alloca i32
-    store i32 0, i32* %i
-    br label %input_bool_true_loop_start
-    input_bool_true_loop_start:
-      %11 = load i32, i32* %i
-      %12 = getelementptr inbounds [6 x i8], [6 x i8]* @.str.true.input, i32 0, i32 %11
-      %13 = getelementptr inbounds i8, i8* %1, i32 %11
-      %14 = load i8, i8* %12
-      %15 = load i8, i8* %13
-      %16 = icmp eq i8 %14, %15
-      br i1 %16, label %true_loop_cont, label %input_not_true
-      true_loop_cont:
-        %17 = add i32 %11, 1
-        store i32 %17, i32* %i
-        %18 = icmp ugt i32 %17, 5
-        br i1 %18, label %input_yes, label %input_bool_true_loop_start
-
-    input_not_true:
-      store i32 0, i32* %i
-      br label %false_loop_start
-      false_loop_start:
-        %19 = load i32, i32* %i
-        %20 = getelementptr inbounds [7 x i8], [7 x i8]* @.str.false.input, i32 0, i32 %19
-        %21 = getelementptr inbounds i8, i8* %1, i32 %19
-        %22 = load i8, i8* %20
-        %23 = load i8, i8* %21
-        %24 = icmp eq i8 %22, %23
-        br i1 %24, label %false_loop_cont, label %bad_input
-        false_loop_cont:
-          %25 = add i32 %19, 1
-          store i32 %25, i32* %i
-          %26 = icmp ugt i32 %25, 6
-          br i1 %26, label %input_no, label %false_loop_start
-
-  bad_input:      
-    call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([104 x i8], [104 x i8]* @.str.bad_bool, i32 0, i32 0))
+  %1 = icmp eq %class.IO* null, %self
+  br i1 %1, label %cond.true, label %cond.false
+  cond.true:
+    %2 = alloca [83 x i8]
+    store [83 x i8] c"Segmentation fault : dispatch on null when calling function inputBool on class IO\0a\00", [83 x i8]* %2
+    %3 = getelementptr inbounds [83 x i8], [83 x i8]* %2, i32 0, i32 0
+    %4 = call i32 (i8*, ...) @printf(i8* %3)
     call void @exit(i32 -1)
     ret i1 0
+  cond.false:
+    %5 = call i8* @IO.inputLine(%class.IO* %self)
+    ; This will return the first character
+    %6 = load i8, i8* %5
+    %7 = load i8, i8* getelementptr inbounds ([2 x i8], [2 x i8]* @.str.y, i32 0, i32 0)
+    %8 = icmp eq i8 %7, %6
+    br i1 %8, label %input_yes, label %input_not_yes
+    input_yes:
+      ret i1 1
+    input_not_yes:
+      %9 = load i8, i8* getelementptr inbounds ([2 x i8], [2 x i8]* @.str.n, i32 0, i32 0)
+      %10 = icmp eq i8 %9, %6
+      br i1 %10, label %input_no, label %second_chance
+      input_no:
+        ret i1 0
+
+    second_chance:
+      %11 = load i8, i8* getelementptr inbounds ([2 x i8], [2 x i8]* @.str.one, i32 0, i32 0)
+      %12 = icmp eq i8 %11, %6
+      br i1 %12, label %input_yes, label %input_not_one
+
+      input_not_one:
+        %13 = load i8, i8* getelementptr inbounds ([2 x i8], [2 x i8]* @.str.zero, i32 0, i32 0)
+        %14 = icmp eq i8 %13, %6
+        br i1 %14, label %input_no, label %third_chance
+
+    third_chance:
+      %i = alloca i32
+      store i32 0, i32* %i
+      br label %input_bool_true_loop_start
+      input_bool_true_loop_start:
+        %15 = load i32, i32* %i
+        %16 = getelementptr inbounds [6 x i8], [6 x i8]* @.str.true.input, i32 0, i32 %15
+        %17 = getelementptr inbounds i8, i8* %5, i32 %15
+        %18 = load i8, i8* %16
+        %19 = load i8, i8* %17
+        %20 = icmp eq i8 %18, %19
+        br i1 %20, label %true_loop_cont, label %input_not_true
+        true_loop_cont:
+          %21 = add i32 %15, 1
+          store i32 %21, i32* %i
+          %22 = icmp ugt i32 %21, 5
+          br i1 %22, label %input_yes, label %input_bool_true_loop_start
+
+      input_not_true:
+        store i32 0, i32* %i
+        br label %false_loop_start
+        false_loop_start:
+          %23 = load i32, i32* %i
+          %24 = getelementptr inbounds [7 x i8], [7 x i8]* @.str.false.input, i32 0, i32 %23
+          %25 = getelementptr inbounds i8, i8* %5, i32 %23
+          %26 = load i8, i8* %24
+          %27 = load i8, i8* %25
+          %28 = icmp eq i8 %26, %27
+          br i1 %28, label %false_loop_cont, label %bad_input
+          false_loop_cont:
+            %29 = add i32 %23, 1
+            store i32 %29, i32* %i
+            %30 = icmp ugt i32 %29, 6
+            br i1 %30, label %input_no, label %false_loop_start
+
+    bad_input:      
+      call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([104 x i8], [104 x i8]* @.str.bad_bool, i32 0, i32 0))
+      call void @exit(i32 -1)
+      ret i1 0
 }
 
 ; TODO : return a random number if input is not a number, -1 if too large
 define i32 @IO.inputInt32(%class.IO* %self) {
-  %1 = alloca i32
-  call i32 (i8*, ...) @__isoc99_scanf(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.formatInt32, i32 0, i32 0), i32* %1)
-  %3 = load i32, i32* %1
+  %1 = icmp eq %class.IO* null, %self
+  br i1 %1, label %cond.true, label %cond.false
+  cond.true:
+    %2 = alloca [84 x i8]
+    store [84 x i8] c"Segmentation fault : dispatch on null when calling function inputInt32 on class IO\0a\00", [84 x i8]* %2
+    %3 = getelementptr inbounds [84 x i8], [84 x i8]* %2, i32 0, i32 0
+    %4 = call i32 (i8*, ...) @printf(i8* %3)
+    call void @exit(i32 -1)
+    ret i32 0
+  cond.false:
+    %5 = alloca i32
+    call i32 (i8*, ...) @__isoc99_scanf(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.formatInt32, i32 0, i32 0), i32* %5)
+    ; 7 because call above return %6
+    %7 = load i32, i32* %5
 
-  ; read until newline char
-  br label %input_int32_loop_start
-  input_int32_loop_start:
-    %4 = call i8 @getchar()
-    ; 10 is newline
-    %5 = icmp eq i8 %4, 10
-    br i1 %5, label %input_int32_loop_end, label %input_int32_loop_start
+    ; read until newline char
+    br label %input_int32_loop_start
+    input_int32_loop_start:
+      %8 = call i8 @getchar()
+      ; 10 is newline
+      %9 = icmp eq i8 %8, 10
+      br i1 %9, label %input_int32_loop_end, label %input_int32_loop_start
 
-  input_int32_loop_end:
-    br label %input_int32_end
+    input_int32_loop_end:
+      br label %input_int32_end
 
-  input_int32_end:
-    ret i32 %3
+    input_int32_end:
+      ret i32 %7
 }
 
 @.str.formatInt32 = private unnamed_addr constant [3 x i8] c"%d\00"
