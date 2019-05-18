@@ -41,9 +41,4 @@ public class LiteralBoolean extends Literal {
     protected String getLlvmValue() {
         return BooleanValues.getLlvmName(value);
     }
-
-    @Override
-    protected boolean isLlvmLiteral() {
-        return true;
-    }
 }

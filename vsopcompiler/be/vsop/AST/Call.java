@@ -28,7 +28,7 @@ public class Call extends Expr {
     @Override
     public void checkTypes(ArrayList<SemanticException> errorList) {
         super.checkTypes(errorList);
-        String object = objExpr.typeName;
+        String object = objExpr.typeName;//TODO : 2-3 commentaires feraient pas de mal
         if (object != null) {
             Method called = classTable.get(object).lookupMethod(methodId);
 
@@ -119,11 +119,11 @@ public class Call extends Expr {
 
             // First, cast the pointer to the current object into an int, using the ptrtoint function of llvm
             // We use i64 because an i32 could overflow on most current machines
-            llvm.append(llvmCast(intPointer, LLVMKeywords.PTRTOINT, VSOPTypes.getLlvmTypeName(objExpr.typeName, true),
+            llvm.append(LlvmWrappers.llvmCast(intPointer, LLVMKeywords.PTRTOINT, VSOPTypes.getLlvmTypeName(objExpr.typeName, true),
                     LLVMTypes.INT64, curArgEval.llvmId));
 
             // Then, cast the obtained int into a new pointer (using inttoptr), giving it the new type
-            llvm.append(llvmCast(pointerNewType, LLVMKeywords.INTTOPTR, LLVMTypes.INT64,
+            llvm.append(LlvmWrappers.llvmCast(pointerNewType, LLVMKeywords.INTTOPTR, LLVMTypes.INT64,
                     VSOPTypes.getLlvmTypeName(implementedBy, true), intPointer));
 
             // Add the new type pointer as first argument
@@ -142,10 +142,10 @@ public class Call extends Expr {
         ClassItem classItem = this.classTable.get(objExpr.typeName);
         Method method = classItem.getMethod(methodId.getName());
 
-        int firstArgIndex = 0;
-        if(method.nbArguments() > 0 && method.getArgument(0).getName().equals(LanguageSpecs.SELF))
-            firstArgIndex = 1;
+        //Index of first argument = 1 because there is no "self" in arguments of the call
+        int firstArgIndex = 1;
 
+        //Load the arguments of the call
         for (int i = 0; i < argList.size(); i++) {
             curArgEval = argList.get(i).evalExpr(counter, argList.get(i).typeName);
 
@@ -172,11 +172,8 @@ public class Call extends Expr {
 
 
         // Append code actually calling the function
-            llvm.append(LlvmWrappers.call(llvmId, VSOPTypes.getLlvmTypeName(called.returnType(), true),
-                loadMethod.llvmId, argumentsIds, argumentsTypes));
-//        String funcName = "@" + implementedBy + "." + methodId.getName();
-//        llvm.append(LlvmWrappers.call(llvmId, VSOPTypes.getLlvmTypeName(called.returnType(), true),
-//                funcName, argumentsIds, argumentsTypes));
+        llvm.append(LlvmWrappers.call(llvmId, VSOPTypes.getLlvmTypeName(called.returnType(), true),
+            loadMethod.llvmId, argumentsIds, argumentsTypes));
 
         ExprEval callEval = new ExprEval(llvmId, llvm.toString());
         return castEval(callEval, typeName, expectedType, counter);

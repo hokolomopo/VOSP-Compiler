@@ -15,7 +15,7 @@ public class Formal extends ASTNode{
 
     // Set to true if the formal is a field of a class
     private boolean isClassField = false;
-    private int classFieldId = -1;
+    private int classFieldId = -1;//Index in the llvm structure
     private String parentClass;
 
     //For formals with same name, we add a number to uniquely identify them
@@ -111,10 +111,22 @@ public class Formal extends ASTNode{
         isClassField = classField;
     }
 
+    /**
+     * Return the llvm code to allocate this formal
+     *
+     * @return the llvm code
+     */
     public String llvmAllocate(){
         return String.format("%s = alloca %s \n", getLlvmPtr(), type.getLlvmName(true));
     }
 
+    /**
+     * Get the llvm code to load this formal
+     *
+     * @param parentClassId the llvm id of the parent of the formal
+     * @param counter an InstrCounter
+     * @return the evaluation of the load
+     */
     public ExprEval llvmLoad(String parentClassId, InstrCounter counter){
         String llvm = "", id;
 
@@ -129,10 +141,23 @@ public class Formal extends ASTNode{
         return new ExprEval(id, llvm);
     }
 
+    /**
+     * Get the llvm code to load this formal
+     *
+     * @param counter an InstrCounter
+     * @return the evaluation of the load
+     */
     public ExprEval llvmLoad(InstrCounter counter){
         return llvmLoad("%" + LanguageSpecs.SELF, counter);
     }
 
+    /**
+     * Get a pointer to the field, used if the formal is a class field
+     *
+     * @param parentClassId the llvm id of the parent of the formal
+     * @param counter an InstrCounter
+     * @return the code to get the pointer and the pointer llvm id
+     */
     private ExprEval getFieldPtr(String parentClassId, InstrCounter counter){
         String id = counter.getNextLlvmId();
         String llvm = String.format("%s = getelementptr %s, %s* %s, i32 0, i32 %d \n", id, parentClass, parentClass, parentClassId, classFieldId);
@@ -140,6 +165,14 @@ public class Formal extends ASTNode{
         return new ExprEval(id, llvm);
     }
 
+    /**
+     * Get the llvm code to store the formal
+     *
+     * @param toStore the llvm id of the register to store
+     * @param parentClassId the llvm id of the parent of the formal
+     * @param counter an InstrCounter
+     * @return the code to store the formal
+     */
     public String llvmStore(String toStore, String parentClassId, InstrCounter counter){
         if(isClassField){
             ExprEval eval = getFieldPtr(parentClassId, counter);
@@ -150,29 +183,26 @@ public class Formal extends ASTNode{
         return String.format("store %s %s, %s %s \n", type.getLlvmName(true), toStore, type.getLlvmPtr(true), getLlvmPtr());
     }
 
+    /**
+     * Get the llvm code to store the formal
+     *
+     * @param toStore the llvm id of the register to store
+     * @param counter an InstrCounter
+     * @return the code to store the formal
+     */
     public String llvmStore(String toStore, InstrCounter counter){
         return llvmStore(toStore, "%" + LanguageSpecs.SELF, counter);
     }
 
-    public boolean isPrimitive(){
-        return type.isPrimitive();
-    }
 
     public boolean isPointer(){
         return type.isPointer();
-    }
-
-    public int getClassFieldId() {
-        return classFieldId;
     }
 
     public void setClassFieldId(int classFieldId) {
         this.classFieldId = classFieldId;
     }
 
-    public String getParentClass() {
-        return parentClass;
-    }
 
     public void setParentClass(String parentClass) {
         this.parentClass = parentClass;

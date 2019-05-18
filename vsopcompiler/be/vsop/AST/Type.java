@@ -53,16 +53,8 @@ public class Type extends ASTNode {
 		return VSOPTypes.getLlvmTypeName(name, pointerOnClass);
 	}
 
-	String getLlvmPtr() {
-		return getLlvmPtr(false);
-	}
-
 	String getLlvmPtr(boolean pointerOnClass) {
 		return getLlvmName(pointerOnClass) + "*";
-	}
-
-	boolean isPrimitive() {
-		return isPrimitive;
 	}
 
 	boolean isPointer() {

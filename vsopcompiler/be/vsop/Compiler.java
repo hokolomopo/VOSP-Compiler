@@ -4,7 +4,7 @@ import be.vsop.AST.ClassItem;
 import be.vsop.AST.ClassList;
 import be.vsop.AST.Program;
 import be.vsop.codegenutil.InstrCounter;
-import be.vsop.codegenutil.MethodSetter;
+import be.vsop.codegenutil.MethodCounter;
 import be.vsop.exceptions.LexerException;
 import be.vsop.exceptions.ParserException;
 import be.vsop.exceptions.semantic.SemanticException;
@@ -98,8 +98,8 @@ public class Compiler {
 
 
     String generateLlvm() {
-        //Set number to methods
-        new MethodSetter(program.getClassTable()).setupMethods();
+        //Set number to methods to be able to load them from the vtable
+        new MethodCounter(program.getClassTable()).setupMethods();
 
         StringBuilder classDeclarations = new StringBuilder();
 

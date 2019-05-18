@@ -20,9 +20,4 @@ public class LiteralInteger extends Literal {
         return value;
     }
 
-    @Override
-    protected boolean isLlvmLiteral() {
-        return true;
-    }
-
 }

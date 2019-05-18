@@ -187,6 +187,12 @@ public class Method extends ASTNode {
         return llvm;
     }
 
+    /**
+     * Get the signature of the method in llvm
+     *
+     * @param pointer true if we want a pointer
+     * @return the signature
+     */
     public String getLlvmSignature(boolean pointer){
         StringBuilder llvm = new StringBuilder();
 
@@ -194,7 +200,6 @@ public class Method extends ASTNode {
 
         for(int i = 0;i < formals.getLength();i++){
             Formal f = formals.get(i);
-
             llvm.append(f.getType().getLlvmName(true));
 
             if(i != formals.getLength() - 1)
@@ -225,6 +230,12 @@ public class Method extends ASTNode {
         return LlvmWrappers.getMethodName(id.getName(), getParentClassName());
     }
 
+    /**
+     * Get a formal representing the method that can be loaded from the vtable
+     *
+     * @param vtableName the type of the vtable
+     * @return the formal
+     */
     private Formal getMethodFormal(String vtableName){
         Formal methodFormal = new Formal(getLlvmName(), getLlvmSignature(false));
         methodFormal.setClassField(true);
@@ -234,13 +245,16 @@ public class Method extends ASTNode {
         return methodFormal;
     }
 
+    /**
+     * Store this method in the given vtable
+     *
+     * @param vtable the vtable
+     * @param vtableId the llvm register where is the vtable
+     * @param counter an InstrCounter
+     * @return the llvm code that store the method in the vtable
+     */
     public String storeInVtable(Formal vtable, String vtableId, InstrCounter counter) {
         String llvm = "";
-
-//        //Method is an override of another, we need to cast the first argument (self) to correspond to the original type
-//        if(isOverride()){
-//
-//        }
 
         Formal methodFormal = getMethodFormal(vtable.getType().getName());
 
@@ -249,6 +263,13 @@ public class Method extends ASTNode {
         return llvm;
     }
 
+    /**
+     * Load a method from the vtable
+     *
+     * @param parentClassId the llvm id of the class of the parent
+     * @param counter an InstrCounter
+     * @return the eval loading the method
+     */
     public ExprEval loadMethod(String parentClassId, InstrCounter counter){
         Formal vtable = classTable.get(getParentClassName()).getVtable();
         Formal methodFormal = getMethodFormal(vtable.getType().getName());
@@ -268,12 +289,4 @@ public class Method extends ASTNode {
         return this.overriddenMethod != null;
     }
 
-    private Method getOriginalMethod(){
-        Method current = this;
-
-        while (current.overriddenMethod != null)
-            current = current.overriddenMethod;
-
-        return current;
-    }
 }

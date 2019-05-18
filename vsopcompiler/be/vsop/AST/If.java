@@ -149,7 +149,7 @@ public class If extends Expr {
         ExprEval finalEval = new ExprEval(retId, llvm);
 
 
-        return castEval(finalEval, thenExpr.typeName, expectedType, counter);//TODO unt ruc qui march vraiment
+        return castEval(finalEval, thenExpr.typeName, expectedType, counter);
     }
 
 }

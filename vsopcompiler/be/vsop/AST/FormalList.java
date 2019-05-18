@@ -46,7 +46,7 @@ public class FormalList extends ASTNode{
 
     void checkAllDifferent(ArrayList<SemanticException> errorList) {
         Formal formal;
-        Formal other;
+        Formal other;//TODO comment
         HashSet<Integer> toIgnore = new HashSet<>();
         for (int i = 0; i < formals.size(); i++) {
             if (! toIgnore.contains(i)) {
@@ -87,6 +87,10 @@ public class FormalList extends ASTNode{
 
     }
 
+    /**
+     * Allocate memory for all the formals
+     * @return the llvm code
+     */
     public String llvmAllocate() {
         StringBuilder builder = new StringBuilder();
 
@@ -97,6 +101,12 @@ public class FormalList extends ASTNode{
 
     }
 
+    /**
+     * Store all the formals
+     *
+     * @param counter an InstrCounter
+     * @return the llvm code
+     */
     public String llvmStore(InstrCounter counter) {
         StringBuilder builder = new StringBuilder();
 

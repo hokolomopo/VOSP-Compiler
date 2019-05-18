@@ -74,12 +74,12 @@ public class ExprList extends Expr {
     public ExprEval evalExpr(InstrCounter counter, String expectedType) {
         StringBuilder builder = new StringBuilder();
 
-
+        //Get the llvm code of the expressions
         ExprEval lastEval = null;
         for(int i = 0;i < expressions.size();i++){
             Expr e = expressions.get(i);
 
-            //We don't care of the return types of the expressions expept for the last one
+            //We don't care of the return types of the expressions except for the last one
             String type = null;
             if(i == (expressions.size() - 1))
                 type = this.typeName;
@@ -90,6 +90,8 @@ public class ExprList extends Expr {
 
         if(lastEval == null)
             return new ExprEval("", "");
+
+        //Cast and return the eval
         ExprEval eval = new ExprEval(lastEval.llvmId, builder.toString(), lastEval.isLiteral());
         return castEval(eval, expressions.get(expressions.size() - 1).typeName, expectedType, counter);
     }

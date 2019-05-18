@@ -40,6 +40,12 @@ public class Program extends ASTNode{
         return llvm + endLine + super.getLlvm(counter);
     }
 
+    /**
+     * Declare all the strings constant that will be used in the program
+     * @param literalStringsthe strings
+     *
+     * @return the llvm code that declares the string
+     */
     private String llvmDeclareStrings(ArrayList<LiteralString> literalStrings){
         StringBuilder declarations = new StringBuilder();
         int i = 0;
@@ -53,6 +59,11 @@ public class Program extends ASTNode{
         return declarations.toString();
     }
 
+    /**
+     * Create the llvm main function
+     *
+     * @return the llvm code that declares the main function
+     */
     private String createMain(){
         String llvm = "";
 

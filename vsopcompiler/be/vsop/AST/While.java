@@ -30,7 +30,7 @@ public class While extends Expr {
 			errorList.add(new TypeNotExpectedException(condExpr, "bool"));
 		}
 
-		typeName = "unit";
+		typeName = VSOPTypes.UNIT.getName();
 	}
 
 	@Override

@@ -96,8 +96,11 @@ public class ClassElementList extends ASTNode {
 
     @Override
     public String getLlvm(InstrCounter counter) {
-        StringBuilder builder = new StringBuilder();
 
+        //Don't generate code for the fields, this is managed by the ClassItem initialization method
+
+        //Generate methods llvm code
+        StringBuilder builder = new StringBuilder();
         if(methods != null)
             for(Method method: methods)
                 builder.append(method.getLlvm(counter)).append("\n\n");

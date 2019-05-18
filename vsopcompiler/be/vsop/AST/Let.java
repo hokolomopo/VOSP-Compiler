@@ -84,12 +84,15 @@ public class Let extends Expr {
 
 	@Override
 	public ExprEval evalExpr(InstrCounter counter, String expectedType) {
+
+		//Allocate memory for the formal if needed
 		String llvm = "";
 		if (!formal.getType().isUnit()) {
 			formal.setLlvmId(counter.getNextLlvmId());
 			llvm += formal.llvmAllocate();
 		}
 
+		//Initialize the formal if needed
 		if(initExpr != null){
 			Assign init = new Assign(new Id(formal.getName()), initExpr);
 			init.setScopeTable(this.scopeTable);
@@ -97,6 +100,7 @@ public class Let extends Expr {
 			llvm += init.getLlvm(counter);
 		}
 
+		//Get the llvm code of the body of the let
 		ExprEval bodyEval = bodyExpr.evalExpr(counter, typeName);
 		llvm += bodyEval.llvmCode;
 

@@ -18,13 +18,69 @@ public abstract class ASTNode {
     public int column = 0;
 
     protected ArrayList<ASTNode> children;
-    ScopeTable scopeTable;
-    HashMap<String, ClassItem> classTable;
+
+    protected ScopeTable scopeTable;
+    protected HashMap<String, ClassItem> classTable;
 
     static final String endLine = "\n";
 
     protected ASTNode(){}
 
+
+    /**
+     * Add the classes of the program to the classTable
+     *
+     * @param classTable the classTable to fill
+     * @param errorList an List in which to input semantic errors
+     */
+    public void updateClassTable(HashMap<String, ClassItem> classTable, ArrayList<SemanticException> errorList) {
+        this.classTable = classTable;
+        if(children != null)
+            for(ASTNode node : children)
+                node.updateClassTable(classTable, errorList);
+    }
+
+    /**
+     * Add the variables and methods of the program to the scopeTable
+     *
+     * @param scopeTable the scopeTable to fill
+     * @param errorList an List in which to input semantic errors
+     */
+    public void fillScopeTable(ScopeTable scopeTable, ArrayList<SemanticException> errorList){
+        this.scopeTable = scopeTable;
+        if(children != null)
+            for(ASTNode node : children)
+                node.fillScopeTable(scopeTable, errorList);
+    }
+
+    /**
+     * Check for type consistency
+     *
+     * @param errorList an List in which to input semantic errors
+     */
+    public void checkTypes(ArrayList<SemanticException> errorList) {
+        if(children != null)
+            for(ASTNode node : children)
+                node.checkTypes(errorList);
+    }
+
+    /**
+     * Check for scope consistency
+     *
+     * @param errorList an List in which to input semantic errors
+     */
+    public void checkScope(ArrayList<SemanticException> errorList){
+        if(children != null)
+            for(ASTNode node : children)
+                node.checkScope(errorList);
+    }
+
+    /**
+     * Get the llvm code of this node
+     *
+     * @param counter an InstrCounter
+     * @return the llvm code
+     */
     public String getLlvm(InstrCounter counter){
         StringBuilder builder = new StringBuilder();
 
@@ -34,6 +90,14 @@ public abstract class ASTNode {
         return builder.toString();
     }
 
+
+    /**
+     * Return the first common ancestor between 2 types
+     *
+     * @param type1 A type
+     * @param type2 Another type
+     * @return their first common ancestor
+     */
     String firstCommonAncestor(String type1, String type2) {
         HashSet<String> ancestors1 = new HashSet<>();
         Type curType = classTable.get(type1).getType();
@@ -52,6 +116,13 @@ public abstract class ASTNode {
         return null;
     }
 
+    /**
+     * Check if a type is not a child of another
+     *
+     * @param child the child type
+     * @param parent the parent type
+     * @return false if the child is a child of the parent, true otherwise
+     */
     boolean isNotChild(String child, String parent) {
         if (LanguageSpecs.isPrimitiveType(child) || LanguageSpecs.isPrimitiveType(parent)) {
             return !child.equals(parent);
@@ -59,125 +130,30 @@ public abstract class ASTNode {
         return !firstCommonAncestor(child, parent).equals(parent);
     }
 
-    public void updateClassTable(HashMap<String, ClassItem> classTable, ArrayList<SemanticException> errorList) {
-        this.classTable = classTable;
-        if(children != null)
-            for(ASTNode node : children)
-                node.updateClassTable(classTable, errorList);
-    }
-
-    public void fillScopeTable(ScopeTable scopeTable, ArrayList<SemanticException> errorList){
-        this.scopeTable = scopeTable;
-        if(children != null)
-            for(ASTNode node : children)
-                node.fillScopeTable(scopeTable, errorList);
-    }
-
-    public void checkTypes(ArrayList<SemanticException> errorList) {
-        if(children != null)
-            for(ASTNode node : children)
-                node.checkTypes(errorList);
-    }
-
-    public void checkScope(ArrayList<SemanticException> errorList){
-        if(children != null)
-            for(ASTNode node : children)
-                node.checkScope(errorList);
-    }
-
-    public void print(boolean withTypes){
-        print(0, false, withTypes);
-    }
-
-    public abstract void print(int tabLevel, boolean doTab, boolean withTypes);
-
-    protected String getTab(int tabLevel){
-        StringBuilder s = new StringBuilder();
-        for(int i = 0;i < tabLevel;i++)
-            s.append('\t');
-        return s.toString();
-    }
-
     public ArrayList<ASTNode> getChildren() {
         return children;
     }
 
+    /**
+     * Get all the string liberals of the program
+     *
+     * @param literalStrings An array of LiteralString
+     */
     public void getStringLiteral(ArrayList<LiteralString> literalStrings){
         if(children != null)
             for(ASTNode child : children)
                 child.getStringLiteral(literalStrings);
     }
 
-    String llvmAllocation(String result, String type) {
-        return result + " = " + LLVMKeywords.ALLOCATE.getLlvmName() + " " + type + endLine;
-    }
 
-    String llvmStore(LLVMTypes type, String value, String where) {
-        return LLVMKeywords.STORE.getLlvmName() + " " + type.getLlvmName() + " " + value + ", " + type.getLlvmName() +
-                "* " + where + endLine;
-    }
-
-    String llvmSetBool(String result, boolean value) {
-        if (value) {
-            return result + " = " + LLVMKeywords.ADD.getLlvmName() + " " + LLVMTypes.BOOL.getLlvmName() + " " + "1" + ", " + "0" + endLine;
-        } else {
-            return result + " = " + LLVMKeywords.ADD.getLlvmName() + " " + LLVMTypes.BOOL.getLlvmName() + " " + "0" + ", " + "0" + endLine;
-        }
-    }
-
-    String llvmLabel(String label) {
-        return label + ":" + endLine;
-    }
-
-    String llvmBranch(String label) {
-        return LLVMKeywords.BRANCH.getLlvmName() + " " + LLVMKeywords.LABEL.getLlvmName() + " %" + label + endLine;
-    }
-
-    String llvmBranch(String cond, String labelTrue, String labelFalse) {
-        return LLVMKeywords.BRANCH.getLlvmName() + " " + LLVMTypes.BOOL.getLlvmName() + " " + cond + " " + ", " +
-                LLVMKeywords.LABEL.getLlvmName() + " %" + labelTrue + ", " + LLVMKeywords.LABEL.getLlvmName() + " %" +
-                labelFalse + endLine;
-    }
-
-    String llvmPhi(String result, LLVMTypes type, String valIfTrue, String labelIfTrue,
-                   String valIfFalse, String labelIfFalse) {
-        return result + " = " + LLVMKeywords.PHI.getLlvmName() + " " + type.getLlvmName() + " [" + valIfTrue +
-                ", %" + labelIfTrue + "], [" + valIfFalse + ", %" + labelIfFalse + "]" + endLine;
-    }
-
-    static String llvmCast(String result, LLVMKeywords conversion, LLVMTypes fromType, LLVMTypes toType, String fromValue) {
-        return llvmCast(result, conversion, fromType.getLlvmName(), toType.getLlvmName(), fromValue);
-    }
-
-    static String llvmCast(String result, LLVMKeywords conversion, String fromType, LLVMTypes toType, String fromValue) {
-        return llvmCast(result, conversion, fromType, toType.getLlvmName(), fromValue);
-    }
-
-    static String llvmCast(String result, LLVMKeywords conversion, LLVMTypes fromType, String toType, String fromValue) {
-        return llvmCast(result, conversion, fromType.getLlvmName(), toType, fromValue);
-    }
-
-    static private String llvmCast(String result, LLVMKeywords conversion, String fromType, String toType, String fromValue) {
-        return result + " = " + conversion.getLlvmName() + " " + fromType +
-                " " + fromValue + " " + LLVMKeywords.TO.getLlvmName() + " " + toType + endLine;
-    }
-
-    String llvmCall(String result, String retType, String funcName, ArrayList<String> argumentsIds, ArrayList<String> argumentsTypes) {
-        StringBuilder ret = new StringBuilder();
-        ret.append(result).append(" = ").append(LLVMKeywords.CALL.getLlvmName()).append(" ").append(retType)
-                .append(" ").append(funcName).append("(");
-        for (int i = 0; i < argumentsIds.size(); i++) {
-            ret.append(argumentsTypes.get(i)).append(" ").append(argumentsIds.get(i)).append(", ");
-        }
-        ret.setLength(ret.length() - 2);
-        ret.append(")").append(endLine);
-        return ret.toString();
-    }
 
     public void setScopeTable(ScopeTable scopeTable) {
         this.scopeTable = scopeTable;
     }
 
+    /**
+     * Prepare the tree for the llvm code generation. This has to be called before generating llvm code
+     */
     public void prepareForLlvm(){
         if(children != null)
             for(ASTNode node : children)
@@ -186,5 +162,33 @@ public abstract class ASTNode {
 
     public HashMap<String, ClassItem> getClassTable() {
         return classTable;
+    }
+
+    /**
+     * Print the tree
+     *
+     * @param withTypes if true the types of the expression will be printed too
+     */
+    public void print(boolean withTypes){
+        print(0, false, withTypes);
+    }
+
+    /**
+     * Print the tree
+     *
+     * @param tabLevel tabulation level
+     * @param doTab if true, print tabulations before the tree
+     * @param withTypes if true the types of the expression will be printed too
+     */
+    public abstract void print(int tabLevel, boolean doTab, boolean withTypes);
+
+    /**
+     * Get the tabulations for the tab level
+     */
+    protected String getTab(int tabLevel){
+        StringBuilder s = new StringBuilder();
+        for(int i = 0;i < tabLevel;i++)
+            s.append('\t');
+        return s.toString();
     }
 }

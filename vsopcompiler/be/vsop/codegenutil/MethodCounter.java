@@ -6,10 +6,18 @@ import be.vsop.AST.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class MethodSetter {
+
+/**
+ * Class used to set indices to methods for them to be put in the vtable
+ */
+public class MethodCounter {
     private class Node{
         private ClassItem item;
-        private int lastNumber = 0;
+
+        //Index of the last method
+        private int lastIndex = 0;
+
+        //True if we already called buildNode() on this node
         private boolean alreadyBuild = false;
 
         public Node(ClassItem item) {
@@ -21,7 +29,7 @@ public class MethodSetter {
     private HashMap<String, ClassItem> classTable;
     private HashMap<String, Node> nodeTable;
 
-    public MethodSetter(HashMap<String, ClassItem> classTable) {
+    public MethodCounter(HashMap<String, ClassItem> classTable) {
         this.classTable = classTable;
         nodeTable = new HashMap<>();
 
@@ -30,27 +38,36 @@ public class MethodSetter {
         }
     }
 
+    /**
+     * Gives indexes to the methods.
+     *
+     * Here the goal is to give indexes to the such that the lower indexes are the indexes of the ancestor classes,
+     * and the highest are the methods of the class. If we do that, it becomes very easy to cast and override methods in llvm.
+     *
+     */
     public void setupMethods(){
         for(Node node : nodeTable.values()){
             buildNode(node);
-
         }
     }
 
+    /**
+     * Gives indexes to the methods of this node and its parents
+     */
     private void buildNode(Node node){
-        if(node == null)
-            return;
-        if(node.alreadyBuild)
+        if(node == null || node.alreadyBuild)
             return;
 
         //Build parent
         Node parentNode = nodeTable.get(node.item.getParentName());
         buildNode(parentNode);
 
-        int lastNumber = 0;
+        //Get last index of methods of parent = first index of the methods of this node
+        int lastIndex = 0;
         if(parentNode != null)
-            lastNumber = parentNode.lastNumber;
+            lastIndex = parentNode.lastIndex;
 
+        //Get methods of parent
         ClassItem parent = classTable.get(node.item.getParentName());
         ArrayList<Method> parentMethods = getMethods(parent);
 
@@ -58,6 +75,8 @@ public class MethodSetter {
 
         int i = 0;
         for(Method m : methods){
+
+            //Check if method is an override
             for(Method parentMethod : parentMethods){
                 if(m.getName().equals(parentMethod.getName())) {
                     m.setLlvmNumber(parentMethod.getLlvmNumber());
@@ -65,16 +84,24 @@ public class MethodSetter {
                 }
             }
 
+            //Not an override
             if(m.getLlvmNumber() == -1){
-                m.setLlvmNumber(lastNumber + i);
+                m.setLlvmNumber(lastIndex + i);
                 i++;
             }
         }
 
+        //Update the node
         node.alreadyBuild = true;
-        node.lastNumber = lastNumber + i;
+        node.lastIndex = lastIndex + i;
     }
 
+    /**
+     * Get the list of method od a class and its parents
+     *
+     * @param item the class
+     * @return a list of methods
+     */
     private ArrayList<Method> getMethods(ClassItem item){
         if(item == null)
             return new ArrayList<>();

@@ -52,8 +52,11 @@ public class Assign extends Expr {
 
     @Override
     public ExprEval evalExpr(InstrCounter counter, String expectedType) {
+
+        //Get the formal to assign
         Formal toAssign = scopeTable.lookupVariable(id.getName());
 
+        //Evaluate the expression and store it if needed
         ExprEval eval = expr.evalExpr(counter, toAssign.getType().getName());
         String store = "";
         if (!isUnit()) {

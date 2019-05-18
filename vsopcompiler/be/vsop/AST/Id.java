@@ -52,11 +52,13 @@ public class Id extends Expr {
 
 	@Override
 	public ExprEval evalExpr(InstrCounter counter, String expectedType) {
+
 		if (isUnit()) {
 			return new ExprEval("","");
 		}
-		Formal thisFormal =  this.scopeTable.lookupVariable(name);
 
+		//Get the formal corresponding to this Id and load it
+		Formal thisFormal =  this.scopeTable.lookupVariable(name);
 		ExprEval eval = thisFormal.llvmLoad(counter);
 
 		return castEval(eval, typeName, expectedType, counter);

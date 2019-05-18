@@ -124,22 +124,22 @@ public class BinOp extends Expr {
             llvmId = counter.getNextLlvmId();
             HashMap<String, String> labels = counter.getNextCondLabels();
             String llvm = leftPair.llvmCode;
-            llvm += llvmBranch(leftPair.llvmId, labels.get(InstrCounter.COND_IF_LABEL),
+            llvm += LlvmWrappers.llvmBranch(leftPair.llvmId, labels.get(InstrCounter.COND_IF_LABEL),
                     labels.get(InstrCounter.COND_ELSE_LABEL));
 
             // If first operand is true, result is the second operand.
             // Exec code to generate right operand value and then simply branch, the phi function will do the rest.
-            llvm += llvmLabel(labels.get(InstrCounter.COND_IF_LABEL)) + rightPair.llvmCode;
-            llvm += llvmBranch(labels.get(InstrCounter.COND_END_LABEL));
+            llvm += LlvmWrappers.llvmLabel(labels.get(InstrCounter.COND_IF_LABEL)) + rightPair.llvmCode;
+            llvm += LlvmWrappers.llvmBranch(labels.get(InstrCounter.COND_END_LABEL));
 
             // If first operand is false, the result is false. Simply branch and let the phi function do the rest.
-            llvm += llvmLabel(labels.get(InstrCounter.COND_ELSE_LABEL)) +
-                    llvmBranch(labels.get(InstrCounter.COND_END_LABEL));
+            llvm += LlvmWrappers.llvmLabel(labels.get(InstrCounter.COND_ELSE_LABEL)) +
+                    LlvmWrappers.llvmBranch(labels.get(InstrCounter.COND_END_LABEL));
 
             // Set result to false if previous block was the else one (first operand is false),
             // and set result to second operand if the previous block was the if one.
-            llvm += llvmLabel(labels.get(InstrCounter.COND_END_LABEL));
-            llvm += llvmPhi(llvmId, LLVMTypes.BOOL, rightPair.llvmId, labels.get(InstrCounter.COND_IF_LABEL),
+            llvm += LlvmWrappers.llvmLabel(labels.get(InstrCounter.COND_END_LABEL));
+            llvm += LlvmWrappers.llvmPhi(llvmId, LLVMTypes.BOOL, rightPair.llvmId, labels.get(InstrCounter.COND_IF_LABEL),
                     "0", labels.get((InstrCounter.COND_ELSE_LABEL)));
             return new ExprEval(llvmId, llvm);
         }
@@ -150,7 +150,7 @@ public class BinOp extends Expr {
         return new ExprEval(llvmId, llvm);
     }
 
-    private String evaluateExpr(String leftId, String rightId, InstrCounter counter){
+    private String evaluateExpr(String leftId, String rightId, InstrCounter counter){//TODO mieux commenter/espacer, tester POW je sais pas si il marche vraiment
         llvmId = counter.getNextLlvmId();
         String ret;
         switch (type){
@@ -169,10 +169,10 @@ public class BinOp extends Expr {
                 String leftPointerValue = llvmId;
 
                 // Turn class pointers to i64, then compare the i64 values (i.e., check if addresses are equal)
-                ret = llvmCast(leftPointerValue, LLVMKeywords.PTRTOINT, llvmTypeLeft,
+                ret = LlvmWrappers.llvmCast(leftPointerValue, LLVMKeywords.PTRTOINT, llvmTypeLeft,
                         LLVMTypes.INT64, leftId);
                 String rightPointerValue = counter.getNextLlvmId();
-                ret += llvmCast(rightPointerValue, LLVMKeywords.PTRTOINT, llvmTypeRight,
+                ret += LlvmWrappers.llvmCast(rightPointerValue, LLVMKeywords.PTRTOINT, llvmTypeRight,
                         LLVMTypes.INT64, rightId);
                 llvmId = counter.getNextLlvmId();
                 ret += llvmBinOp(llvmId, leftPointerValue, rightPointerValue, LLVMKeywords.EQ, LLVMTypes.INT64.getLlvmName());
@@ -191,7 +191,7 @@ public class BinOp extends Expr {
                 return llvmBinOp(llvmId, leftId, rightId, LLVMKeywords.DIV);
             case POW:
                 String firstArgFloatId = llvmId;
-                ret = llvmCast(firstArgFloatId, LLVMKeywords.INTTOFLOAT, LLVMTypes.INT32, LLVMTypes.FLOAT, leftId);
+                ret = LlvmWrappers.llvmCast(firstArgFloatId, LLVMKeywords.INTTOFLOAT, LLVMTypes.INT32, LLVMTypes.FLOAT, leftId);
 
                 ArrayList<String> argumentsIds = new ArrayList<>();
                 argumentsIds.add(firstArgFloatId);
@@ -200,11 +200,11 @@ public class BinOp extends Expr {
                 argumentsTypes.add(LLVMTypes.FLOAT.getLlvmName());
                 argumentsTypes.add(LLVMTypes.INT32.getLlvmName());
                 String resultFloatId = counter.getNextLlvmId();
-                ret += llvmCall(resultFloatId, LLVMTypes.FLOAT.getLlvmName(), LLVMIntrinsics.POW.getLlvmName(),
+                ret += LlvmWrappers.llvmCall(resultFloatId, LLVMTypes.FLOAT.getLlvmName(), LLVMIntrinsics.POW.getLlvmName(),
                         argumentsIds, argumentsTypes);
 
                 llvmId = counter.getNextLlvmId();
-                ret += llvmCast(llvmId, LLVMKeywords.FLOATTOINT, LLVMTypes.FLOAT, LLVMTypes.INT32, resultFloatId);
+                ret += LlvmWrappers.llvmCast(llvmId, LLVMKeywords.FLOATTOINT, LLVMTypes.FLOAT, LLVMTypes.INT32, resultFloatId);
 
                 return ret;
         }

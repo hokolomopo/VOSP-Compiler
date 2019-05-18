@@ -1,4 +1,11 @@
 class Parent {
+    str : string <- "wololo";
+
+    troll() : string { 
+        (new IO).print("Trolling"); 
+        str
+    }
+
     name() : string { "Parent\n" }
 }
 class Child extends Parent {
@@ -10,10 +17,10 @@ class Main extends IO {
     }
 
     main() : int32 {
-        //print((new Child).name());
+        //print((new Child).troll());
         printBool(true);
-        print((if true then new Parent else new Child).name());
-        print((if false then new Parent else new Child).name());
+        print((if true then new Parent else new Child).troll());
+        print((if false then new Parent else new Child).troll());
         0
     }
 }

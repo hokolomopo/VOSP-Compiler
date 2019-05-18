@@ -188,4 +188,54 @@ public class LlvmWrappers {
         return "ret " + VSOPTypes.getLlvmTypeName(type.getName(), true) + " " +
                 VSOPTypes.getLlvmDefaultInit(type.getName()) + endLine;
     }
+
+    public static String llvmLabel(String label) {
+        return label + ":" + endLine;
+    }
+
+    public static String llvmBranch(String label) {
+        return LLVMKeywords.BRANCH.getLlvmName() + " " + LLVMKeywords.LABEL.getLlvmName() + " %" + label + endLine;
+    }
+
+    public static String llvmBranch(String cond, String labelTrue, String labelFalse) {
+        return LLVMKeywords.BRANCH.getLlvmName() + " " + LLVMTypes.BOOL.getLlvmName() + " " + cond + " " + ", " +
+                LLVMKeywords.LABEL.getLlvmName() + " %" + labelTrue + ", " + LLVMKeywords.LABEL.getLlvmName() + " %" +
+                labelFalse + endLine;
+    }
+
+    public static String llvmPhi(String result, LLVMTypes type, String valIfTrue, String labelIfTrue,
+                          String valIfFalse, String labelIfFalse) {
+        return result + " = " + LLVMKeywords.PHI.getLlvmName() + " " + type.getLlvmName() + " [" + valIfTrue +
+                ", %" + labelIfTrue + "], [" + valIfFalse + ", %" + labelIfFalse + "]" + endLine;
+    }
+
+    public static String llvmCast(String result, LLVMKeywords conversion, LLVMTypes fromType, LLVMTypes toType, String fromValue) {
+        return llvmCast(result, conversion, fromType.getLlvmName(), toType.getLlvmName(), fromValue);
+    }
+
+    public static String llvmCast(String result, LLVMKeywords conversion, String fromType, LLVMTypes toType, String fromValue) {
+        return llvmCast(result, conversion, fromType, toType.getLlvmName(), fromValue);
+    }
+
+    public static String llvmCast(String result, LLVMKeywords conversion, LLVMTypes fromType, String toType, String fromValue) {
+        return llvmCast(result, conversion, fromType.getLlvmName(), toType, fromValue);
+    }
+
+    public static  String llvmCast(String result, LLVMKeywords conversion, String fromType, String toType, String fromValue) {
+        return result + " = " + conversion.getLlvmName() + " " + fromType +
+                " " + fromValue + " " + LLVMKeywords.TO.getLlvmName() + " " + toType + endLine;
+    }
+
+    public static String llvmCall(String result, String retType, String funcName, ArrayList<String> argumentsIds, ArrayList<String> argumentsTypes) {
+        StringBuilder ret = new StringBuilder();
+        ret.append(result).append(" = ").append(LLVMKeywords.CALL.getLlvmName()).append(" ").append(retType)
+                .append(" ").append(funcName).append("(");
+        for (int i = 0; i < argumentsIds.size(); i++) {
+            ret.append(argumentsTypes.get(i)).append(" ").append(argumentsIds.get(i)).append(", ");
+        }
+        ret.setLength(ret.length() - 2);
+        ret.append(")").append(endLine);
+        return ret.toString();
+    }
+
 }
