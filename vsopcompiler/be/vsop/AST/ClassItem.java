@@ -6,7 +6,6 @@ import be.vsop.exceptions.semantic.ClassAlreadyDeclaredException;
 import be.vsop.exceptions.semantic.MainException;
 import be.vsop.exceptions.semantic.SemanticException;
 import be.vsop.semantic.*;
-import sun.plugin.dom.css.Counter;
 
 import java.util.ArrayList;
 import java.util.Comparator;
