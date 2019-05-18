@@ -5,8 +5,13 @@ class Child extends Parent {
     name() : string { "Child\n" }
 }
 class Main extends IO {
+    printBool(b : bool) : IO{
+        print("Overriden bitch\n")
+    }
+
     main() : int32 {
         //print((new Child).name());
+        printBool(true);
         print((if true then new Parent else new Child).name());
         print((if false then new Parent else new Child).name());
         0
