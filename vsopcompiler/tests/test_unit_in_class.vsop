@@ -1,0 +1,26 @@
+class Main extends IO {
+    a : int32 <- 3;
+    b : bool <- true;
+    c : string <- "Ich lerne deutch mit Frau Mawhin";
+    d : string <- "(exam wednesday :'()";
+    e : X <- new X;
+    f : unit <- ();
+
+    main() : int32{
+        f <- {printBool(false); ()};
+        print("\n");
+        let g : unit <- {print("ignored"); print("\n"); ()} in {printBool(g = f); print("\n"); "hello"};
+        printBool(f = ());
+        print("\n");
+        0
+    }
+ }
+
+ class X extends IO {
+    xval : int32 <- 42;
+
+    xfun() : unit {
+        printInt32(xval);
+        ()
+    }
+ }

@@ -1,0 +1,7 @@
+class Main extends IO {
+    s : string <- "hello test print";
+    main() : int32 {
+        print(s);
+        0
+    }
+}
