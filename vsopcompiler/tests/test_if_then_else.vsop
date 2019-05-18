@@ -1,0 +1,13 @@
+class Main extends IO {
+    main() : int32 {
+        if true then
+            if false then
+                printInt32(0)
+            else
+                printInt32(1)
+        else
+            printInt32(2);
+        print("After print");
+        0
+    }
+}
