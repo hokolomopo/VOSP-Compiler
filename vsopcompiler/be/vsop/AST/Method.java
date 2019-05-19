@@ -289,7 +289,7 @@ public class Method extends ASTNode {
      * @return the eval loading the method
      */
     public ExprEval loadMethod(String parentClassId, InstrCounter counter){
-        Formal vtable = classTable.get(getParentClassName()).getVtable();
+        Formal vtable = classTable.get(getParentClassName()).getVTable();
         Formal methodFormal = getMethodFormal(vtable.getType().getName());
 
         ExprEval loadVtable =  vtable.llvmLoad(parentClassId, counter);

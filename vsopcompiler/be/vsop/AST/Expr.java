@@ -11,7 +11,6 @@ public abstract class Expr extends ASTNode{
     protected String typeName;
     protected boolean withTypes;
 
-
     /**
      * See ASTNode, this is used to add the types to the print without modifying each child
      */

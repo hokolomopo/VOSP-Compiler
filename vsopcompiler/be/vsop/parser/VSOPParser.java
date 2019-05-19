@@ -5,13 +5,14 @@
 
 package be.vsop.parser;
 
+import java_cup.runtime.*;
+import be.vsop.tokens.Token;
+import be.vsop.lexer.VSOPLexer;
+import java_cup.runtime.ComplexSymbolFactory.Location;
 import be.vsop.AST.*;
 import be.vsop.exceptions.ParserException;
-import be.vsop.tokens.Token;
-import java_cup.runtime.ComplexSymbolFactory;
-import java_cup.runtime.Scanner;
-
 import java.util.List;
+import java_cup.runtime.XMLElement;
 
 /** CUP v0.11b 20160615 (GIT 4ac7450) generated parser.
   */
@@ -417,31 +418,55 @@ public class VSOPParser extends java_cup.runtime.lr_parser {
     }
 
 
-    // Connect this parser to a scanner!
-    Scanner s;
-    ComplexSymbolFactory sf;
-    ASTNode abstractTree;
+  // Connect this parser to a scanner!
+  // The scanner is a simple class that turns lexer tokens into ComplexSymbolFactory symbols
+  Scanner s;
+  ComplexSymbolFactory sf;
+  ASTNode abstractTree;
 
-    public void init(Scanner s, ComplexSymbolFactory sf){ this.s=s; this.sf = sf;}
+  /**
+   * Initializes the parser.
+   *
+   * @param s the scanner that can be called to get the next symbol (converted from a token)
+   * @param sf the complex symbol factory, useful to report errors
+   */
+  public void init(Scanner s, ComplexSymbolFactory sf){
+    this.s=s;
+    this.sf = sf;
+  }
 
-    public ASTNode getTree(){return abstractTree;}
+  /**
+   * Returns the root of the abstract syntax tree (a ClassList)
+   *
+   * @return abstractTree the ClassList object representing the root of the abstract syntax tree
+   */
+  public ASTNode getTree(){
+    return abstractTree;
+  }
 
-    public void report_error(String message, Object info) {
-        if (info instanceof ComplexSymbolFactory.ComplexSymbol) {
+  /**
+   * Reports a parsing error through a ParserException
+   *
+   * @param message the message describing the error. Unused here, present for compatibility purposes
+   * @param info a Symbol containing information about the error, here it is a Symbol containing in particular
+   *             the read symbol and its location (line and column).
+   */
+  public void report_error(String message, Object info) {
+      if (info instanceof ComplexSymbolFactory.ComplexSymbol) {
 
-          ComplexSymbolFactory.ComplexSymbol s = (ComplexSymbolFactory.ComplexSymbol)info;
+        ComplexSymbolFactory.ComplexSymbol s = (ComplexSymbolFactory.ComplexSymbol)info;
 
-          // Return previous token if current has no indication of location. Should only happen on EOF.
-          if(s.xleft == null || s.xright == null){
-              s = ((VSOPScanner)this.s).getPrev();
-          }
-          List<Integer> expected = expected_token_ids();
-
-          throw new ParserException(s, expected, s.xleft.getLine(), s.xleft.getColumn());
+        // Return previous token if current has no indication of location. Should only happen on EOF.
+        if(s.xleft == null || s.xright == null){
+            s = ((VSOPScanner)this.s).getPrev();
         }
-    }
 
+        // Return a list containing the expected tokens (the ones that could belong to a valid input at the current location).
+        List<Integer> expected = expected_token_ids();
 
+        throw new ParserException(s, expected, s.xleft.getLine(), s.xleft.getColumn());
+      }
+  }
 
 
 /** Cup generated class to encapsulate user supplied action code.*/

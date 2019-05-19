@@ -2,12 +2,10 @@
 
 /* JFlex file for VSOP language */
 package be.vsop.lexer;
-
 import be.vsop.exceptions.LexerException;
-import be.vsop.tokens.Token;
-import be.vsop.tokens.Token.Tokens;
-
 import java.util.HashMap;
+import be.vsop.tokens.Token.Tokens;
+import be.vsop.tokens.Token;
 import java.util.Stack;
 
 /**
@@ -260,9 +258,13 @@ public class VSOPLexer {
   /* user code: */
   StringBuffer string = new StringBuffer();
 
+  // These maps are used respectively to distinguish normal identifiers from keywords
+  // and to distinguish badly-formatted input from operators
   HashMap<String, Tokens> keywordsMap = Token.Tokens.getKeywordsHashMap();
   HashMap<String, Tokens> operatorsMap = Token.Tokens.getOperatorsHashMap();
 
+  // This stack is used to store line and columns of the (* indicating new level of comment,
+  // in order to report errors correctly if EOF is reached inside a comment
   Stack<int[]> commentStack = new Stack<int[]>();
 
   int commentLevel = 0;
@@ -670,13 +672,17 @@ public class VSOPLexer {
         switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
           case 1: 
             { Tokens t = operatorsMap.get(yytext());
-                                 if(t == null) throw new LexerException("Illegal character : <" + yytext()+ ">", yyline + 1, yycolumn + 1);
-                                 return new Token(t, yyline + 1, yycolumn + 1);
+
+                                    // t is null if the current string does not match any operator
+                                    if(t == null) throw new LexerException("Illegal character : <" + yytext()+ ">", yyline + 1, yycolumn + 1);
+                                    return new Token(t, yyline + 1, yycolumn + 1);
             } 
             // fall through
           case 23: break;
           case 2: 
             { Tokens t = keywordsMap.get(yytext());
+
+                                    // t is null if the current identifier does not match any keyword
                                     if(t == null) return new Token(Tokens.IDENTIFIER, yytext(), yyline + 1, yycolumn + 1);
                                     return new Token(t, yyline + 1, yycolumn + 1);
             } 

@@ -5,10 +5,19 @@ import be.vsop.codegenutil.InstrCounter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class represents a list of all the elements present in a class, i.e. fields and methods
+ */
 public class ClassElementList extends ASTNode {
     private ArrayList<Field> fields;
     private ArrayList<Method> methods;
 
+    /**
+     * Creates a new ClassElementList by appending a field to a previous ClassElementList.
+     *
+     * @param cel the previous ClassElementList
+     * @param f the field to add
+     */
     public ClassElementList(ClassElementList cel, Field f) {
         this.fields = cel.fields;
         this.fields.add(f);
@@ -19,6 +28,12 @@ public class ClassElementList extends ASTNode {
         this.children.addAll(methods);
     }
 
+    /**
+     * Creates a new ClassElementList by appending a method to a previous ClassElementList
+     *
+     * @param cel the previous ClassElementList
+     * @param m the method to add
+     */
     public ClassElementList(ClassElementList cel, Method m) {
         this.fields = cel.fields;
         this.methods = cel.methods;
@@ -29,6 +44,12 @@ public class ClassElementList extends ASTNode {
         this.children.addAll(methods);
     }
 
+    /**
+     * Creates a new ClassElementList from a list of fields and a list of methods
+     *
+     * @param fields the fields
+     * @param methods the methods
+     */
     public ClassElementList(List<Field> fields, List<Method> methods) {
         this.fields = new ArrayList<>(fields);
         this.methods = new ArrayList<>(methods);
@@ -38,6 +59,9 @@ public class ClassElementList extends ASTNode {
         this.children.addAll(methods);
     }
 
+    /**
+     * Creates a new empty ClassElementList. Combine with other constructors to add fields and methods
+     */
     public ClassElementList() {
         fields = new ArrayList<>();
         methods = new ArrayList<>();
@@ -89,11 +113,21 @@ public class ClassElementList extends ASTNode {
         System.out.print("]");
     }
 
-    public ArrayList<Field> getFields() {
+    /**
+     * Getter for the fields of this ClassElementList
+     *
+     * @return the fields
+     */
+    ArrayList<Field> getFields() {
         return fields;
     }
 
-    public ArrayList<Method> getMethods() {
+    /**
+     * Getter for the methods of this ClassElementList
+     *
+     * @return the methods
+     */
+    ArrayList<Method> getMethods() {
         return methods;
     }
 
@@ -110,7 +144,7 @@ public class ClassElementList extends ASTNode {
         if(methods != null)
             for(Method method: methods)
                 builder.append(method.getLlvm(counter)).append("\n\n");
-        return builder.toString();
 
+        return builder.toString();
     }
 }

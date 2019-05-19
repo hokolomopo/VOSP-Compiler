@@ -3,7 +3,7 @@ class Main {
     x : IO;
 
     main() : int32 {
-        if true and x.inputInt32() = 5 then io.print("true\n") else io.print("I am there\n");
+        if false and x.inputInt32() = 5 then io.print("true\n") else io.print("OK, no seg fault\n");
         io.printInt32(3^8);
         io.print("\n");
         io.printInt32(4^5);

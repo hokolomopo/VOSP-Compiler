@@ -11,19 +11,39 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 
+/**
+ * This class represent a VSOP class
+ */
 public class ClassItem extends ASTNode{
     private Type type;
     private Type parentType;
     private ClassElementList cel;
-    private Formal vtable;
+    private Formal vTable;
 
+    /**
+     * Creates a new ClassItem from a type and a ClassElementList. Default parent type is Object.
+     *
+     * @param type the type of the VSOP class represented by this object
+     * @param cel the elements of the class (fields and methods)
+     */
     public ClassItem(Type type, ClassElementList cel) {
         this(type, new Type("Object"), cel);
     }
 
+    /**
+     * Creates a new ClassItem from a type, a parent type and a ClassElementList
+     *
+     * @param type the type of the VSOP class represented by this object.
+     *             If Object, parent type will be set to null
+     * @param parentType the type of the parent of this class
+     * @param cel the elements of the class (fields and methods)
+     */
     public ClassItem(Type type, Type parentType, ClassElementList cel) {
         this.scopeTable = new ScopeTable(type);
         this.type = type;
+
+        // This condition is due to the fact that we don't generate language features the same way as we generate
+        // user-defined classes
         if (type.getName().equals("Object")) {
             this.parentType = null;
         } else {
@@ -54,8 +74,9 @@ public class ClassItem extends ASTNode{
             classTable.put(type.getName(), this);
         }
         if(children != null)
-            for(ASTNode node : children)
+            for(ASTNode node : children) {
                 node.updateClassTable(classTable, errorList);
+            }
     }
 
     /**
@@ -105,7 +126,7 @@ public class ClassItem extends ASTNode{
     }
 
     /**
-     * See ASTNode a ClassItem is printed as Class(type, parentType, classElementList)
+     * See ASTNode, a ClassItem is printed as Class(type, parentType, classElementList)
      */
     @Override
     public void print(int tabLevel, boolean doTab, boolean withTypes) {
@@ -118,30 +139,59 @@ public class ClassItem extends ASTNode{
         System.out.print(")");
     }
 
+    /**
+     * Getter for the name of the parent type. Return null if called on Object (should not happen)
+     *
+     * @return the name of the type of the parent
+     */
     public String getParentName() {
         if (parentType == null)
             return null;
         return parentType.getName();
     }
 
+    /**
+     * Getter for the name of the type of the VSOP class represented by this object
+     *
+     * @return the name of the VSOP class
+     */
     public String getName() {
         return type.getName();
     }
 
+    /**
+     * Getter for the Type of the parent
+     *
+     * @return the type of the parent
+     */
     Type getParentType() {
         return parentType;
     }
 
+    /**
+     * Getter for the VSOP Type of the class represented by this object
+     *
+     * @return the VSOP Type
+     */
     public Type getType() {
         return type;
     }
 
+    /**
+     * Returns the column of the first letter of the parent name, useful for reporting errors
+     *
+     * @return the column of the first letter of the parent name
+     */
     public int parentNameColumn() {
         return column + getName().length() + " extends ".length();
     }
 
     /**
-     * Get a method from a method id
+     * Returns the Method object corresponding to the given methodId Id
+     *
+     * @param methodId the id of the method to search for
+     *
+     * @return the corresponding Method object
      */
     Method lookupMethod(Id methodId) {
         return scopeTable.lookupMethod(methodId.getName());
@@ -154,7 +204,7 @@ public class ClassItem extends ASTNode{
     public void prepareForLlvm() {
 
         //Add a Vtable Formal to the ClassItem
-        addVtable();
+        addVTable();
 
         super.prepareForLlvm();
     }
@@ -166,7 +216,7 @@ public class ClassItem extends ASTNode{
 
     /**
      * Get the llvm code that declares this class.
-     * The class is declared with a structure for its fields, and a vtable for its methods.
+     * The class is declared with a structure for its fields, and a vTable for its methods
      *
      * @return the llvm code
      */
@@ -175,15 +225,12 @@ public class ClassItem extends ASTNode{
         //Get all class fields
         ArrayList<Formal> fieldFormals = getFormalsList();
 
-        StringBuilder llvm = new StringBuilder();
+        //Get vTable declaration
 
-        //Get vtable declaration
-        llvm.append(declareVtable());
+        return declareVtable() +
 
-        //Get the class structure declaration
-        llvm.append(getLlvmClassStructure(fieldFormals));
-
-        return llvm.toString();
+                //Get the class structure declaration
+                getLlvmClassStructure(fieldFormals);
     }
 
     /**
@@ -195,17 +242,13 @@ public class ClassItem extends ASTNode{
         //Get all class fields
         ArrayList<Formal> fieldFormals = getFormalsList();
 
-        StringBuilder llvm = new StringBuilder();
-
         // Generate New method
-        llvm.append(getNew());
 
-        //Generate initialization method
-        llvm.append(getInitializer(fieldFormals));
+        return getNew() +
 
-        llvm.append(cel.getLlvm(new InstrCounter()));
-
-        return llvm.toString();
+                //Generate initialization method
+                getInitializer(fieldFormals) +
+                cel.getLlvm(new InstrCounter());
     }
 
     /**
@@ -233,7 +276,8 @@ public class ClassItem extends ASTNode{
     }
 
     /**
-     * Declare the vtable of the class
+     * Returns the llvm code that declares the vTable of the class
+     *
      * @return the llvm code of the declaration
      */
     private String declareVtable(){
@@ -255,12 +299,7 @@ public class ClassItem extends ASTNode{
         }
 
         //Sort the Methods by index
-        tmp.sort(new Comparator<Method>() {
-            @Override
-            public int compare(Method o1, Method o2) {
-                return Integer.compare(o1.getLlvmNumber(), o2.getLlvmNumber());
-            }
-        });
+        tmp.sort(Comparator.comparingInt(Method::getLlvmNumber));
 
         //Replace overridden methods
         for(Method method : methods){
@@ -275,7 +314,7 @@ public class ClassItem extends ASTNode{
             tmp.add(method.getLlvmNumber(), method);
         }
 
-        //Declares the vtable
+        //Declares the vTable
         StringBuilder llvm = new StringBuilder();
 
         llvm.append(LlvmWrappers.vtableName(type.getName())).append(" = type { ");
@@ -296,7 +335,7 @@ public class ClassItem extends ASTNode{
 
     /**
      * Get the llvm "New" function for this class.
-     * This function malloc space for the object structure and vtable, and call the init function
+     * This function malloc space for the object structure and vTable, and call the init function
      *
      * @return the llvm code of the "New" function
      */
@@ -314,10 +353,10 @@ public class ClassItem extends ASTNode{
         String retLlvmId = heapAllocationExpr.llvmId;
         llvm.append(heapAllocationExpr.llvmCode);
 
-        //Allocate memory for the vtable
-        ExprEval heapAllocationVtable = LlvmWrappers.heapAllocation(counter, this.vtable.getType().getName());
-        llvm.append(heapAllocationVtable.llvmCode);
-        llvm.append(vtable.llvmStore(heapAllocationVtable.llvmId, retLlvmId, counter));
+        //Allocate memory for the vTable
+        ExprEval heapAllocationVTable = LlvmWrappers.heapAllocation(counter, this.vTable.getType().getName());
+        llvm.append(heapAllocationVTable.llvmCode);
+        llvm.append(vTable.llvmStore(heapAllocationVTable.llvmId, retLlvmId, counter));
 
 
         //Call init function
@@ -340,9 +379,10 @@ public class ClassItem extends ASTNode{
     }
 
     /**
-     * Get the initializer function in llvm
+     * Returns the llvm code corresponding to the initializer function
      *
      * @param fieldFormals the list of formals of the Structure representing the class
+     *
      * @return the llvm code
      */
     private String getInitializer(ArrayList<Formal> fieldFormals){
@@ -374,7 +414,7 @@ public class ClassItem extends ASTNode{
         llvm.append(initFields(fieldFormals, self, counter));
 
         //Initialize the VTable
-        llvm.append(initVtable(counter, self));
+        llvm.append(initVTable(counter, self));
 
         //Return void
         llvm.append(LLVMKeywords.RET.getLlvmName()).append(" ").append(VSOPTypes.UNIT.getLlvmName()).append(endLine);
@@ -386,24 +426,25 @@ public class ClassItem extends ASTNode{
     }
 
     /**
-     * Initialize the methods inside the vtable
+     * Initialize the methods inside the vTable
      *
      * @param counter an InstrCounter
      * @param selfId the llvm id of self
-     * @return the llvm code to initialize the vtable
+     *
+     * @return the llvm code to initialize the vTable
      */
-    private String initVtable(InstrCounter counter, String selfId){
+    private String initVTable(InstrCounter counter, String selfId){
         StringBuilder llvm = new StringBuilder();
 
-        //Load the vtable
-        ExprEval vtableLoad = this.vtable.llvmLoad(selfId, counter);
-        String vtableId = vtableLoad.llvmId;
-        llvm.append(vtableLoad.llvmCode);
+        //Load the vTable
+        ExprEval vTableLoad = this.vTable.llvmLoad(selfId, counter);
+        String vTableId = vTableLoad.llvmId;
+        llvm.append(vTableLoad.llvmCode);
 
-        //Store the methods in the vtable
+        //Store the methods in the vTable
         ArrayList<Method> methods = cel.getMethods();
         for(Method method : methods){
-            llvm.append(method.storeInVtable(this.vtable, vtableId, counter));
+            llvm.append(method.storeInVtable(this.vTable, vTableId, counter));
         }
 
         return llvm.toString();
@@ -415,6 +456,7 @@ public class ClassItem extends ASTNode{
      * @param fieldFormals the fields of the class
      * @param selfId the llvm id of self
      * @param counter an InstrCounter
+     *
      * @return the llvm code to Initialize the fields
      */
     private String initFields(ArrayList<Formal> fieldFormals, String selfId, InstrCounter counter){
@@ -449,7 +491,8 @@ public class ClassItem extends ASTNode{
     /**
      * Get the Field object corresponding to a formal, searching in this class and all its parent
      *
-     * @param formal the formal to search
+     * @param formal the formal to search for
+     *
      * @return the corresponding field
      */
     private Field getField(Formal formal){
@@ -474,7 +517,8 @@ public class ClassItem extends ASTNode{
     }
 
     /**
-     * Get the list of formals representing the field of this class and all its parents
+     * Get the list of formals representing the field of this class and all of its parents
+     *
      * @return the list of formals
      */
     private ArrayList<Formal> getFormalsList(){
@@ -505,8 +549,8 @@ public class ClassItem extends ASTNode{
         }
         fieldFormals.removeAll(self);
 
-        //Add the vtable to the fields
-        fieldFormals.add(0, vtable);
+        //Add the vTable to the fields
+        fieldFormals.add(0, vTable);
 
 
         //Give id and parent class to fields
@@ -522,7 +566,8 @@ public class ClassItem extends ASTNode{
     }
 
     /**
-     * Get the list of formals representing the field of this class and all its parents
+     * Get the list of methods representing the field of this class and all of its parents
+     *
      * @return the list of formals
      */
     private ArrayList<Method> getFullMethodList(){
@@ -540,7 +585,7 @@ public class ClassItem extends ASTNode{
         }
 
         //Insert in reverted order. That way, when we have class A extends B, and that we cast A to B (for a method call)
-        //the fields are exactly is the same oder and ca be accessed from B
+        //the fields are exactly is the same oder and can be accessed from B
         ArrayList<Method> methodList = new ArrayList<>();
         for(int i = methodListList.size() - 1;i >= 0;i--)
             methodList.addAll(methodListList.get(i));
@@ -550,22 +595,34 @@ public class ClassItem extends ASTNode{
     }
 
 
-    public Method getMethod(String methodName){
+    /**
+     * Getter for the Method object corresponding to the given method name
+     *
+     * @param methodName the name of the method
+     *
+     * @return the corresponding Method object
+     */
+    Method getMethod(String methodName){
         return this.scopeTable.lookupMethod(methodName, ScopeTable.Scope.GLOBAL);
     }
 
-    public Formal getVtable() {
-        return vtable;
+    /**
+     * Getter for the vTable of this class
+     *
+     * @return the vTable
+     */
+    Formal getVTable() {
+        return vTable;
     }
 
     /**
-     * Set up the vtable formal for this ClassItem
+     * Set up the vTable formal for this ClassItem
      */
-    private void addVtable(){
-        Formal vtable = new Formal(LlvmWrappers.vtableName(type.getName()), LlvmWrappers.vtableName(type.getName()));
-        vtable.setClassField(true);
-        vtable.setParentClass("%class." + this.getName());
-        vtable.setClassFieldId(0);
-        this.vtable = vtable;
+    private void addVTable(){
+        Formal vTable = new Formal(LlvmWrappers.vtableName(type.getName()), LlvmWrappers.vtableName(type.getName()));
+        vTable.setClassField(true);
+        vTable.setParentClass("%class." + this.getName());
+        vTable.setClassFieldId(0);
+        this.vTable = vTable;
     }
 }

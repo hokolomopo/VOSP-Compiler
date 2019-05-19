@@ -2,27 +2,33 @@ package be.vsop.AST;
 
 import java.util.ArrayList;
 
+/**
+ * This class represents a list of VSOP classes (represented by ClassItem's)
+ */
 public class ClassList extends ASTNode {
     private ArrayList<ClassItem> classes;
 
+    /**
+     * Creates a new ClassList by adding a ClassItem to a previous ClassList
+     *
+     * @param cl the previous ClassList
+     * @param ci the ClassItem to add
+     */
     public ClassList(ClassList cl, ClassItem ci) {
-        if(cl == null)
-            this.classes = new ArrayList<>();
-        else
-            this.classes = cl.classes;
-
-        if(ci != null)
-            this.classes.add(ci);
+        this.classes = cl.classes;
+        this.classes.add(ci);
 
         this.children = new ArrayList<>(this.classes);
     }
 
+    /**
+     * Creates a new ClassList with only one ClassItem given in argument
+     *
+     * @param ci the ClassItem
+     */
     public ClassList(ClassItem ci) {
-        this(null, ci);
-    }
-
-    public ClassList(ArrayList<ClassItem> classes) {
-        this.classes = classes;
+        this.classes = new ArrayList<>();
+        this.classes.add(ci);
 
         this.children = new ArrayList<>(this.classes);
     }
@@ -50,5 +56,4 @@ public class ClassList extends ASTNode {
         }
         System.out.print("]");
     }
-
 }
