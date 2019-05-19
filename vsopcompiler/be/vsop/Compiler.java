@@ -21,20 +21,41 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+/**
+ * This class represents our VSOP compiler
+ */
 public class Compiler {
     private String fileName;
     private String languageDirPath;
     private Program program;
 
+    /**
+     * Creates a new Compiler that will compile the given file name. Convenience method for setting the default value
+     * of the language dir path to the current directory
+     *
+     * @param fileName the file name that contains the VSOP code to be compiled
+     */
     public Compiler(String fileName) {
         this(fileName, ".");
     }
 
+    /**
+     * Creates a new Compiler that will compile the given file name, using the given languageDirPath as folder
+     * for the default language classes
+     *
+     * @param fileName the file name that contains the VSOP code to be compiled
+     * @param languageDirPath the path to the folder containing the VSOP implementation of the default classes
+     */
     public Compiler(String fileName, String languageDirPath) {
         this.fileName = fileName;
         this.languageDirPath = languageDirPath;
     }
 
+    /**
+     * Builds the abstract syntax tree of the file name that has to be compiled
+     *
+     * @return a Program instance which represents the root of the tree. It will be used in the next compilation steps
+     */
     public Program buildAST(){
         FileReader reader = null;
         try {
@@ -50,6 +71,7 @@ public class Compiler {
         VSOPScanner scanner = new VSOPScanner(lexer, symbolFactory);
         VSOPParser parser = new VSOPParser(scanner, symbolFactory);
         parser.init(scanner, symbolFactory);
+
 
         try {
             parser.parse();
@@ -71,10 +93,22 @@ public class Compiler {
         return this.program;
     }
 
+    /**
+     * Convenience method for setting print to true
+     */
     void doSemanticAnalysis(Program program, String languageDirPath) {
         doSemanticAnalysis(program, languageDirPath, true);
     }
 
+    /**
+     * Analyses the given program, using the given languageDirPath for the default classes. If program is null
+     * the one present in the instance variables is used, calling buildAST if needed. The call will effectively modify
+     * the instance variable, in any cases.
+     *
+     * @param program the program to analyse, obtained with buildAST above
+     * @param languageDirPath the path to the folder containing the implementation of the default classes
+     * @param print whether to print the typed AST or not
+     */
     void doSemanticAnalysis(Program program, String languageDirPath, boolean print) {
         if (program == null) {
             if (this.program == null) {
@@ -96,7 +130,12 @@ public class Compiler {
             this.program.print(true);
     }
 
-
+    /**
+     * Generates the llvm code of the program that is being compiled, the previous functions should have been called
+     * before.
+     *
+     * @return a supposedly very very long String containing the whole llvm code of the compiled program
+     */
     String generateLlvm() {
         //Set number to methods to be able to load them from the vtable
         new MethodCounter(program.getClassTable()).setupMethods();
@@ -110,13 +149,24 @@ public class Compiler {
         for(ClassItem classItem : program.getClassTable().values())
             classDeclarations.append(classItem.getClassDeclaration());
 
-            return classDeclarations.toString() + writeIOCode() + this.program.getLlvm(new InstrCounter());
+        return classDeclarations.toString() + writeIOCode() + this.program.getLlvm(new InstrCounter());
     }
 
+    /**
+     * Returns the abstract syntax tree generated so far
+     *
+     * @return a Program instance, the root of the AST
+     */
     public Program getAST(){
         return program;
     }
 
+    /**
+     * Copy the code present in the file llcode.ll, which implements the IO class and also declare some functions
+     * used sometimes for generating llvm code
+     *
+     * @return The file content as a String
+     */
     private String writeIOCode() {
         try {
             return new String(Files.readAllBytes(Paths.get(languageDirPath + "/language/llcode.ll")), StandardCharsets.UTF_8);

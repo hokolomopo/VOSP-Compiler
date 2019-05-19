@@ -112,7 +112,7 @@ public enum VSOPTypes{
         } else if (typeName.equals(INT32.getName())) {
             return "0";
         } else if (typeName.equals(UNIT.getName())) {
-            
+
             // Don't initialise unit-type variables, they will be statically replaced by their only possible value ()
             return "";
         } else {

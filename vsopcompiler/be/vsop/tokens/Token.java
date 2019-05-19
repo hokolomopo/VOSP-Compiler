@@ -8,7 +8,13 @@ import java.util.HashMap;
 
 import static be.vsop.tokens.TokenType.*;
 
+/**
+ * This class is used by the lexer to output tokens
+ */
 public class Token{
+    /**
+     * This enumeration contains all the keywords of VSOP
+     */
     public enum Tokens {
         //Keywords
         AND("and", KEYWORD, sym.AND),
@@ -62,6 +68,14 @@ public class Token{
         private String name;
         private int symbolValue;
 
+        /**
+         * Creates a Token with the given arguments, its name defaulting to its stringValue
+         *
+         * @param stringValue the value of the token (characters that need to be written in the input file
+         *                    to output this token)
+         * @param tokenType the type of the Token, see TokenType
+         * @param symbolValue the symbol value for the cup parser
+         */
         Tokens(String stringValue, TokenType tokenType, int symbolValue) {
             this.stringValue = stringValue;
             this.tokenType = tokenType;
@@ -69,6 +83,15 @@ public class Token{
             this.symbolValue = symbolValue;
         }
 
+        /**
+         * Creates a Token with the given arguments
+         *
+         * @param stringValue the value of the token (characters that need to be written in the input file
+         *                    to output this token)
+         * @param tokenType the type of the Token, see TokenType
+         * @param name the name of the token (for printing)
+         * @param symbolValue the symbol value for the cup parser
+         */
         Tokens(String stringValue, TokenType tokenType, String name, int symbolValue) {
             this.stringValue = stringValue;
             this.tokenType = tokenType;
@@ -76,6 +99,12 @@ public class Token{
             this.symbolValue = symbolValue;
         }
 
+        /**
+         * Returns the HashMap containing all the keywords (not all the tokens).
+         *
+         * @return a HashMap<String, Tokens> that takes as input the value of the token and returns the corresponding
+         *         token object
+         */
         public static HashMap<String, Tokens> getKeywordsHashMap(){
             HashMap<String, Tokens> map = new HashMap<>();
 
@@ -84,7 +113,13 @@ public class Token{
                     map.put(t.stringValue, t);
             return map;
         }
-        
+
+        /**
+         * Returns the HashMap containing all the operators (not all the tokens).
+         *
+         * @return a HashMap<String, Tokens> that takes as input the value of the token and returns the corresponding
+         *         token object
+         */
         public static HashMap<String, Tokens> getOperatorsHashMap(){
             HashMap<String, Tokens> map = new HashMap<>();
 
@@ -94,6 +129,13 @@ public class Token{
             return map;
         }
 
+        /**
+         * Take a symbol value and returns the corresponding Token
+         *
+         * @param value the symbol value to search for
+         *
+         * @return the corresponding Token object, or null if not found
+         */
         public static Tokens fromValue(int value){
             for (Tokens t : Tokens.values())
                 if(t.getSymbolValue() == value)
@@ -101,14 +143,30 @@ public class Token{
             return null;
         }
 
+        /**
+         * Getter for the name of this Token (used for printing)
+         *
+         * @return the printable name
+         */
         public String getName() {
             return name;
         }
 
+        /**
+         * Getter for the Symbol value of this Token (used to pass to the cup parser)
+         *
+         * @return the symbol value
+         */
         public int getSymbolValue() {
             return symbolValue;
         }
 
+        /**
+         * Getter for the string value of this Token (characters that need to be written in the input file
+         * to output this token)
+         *
+         * @return the string value
+         */
         public String getStringValue() {
             return stringValue;
         }
@@ -118,13 +176,28 @@ public class Token{
     private String value;
     private int line;	// Useful for instance in case of multi-line strings
     private int column;
-    
+
+    /**
+     * Creates a new Token with the given type (see enum above), line and column
+     *
+     * @param tokenType the token type, which is a member of the above enum, be careful with the other enum named tokenType
+     * @param line the line used for reporting errors
+     * @param column the column used for reporting errors
+     */
     public Token(Tokens tokenType, int line, int column) {
     	this.tokenType = tokenType;
     	this.line = line;
     	this.column = column;
     }
-    
+
+    /**
+     * Creates a new Token with the given type (see enum above), value, line and column
+     *
+     * @param tokenType the token type, which is a member of the above enum, be careful with the other enum named tokenType
+     * @param value the value
+     * @param line the line used for reporting errors
+     * @param column the column used for reporting errors
+     */
     public Token(Tokens tokenType, String value, int line, int column) throws LexerException {
     	this(tokenType, line, column);
     	this.value = value;
@@ -139,7 +212,6 @@ public class Token{
      * @return the string with escape sequences converted
      */
     private String convertEscapeSymbols(String str) throws LexerException {
-
         char lastChar = 'a';
         char curr;
         int i = 0;
@@ -173,29 +245,59 @@ public class Token{
         return str;
     }
 
+
+    /**
+     * Getter for the length of this Token
+     *
+     * @return the length of this Token
+     */
     public int getLength() {
         if(tokenType.stringValue == null)
             return value.length();
         return tokenType.stringValue.length();
     }
 
-
+    /**
+     * Getter for the type of this Token (see above enum)
+     *
+     * @return the type
+     */
     public Tokens getTokenType() {
         return tokenType;
     }
 
+    /**
+     * Getter for the value of this Token
+     *
+     * @return the value
+     */
     public String getValue() {
         return value;
     }
-    
+
+    /**
+     * Getter for the line of this Token
+     *
+     * @return the line
+     */
     public int getLine() {
     	return line;
     }
-    
+
+    /**
+     * Getter for the column of this Token
+     *
+     * @return the column
+     */
     public int getColumn() {
     	return column;
     }
 
+    /**
+     * Setter for the value of this Token
+     *
+     * @param value the new value
+     */
     public void setValue(String value) {
         this.value = value;
     }

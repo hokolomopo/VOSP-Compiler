@@ -8,6 +8,10 @@ import java.io.*;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
+/**
+ * This is the main class of our VSOP compiler, it parses the arguments, calls the relevant functions, and outputs
+ * what has been asked (that depends on the arguments)
+ */
 public class vsopc {
     // This class is used to redirect runtime commands' outputs to stdout / stderr
     private static class StreamGobbler implements Runnable {
@@ -25,7 +29,10 @@ public class vsopc {
                     .forEach(consumer);
         }
     }
+
     public static void main(String[] args) {
+        // parse the program arguments. Note that we check for a -dir argument, which contains the absolute path
+        // to the vsopcompiler folder. This was needed to compliant with the submission platform
         String fileName = null;
         String mode = "";
         boolean skipNext = false;
@@ -64,7 +71,6 @@ public class vsopc {
 
         if (mode.contentEquals("-lex")) {
             VSOPLexer lexer = new VSOPLexer(reader);
-
             try {
                 while (true) {
                     Token t = lexer.yylex();
@@ -140,6 +146,7 @@ public class vsopc {
                 Process process;
 
                 if (isWindows) {
+                    // The windows subsystem for linux needs to be activated for this to work on a Windows OS
                     String[] cmd = {"wsl", "clang", "-Wno-override-module", "-o", executableFileName,
                             windowsToWslAbsolutePath(tmpLlvmFile.getAbsolutePath())};
                     process = Runtime.getRuntime().exec(cmd);
@@ -174,6 +181,12 @@ public class vsopc {
 
     }
 
+    /**
+     * Convert non-printable characters to their escape sequences
+     *
+     * @param str the string
+     * @return the string with non-printable characters converted
+     */
     private static String convertToEscapeSymbols(String str){
         String result = str;
         result = result.replace("\\b", "\\x08");
@@ -186,6 +199,14 @@ public class vsopc {
         return result;
     }
 
+    /**
+     * Converts a windows path, for instance D:\Documents\foo\file, to a windows subsystem for linux equivalent path.
+     * It would give /mnt/d/Documents/foo/file if given our example
+     *
+     * @param windowsPath the windows path as a string
+     *
+     * @return the equivalent Windows Subsystem for Linux path
+     */
     private static String windowsToWslAbsolutePath(String windowsPath) {
         StringBuilder unixPath = new StringBuilder();
         // A windows fileName can't contain : (in theory, we could face problems with wsl)
