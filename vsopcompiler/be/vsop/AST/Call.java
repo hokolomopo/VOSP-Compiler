@@ -153,21 +153,21 @@ public class Call extends Expr {
 
             // First, cast the pointer to the current object into an int, using the ptrtoint function of llvm
             // We use i64 because an i32 could overflow on most current machines
-            llvm.append(LlvmWrappers.llvmCast(intPointer, LLVMKeywords.PTRTOINT, VSOPTypes.getLlvmTypeName(objExpr.typeName, true),
+            llvm.append(LlvmWrappers.llvmCast(intPointer, LLVMKeywords.PTRTOINT, VSOPTypes.getLlvmTypeName(objExpr.typeName),
                     LLVMTypes.INT64, curArgEval.llvmId));
 
             // Then, cast the obtained int into a new pointer (using inttoptr), giving it the new type
             llvm.append(LlvmWrappers.llvmCast(pointerNewType, LLVMKeywords.INTTOPTR, LLVMTypes.INT64,
-                    VSOPTypes.getLlvmTypeName(implementedBy, true), intPointer));
+                    VSOPTypes.getLlvmTypeName(implementedBy), intPointer));
 
             // Add the new type pointer as first argument
             argumentsIds.add(pointerNewType);
-            argumentsTypes.add(VSOPTypes.getLlvmTypeName(implementedBy, true));
+            argumentsTypes.add(VSOPTypes.getLlvmTypeName(implementedBy));
 
         } else {
             // If the function is not inherited, simply add calling object as first argument
             argumentsIds.add(curArgEval.llvmId);
-            argumentsTypes.add(VSOPTypes.getLlvmTypeName(objExpr.typeName, true));
+            argumentsTypes.add(VSOPTypes.getLlvmTypeName(objExpr.typeName));
         }
 
         // Append code generating all other arguments, and add them into the list of arguments
@@ -190,7 +190,7 @@ public class Call extends Expr {
 
             llvm.append(curArgEval.llvmCode);
             argumentsIds.add(curArgEval.llvmId);
-            argumentsTypes.add(VSOPTypes.getLlvmTypeName(argument.getType().getName(), true));
+            argumentsTypes.add(VSOPTypes.getLlvmTypeName(argument.getType().getName()));
         }
 
         // Load the method from the vtable
@@ -207,7 +207,7 @@ public class Call extends Expr {
 
 
         // Append code actually calling the function
-        llvm.append(LlvmWrappers.call(llvmId, VSOPTypes.getLlvmTypeName(called.returnType(), true),
+        llvm.append(LlvmWrappers.call(llvmId, VSOPTypes.getLlvmTypeName(called.returnType()),
             loadMethod.llvmId, argumentsIds, argumentsTypes));
 
         ExprEval callEval = new ExprEval(llvmId, llvm.toString());

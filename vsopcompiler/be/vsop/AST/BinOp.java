@@ -221,8 +221,8 @@ public class BinOp extends Expr {
                 // Third case : need to compare addresses, need to convert pointers to int value to do so
                 // (otherwise we wouldn't be able to compare values of different types, which can still have the same
                 // address because of inheritance)
-                String llvmTypeLeft = VSOPTypes.getLlvmTypeName(lhs.typeName, true);
-                String llvmTypeRight = VSOPTypes.getLlvmTypeName(rhs.typeName, true);
+                String llvmTypeLeft = VSOPTypes.getLlvmTypeName(lhs.typeName);
+                String llvmTypeRight = VSOPTypes.getLlvmTypeName(rhs.typeName);
 
                 // Turn class pointers to i64 : left-hand-side
                 String leftPointerValue = llvmId;

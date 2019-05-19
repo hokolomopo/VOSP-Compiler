@@ -30,7 +30,7 @@ public enum VSOPTypes{
     }
 
     public static String getLlvmTypeName(String typeName){
-        return getLlvmTypeName(typeName, false);
+        return getLlvmTypeName(typeName, true);
     }
 
     public static String getLlvmTypeName(String typeName, boolean pointerOnClass){

@@ -8,9 +8,17 @@ import be.vsop.semantic.VSOPTypes;
 
 import java.util.ArrayList;
 
+/**
+ * This class represents a VSOP program, which is not more than a list of files (which are themselves lists of classes)
+ */
 public class Program extends ASTNode{
     private ArrayList<ClassList> classLists;
 
+    /**
+     * Construct a new program with only one file (the given classList)
+     *
+     * @param classList the list of classes
+     */
     public Program(ClassList classList) {
         this.classLists = new ArrayList<>();
         this.classLists.add(classList);
@@ -47,8 +55,9 @@ public class Program extends ASTNode{
     }
 
     /**
-     * Declare all the strings constant that will be used in the program
-     * @param literalStrings the strings
+     * Generates the llvm code that declares all the strings present in the program (declared as llvm global constants)
+     *
+     * @param literalStrings the strings, may be updated
      *
      * @return the llvm code that declares the string
      */
@@ -66,7 +75,7 @@ public class Program extends ASTNode{
     }
 
     /**
-     * Create the llvm main function
+     * Generates the code of the main function (that simply calls the VSOP Main.main function)
      *
      * @return the llvm code that declares the main function
      */
@@ -83,10 +92,13 @@ public class Program extends ASTNode{
         //Call main function of Main class
         String result = "%returned";
         String mainFuncName = "@Main.main";
+
         ArrayList<String> argumentsIds = new ArrayList<>();
         argumentsIds.add(newMain.llvmId);
+
         ArrayList<String> argumentsTypes = new ArrayList<>();
-        argumentsTypes.add(VSOPTypes.getLlvmTypeName(mainTypeName, true));
+        argumentsTypes.add(VSOPTypes.getLlvmTypeName(mainTypeName));
+
         llvm += newMain.llvmCode + LlvmWrappers.call(result, LLVMTypes.INT32.getLlvmName(), mainFuncName,
                 argumentsIds, argumentsTypes);
 

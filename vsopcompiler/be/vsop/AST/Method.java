@@ -8,6 +8,9 @@ import be.vsop.semantic.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * This class represents a VSOP method definition
+ */
 public class Method extends ASTNode {
     private Id id;
     private FormalList formals;
@@ -18,6 +21,14 @@ public class Method extends ASTNode {
     private int llvmNumber = -1;
     private Method overriddenMethod = null;
 
+    /**
+     * Creates a new Method from the given name, arguments, return type and instructions block
+     *
+     * @param id the name of the Method
+     * @param formals the arguments
+     * @param retType the return type
+     * @param block the instructions block
+     */
     public Method(Id id, FormalList formals, Type retType, ExprList block) {
         this.scopeTable = new ScopeTable();
         this.id = id;
@@ -38,8 +49,10 @@ public class Method extends ASTNode {
     @Override
     public void fillScopeTable(ScopeTable scopeTable, ArrayList<SemanticException> errorList) {
         this.scopeTable.setParent(scopeTable);
+
         // If two methods are defined in different scopes, it may not yet be added in the tables,
-        // thus we only check local scope for now.
+        // thus we only check local scope for now. Moreover, it has to be done to avoid comparing a
+        // Method with itself later (in the check scope pass).
         Method previousDeclaration = scopeTable.lookupMethod(getName(), ScopeTable.Scope.LOCAL);
         if (previousDeclaration != null) {
             errorList.add(new MethodAlreadyDeclaredException(getName(),
@@ -50,10 +63,14 @@ public class Method extends ASTNode {
         Formal curParam;
         for (int i = 0; i < formals.size(); i++) {
             curParam = formals.get(i);
+
+            // in VSOP we can never define or replace the self variable (here we print an error stating self is
+            // declared at line and column 0, which is to indicate that it is defined out of the file)
             if (curParam.getName().equals("self")) {
                 errorList.add(new VariableAlreadyDeclaredException("self", curParam.line, curParam.column, 0, 0));
             }
         }
+
         if(children != null)
             for(ASTNode node : children)
                 node.fillScopeTable(this.scopeTable, errorList);
@@ -65,6 +82,8 @@ public class Method extends ASTNode {
     @Override
     public void checkTypes(ArrayList<SemanticException> errorList) {
         super.checkTypes(errorList);
+        // the typeName of the block will be null is there is already a type error in this block, we don't want to
+        // generate too much errors that would be irrelevant
         if (block.typeName != null && isNotChild(block.typeName, retType.getName())) {
             errorList.add(new TypeNotExpectedException(block, retType.getName()));
         }
@@ -80,24 +99,37 @@ public class Method extends ASTNode {
         // outer is used to avoid getting the current method through the scope table.
         Method previousDeclaration = scopeTable.getParent().lookupMethod(getName(), ScopeTable.Scope.OUTER);
         if (previousDeclaration != null) {
+
+            // Overriding in VSOP has to respect some rules. The overriding function should have the same number
+            // of arguments and they should all have the same type. Its return type must also be the same
             if (previousDeclaration.formals.size() != this.formals.size()) {
                 errorList.add(new InvalidOverrideException(getName(),
                         line, column, previousDeclaration.line, previousDeclaration.column, "different number of arguments"));
+
             } else {
+
+                // The overriding function has the same number of arguments than the previous one. Now we need to check
+                // whether the types match
                 StringBuilder messageEnd = new StringBuilder("argument(s) ");
                 boolean invalid = false;
                 for (int i = 0; i < formals.size(); i++) {
                     String shouldBeChild = formals.get(i).getType().getName();
                     String shouldBeParent = previousDeclaration.formals.get(i).getType().getName();
+
+                    // The arguments types does not need to equal, we can put a child instead of a parent
                     if (isNotChild(shouldBeChild, shouldBeParent)) {
                         invalid = true;
                         messageEnd.append((i+1)).append(", ");
                     }
                 }
+
+                // The two functions should have the same return type
                 if (!retType.getName().equals(previousDeclaration.retType.getName())) {
                     invalid = true;
                     messageEnd.append("return, ");
                 }
+
+                // Invalid is true if at least one error was found
                 if (invalid) {
                     messageEnd.setLength(messageEnd.length() - 2);
                     messageEnd.append(" differ(s) in type");
@@ -106,6 +138,7 @@ public class Method extends ASTNode {
                 }
             }
         }
+
         formals.checkAllDifferent(errorList);
         super.checkScope(errorList);
     }
@@ -128,18 +161,40 @@ public class Method extends ASTNode {
         System.out.print(")");
     }
 
+    /**
+     * Getter for the name of the method
+     *
+     * @return the name
+     */
     public String getName() {
         return id.getName();
     }
 
+    /**
+     * Getter for the number of arguments of the method
+     *
+     * @return the number of arguments
+     */
     int nbArguments() {
         return formals.size();
     }
 
+    /**
+     * Returns the index'th argument of the method
+     *
+     * @param index the index of the argument to return
+     *
+     * @return the index'th argument
+     */
     Formal getArgument(int index) {
         return formals.get(index);
     }
 
+    /**
+     * Getter for the return type of the function
+     *
+     * @return the return type
+     */
     String returnType() {
         return retType.getName();
     }
@@ -165,7 +220,7 @@ public class Method extends ASTNode {
         InstrCounter bodyCounter = new InstrCounter();
 
         //Method header
-        String llvm =  LLVMKeywords.DEFINE.getLlvmName() + " " + retType.getLlvmName(true) + " " +
+        String llvm =  LLVMKeywords.DEFINE.getLlvmName() + " " + retType.getLlvmName() + " " +
                 LlvmWrappers.getMethodName(id.getName(), this.getParentClassName()) +
                 "(";
         if(formals.size() > 0) {
@@ -178,11 +233,13 @@ public class Method extends ASTNode {
         String isNullId = bodyCounter.getNextLlvmId();
         HashMap<String, String> condLabels = bodyCounter.getNextCondLabels();
         llvm += LlvmWrappers.binOp(isNullId, "null", "%" + LanguageSpecs.SELF, LLVMKeywords.EQ,
-                VSOPTypes.getLlvmTypeName(scopeTable.getScopeClassType().getName(), true));
+                VSOPTypes.getLlvmTypeName(scopeTable.getScopeClassType().getName()));
         llvm += LlvmWrappers.branch(isNullId, condLabels.get(InstrCounter.COND_IF_LABEL),
                 condLabels.get(InstrCounter.COND_ELSE_LABEL));
 
         //Will be executed if self is null
+        //TODO in fact this is never executed because of the addition of dynamic dispatch. We instead get a segFault
+        // when accessing the vTable (before). This code should then be put somewhere else and modified a bit.
         llvm += LlvmWrappers.label(condLabels.get(InstrCounter.COND_IF_LABEL));
         String stringErrorContent = "Segmentation fault : dispatch on null when calling function " + id.getName() +
                 " on class " + scopeTable.getScopeClassType().getName();
@@ -200,25 +257,27 @@ public class Method extends ASTNode {
         ExprEval bodyEval = block.evalExpr(bodyCounter, retType.getName());
         llvm += bodyEval.llvmCode;
 
-        llvm += "ret " + VSOPTypes.getLlvmTypeName(retType.getName(), true) + " " + bodyEval.llvmId + " " + endLine + "}";
+        llvm += "ret " + VSOPTypes.getLlvmTypeName(retType.getName()) + " " + bodyEval.llvmId + " " + endLine + "}";
 
         return llvm;
     }
 
     /**
-     * Get the signature of the method in llvm
+     * Creates the llvm code corresponding to the signature of the method
      *
-     * @param pointer true if we want a pointer
+     * @param pointer true if we want a pointer on the method (which looks much like its signature)
+     *
      * @return the signature
      */
-    public String getLlvmSignature(boolean pointer){
+    String getLlvmSignature(boolean pointer){
         StringBuilder llvm = new StringBuilder();
 
-        llvm.append(retType.getLlvmName(true)).append(" (");
+        // In llvm, the signature of a method is <retType> (<arg1Type>, <arg2Type>,...)
+        llvm.append(retType.getLlvmName()).append(" (");
 
         for(int i = 0;i < formals.size();i++){
             Formal f = formals.get(i);
-            llvm.append(f.getType().getLlvmName(true));
+            llvm.append(f.getType().getLlvmName());
 
             if(i != formals.size() - 1)
                 llvm.append(", ");
@@ -232,79 +291,109 @@ public class Method extends ASTNode {
         return llvm.toString();
     }
 
-    public String getParentClassName(){
+    /**
+     * Getter for the name of the class implementing this method
+     *
+     * @return the name of the parent class
+     */
+    String getParentClassName(){
         return scopeTable.getScopeClassType().getName();
     }
 
+    /**
+     * Getter for the number of this function (in the order of the vTable, useful for calls)
+     *
+     * @return the number
+     */
     public int getLlvmNumber() {
         return llvmNumber;
     }
 
+    /**
+     * Tells to this method its location in the order of the vTable, useful for calls
+     *
+     * @param llvmNumber the position of the method
+     */
     public void setLlvmNumber(int llvmNumber) {
         this.llvmNumber = llvmNumber;
     }
 
+    /**
+     * Returns the llvm code corresponding to the name of this function
+     *
+     * @return the llvm code
+     */
     public String getLlvmName(){
         return LlvmWrappers.getMethodName(id.getName(), getParentClassName());
     }
 
     /**
-     * Get a formal representing the method that can be loaded from the vtable
+     * Get a formal representing the method that can be loaded from the vTable
      *
-     * @param vtableName the type of the vtable
+     * @param vTableName the name of the vTable
+     *
      * @return the formal
      */
-    private Formal getMethodFormal(String vtableName){
+    private Formal getMethodFormal(String vTableName){
         Formal methodFormal = new Formal(getLlvmName(), getLlvmSignature(false));
         methodFormal.toClassField();
         methodFormal.setClassFieldId(this.llvmNumber);
-        methodFormal.setParentClass(vtableName);
+        methodFormal.setParentClass(vTableName);
 
         return methodFormal;
     }
 
     /**
-     * Store this method in the given vtable
+     * Store this method in the given vTable
      *
-     * @param vtable the vtable
-     * @param vtableId the llvm register where is the vtable
+     * @param vTable the vTable
+     * @param vTableId the llvm register where is the vTable
      * @param counter an InstrCounter
-     * @return the llvm code that store the method in the vtable
+     * @return the llvm code that store the method in the vTable
      */
-    public String storeInVtable(Formal vtable, String vtableId, InstrCounter counter) {
+    String storeInVTable(Formal vTable, String vTableId, InstrCounter counter) {
         String llvm = "";
 
-        Formal methodFormal = getMethodFormal(vtable.getType().getName());
+        Formal methodFormal = getMethodFormal(vTable.getType().getName());
 
-        llvm += methodFormal.llvmStore(getLlvmName(), vtableId, counter);
-        ;
+        llvm += methodFormal.llvmStore(getLlvmName(), vTableId, counter);
+
         return llvm;
     }
 
     /**
-     * Load a method from the vtable
+     * Load a method from the vTable
      *
      * @param parentClassId the llvm id of the class of the parent
      * @param counter an InstrCounter
      * @return the eval loading the method
      */
-    public ExprEval loadMethod(String parentClassId, InstrCounter counter){
-        Formal vtable = classTable.get(getParentClassName()).getVTable();
-        Formal methodFormal = getMethodFormal(vtable.getType().getName());
+    ExprEval loadMethod(String parentClassId, InstrCounter counter){
+        Formal vTable = classTable.get(getParentClassName()).getVTable();
+        Formal methodFormal = getMethodFormal(vTable.getType().getName());
 
-        ExprEval loadVtable =  vtable.llvmLoad(parentClassId, counter);
-        ExprEval loadMethod = methodFormal.llvmLoad(loadVtable.llvmId, counter);
+        ExprEval loadVTable =  vTable.llvmLoad(parentClassId, counter);
+        ExprEval loadMethod = methodFormal.llvmLoad(loadVTable.llvmId, counter);
 
 
-        return new ExprEval(loadMethod.llvmId, loadVtable.llvmCode + loadMethod.llvmCode);
+        return new ExprEval(loadMethod.llvmId, loadVTable.llvmCode + loadMethod.llvmCode);
     }
 
+    /**
+     * Tells to this method that it overrides another method (useful for updating accordingly the vTable)
+     *
+     * @param overriddenMethod the overridden (not overriding) method
+     */
     public void setOverriddenMethod(Method overriddenMethod) {
         this.overriddenMethod = overriddenMethod;
     }
 
+    /**
+     * Whether this methods overrides another method or is the first in the hierarchy
+     *
+     * @return true if this method is an overriding, false otherwise
+     */
     public boolean isOverride(){
         return this.overriddenMethod != null;
     }
-
 }

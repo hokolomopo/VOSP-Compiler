@@ -262,7 +262,7 @@ public class ClassItem extends ASTNode{
 
         //Generate list of types of fields to define the Structure representing the Object  in llvm
         for (Formal fieldFormal : fieldFormals) {
-            fieldsTypeList.append(fieldFormal.getType().getLlvmName(true));
+            fieldsTypeList.append(fieldFormal.getType().getLlvmName());
             fieldsTypeList.append(", ");
         }
 
@@ -345,11 +345,11 @@ public class ClassItem extends ASTNode{
 
         // Header of initialization method
         llvm.append(LLVMKeywords.DEFINE.getLlvmName()).append(" ")
-                .append(VSOPTypes.getLlvmTypeName(type.getName(), true)).append(" ")
+                .append(VSOPTypes.getLlvmTypeName(type.getName())).append(" ")
                 .append(LlvmWrappers.newFunctionNameFromClassName(type.getName())).append("() {").append(endLine);
 
         //Allocate memory for the object structure
-        ExprEval heapAllocationExpr = LlvmWrappers.heapAllocation(counter, VSOPTypes.getLlvmTypeName(type.getName()));
+        ExprEval heapAllocationExpr = LlvmWrappers.heapAllocation(counter, VSOPTypes.getLlvmTypeName(type.getName(), false));
         String retLlvmId = heapAllocationExpr.llvmId;
         llvm.append(heapAllocationExpr.llvmCode);
 
@@ -362,13 +362,13 @@ public class ClassItem extends ASTNode{
         //Call init function
         String initCall = String.format("%s %s %s (%s %s)\n", LLVMKeywords.CALL.getLlvmName(),
                 VSOPTypes.UNIT.getLlvmName(), LlvmWrappers.initFunctionName(type.getName()),
-                VSOPTypes.getLlvmTypeName(type.getName(), true), retLlvmId);
+                VSOPTypes.getLlvmTypeName(type.getName()), retLlvmId);
 
         llvm.append(initCall);
 
 
         //Return initialized object
-        llvm.append(LLVMKeywords.RET.getLlvmName()).append(" ").append(VSOPTypes.getLlvmTypeName(type.getName(), true))
+        llvm.append(LLVMKeywords.RET.getLlvmName()).append(" ").append(VSOPTypes.getLlvmTypeName(type.getName()))
                 .append(" ").append(retLlvmId).append(endLine);
 
         //End of initialization method
@@ -396,7 +396,7 @@ public class ClassItem extends ASTNode{
         llvm.append(LLVMKeywords.DEFINE.getLlvmName()).append(" ")
                 .append(VSOPTypes.UNIT.getLlvmName()).append(" ")
                 .append(LlvmWrappers.initFunctionName(type.getName())).append("(")
-                .append(VSOPTypes.getLlvmTypeName(type.getName(), true)).append(" ").append(self)
+                .append(VSOPTypes.getLlvmTypeName(type.getName())).append(" ").append(self)
                 .append(") {").append(endLine);
 
         //Initialize parent
@@ -405,7 +405,7 @@ public class ClassItem extends ASTNode{
             llvm.append(casted.llvmCode);
             String initCall = String.format("%s %s %s (%s %s)\n", LLVMKeywords.CALL.getLlvmName(),
                     VSOPTypes.UNIT.getLlvmName(), LlvmWrappers.initFunctionName(parentType.getName()),
-                    VSOPTypes.getLlvmTypeName(parentType.getName(), true), casted.llvmId);
+                    VSOPTypes.getLlvmTypeName(parentType.getName()), casted.llvmId);
 
             llvm.append(initCall);
         }
@@ -444,7 +444,7 @@ public class ClassItem extends ASTNode{
         //Store the methods in the vTable
         ArrayList<Method> methods = cel.getMethods();
         for(Method method : methods){
-            llvm.append(method.storeInVtable(this.vTable, vTableId, counter));
+            llvm.append(method.storeInVTable(this.vTable, vTableId, counter));
         }
 
         return llvm.toString();

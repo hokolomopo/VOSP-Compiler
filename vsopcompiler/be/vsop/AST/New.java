@@ -7,9 +7,17 @@ import be.vsop.semantic.LlvmWrappers;
 
 import java.util.ArrayList;
 
+/**
+ * This class represents the VSOP new operator
+ */
 public class New extends Expr {
     private Type type;
 
+    /**
+     * Creates a new New of the given type
+     *
+     * @param type the type of the class that is being instantiated
+     */
     public New(Type type) {
         this.type = type;
         typeName = type.getName();
@@ -46,5 +54,4 @@ public class New extends Expr {
         ExprEval eval = new ExprEval(llvmId, llvm);
         return castEval(eval, typeName, expectedType, counter);
     }
-
 }

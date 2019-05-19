@@ -164,7 +164,7 @@ public class Formal extends ASTNode{
      */
     @Override
     public String getLlvm(InstrCounter counter) {
-        return type.getLlvmName(true) + " " + getLlvmId();
+        return type.getLlvmName() + " " + getLlvmId();
     }
 
     /**
@@ -189,7 +189,7 @@ public class Formal extends ASTNode{
      * @return the llvm code
      */
     String llvmAllocate(){
-        return String.format("%s = alloca %s \n", getLlvmPtr(), type.getLlvmName(true));
+        return String.format("%s = alloca %s \n", getLlvmPtr(), type.getLlvmName());
     }
 
     /**
@@ -207,14 +207,14 @@ public class Formal extends ASTNode{
             ExprEval getFieldPtrEval = getFieldPtr(parentClassId, counter);
             id = counter.getNextLlvmId();
             llvm += getFieldPtrEval.llvmCode + String.format("%s = load %s, %s %s \n", id,
-                    type.getLlvmName(true), type.getLlvmPtr(true),
+                    type.getLlvmName(), type.getLlvmPtr(),
                     getFieldPtrEval.llvmId);
 
             return new ExprEval(id, llvm);
         }
         id = counter.getNextLlvmId();
-        llvm = String.format("%s = load %s, %s %s \n", id, type.getLlvmName(true),
-                type.getLlvmPtr(true), getLlvmPtr());
+        llvm = String.format("%s = load %s, %s %s \n", id, type.getLlvmName(),
+                type.getLlvmPtr(), getLlvmPtr());
 
         return new ExprEval(id, llvm);
     }
@@ -259,13 +259,13 @@ public class Formal extends ASTNode{
         if(isClassField){
             ExprEval eval = getFieldPtr(parentClassId, counter);
             String llvm = eval.llvmCode;
-            llvm += String.format("store %s %s, %s %s \n", type.getLlvmName(true), toStore,
-                    type.getLlvmPtr(true), eval.llvmId);
+            llvm += String.format("store %s %s, %s %s \n", type.getLlvmName(), toStore,
+                    type.getLlvmPtr(), eval.llvmId);
 
             return llvm;
         }
-        return String.format("store %s %s, %s %s \n", type.getLlvmName(true), toStore,
-                type.getLlvmPtr(true), getLlvmPtr());
+        return String.format("store %s %s, %s %s \n", type.getLlvmName(), toStore,
+                type.getLlvmPtr(), getLlvmPtr());
     }
 
     /**
@@ -278,15 +278,6 @@ public class Formal extends ASTNode{
      */
     String llvmStore(String toStore, InstrCounter counter){
         return llvmStore(toStore, "%" + LanguageSpecs.SELF, counter);
-    }
-
-    /**
-     * Whether this Formal represents a pointer or not
-     *
-     * @return true if this Formal represents a pointer, false otherwise
-     */
-    public boolean isPointer(){
-        return type.isPointer();
     }
 
     /**

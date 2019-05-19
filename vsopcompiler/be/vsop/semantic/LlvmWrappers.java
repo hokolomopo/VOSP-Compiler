@@ -32,7 +32,7 @@ public class LlvmWrappers {
 
 
     public static String callNew(String result, String className) {
-        return result + " = " + LLVMKeywords.CALL.getLlvmName() + " " + VSOPTypes.getLlvmTypeName(className, true) +
+        return result + " = " + LLVMKeywords.CALL.getLlvmName() + " " + VSOPTypes.getLlvmTypeName(className) +
                 " " + newFunctionNameFromClassName(className) + "()" + endLine;
     }
 
@@ -185,7 +185,7 @@ public class LlvmWrappers {
     }
 
     public static String returnDefault(Type type) {
-        return "ret " + VSOPTypes.getLlvmTypeName(type.getName(), true) + " " +
+        return "ret " + VSOPTypes.getLlvmTypeName(type.getName()) + " " +
                 VSOPTypes.getLlvmDefaultInit(type.getName()) + endLine;
     }
 
