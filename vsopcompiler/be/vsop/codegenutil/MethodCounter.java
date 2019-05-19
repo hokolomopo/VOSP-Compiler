@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 
 /**
- * Class used to set indices to methods for them to be put in the vtable
+ * Class used to set indices to methods for them to be put in the vTable
  */
 public class MethodCounter {
     private class Node{
@@ -20,7 +20,7 @@ public class MethodCounter {
         //True if we already called buildNode() on this node
         private boolean alreadyBuild = false;
 
-        public Node(ClassItem item) {
+        Node(ClassItem item) {
             this.item = item;
         }
 

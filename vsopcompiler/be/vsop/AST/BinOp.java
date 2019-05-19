@@ -172,22 +172,22 @@ public class BinOp extends Expr {
             llvmId = counter.getNextLlvmId();
             HashMap<String, String> labels = counter.getNextCondLabels();
             String llvm = leftPair.llvmCode;
-            llvm += LlvmWrappers.llvmBranch(leftPair.llvmId, labels.get(InstrCounter.COND_IF_LABEL),
+            llvm += LlvmWrappers.branch(leftPair.llvmId, labels.get(InstrCounter.COND_IF_LABEL),
                     labels.get(InstrCounter.COND_ELSE_LABEL));
 
             // If first operand is true, result is the second operand.
             // Exec code to generate right operand value and then simply branch, the phi function will do the rest.
-            llvm += LlvmWrappers.llvmLabel(labels.get(InstrCounter.COND_IF_LABEL)) + rightPair.llvmCode;
-            llvm += LlvmWrappers.llvmBranch(labels.get(InstrCounter.COND_END_LABEL));
+            llvm += LlvmWrappers.label(labels.get(InstrCounter.COND_IF_LABEL)) + rightPair.llvmCode;
+            llvm += LlvmWrappers.branch(labels.get(InstrCounter.COND_END_LABEL));
 
             // If first operand is false, the result is false. Simply branch and let the phi function do the rest.
-            llvm += LlvmWrappers.llvmLabel(labels.get(InstrCounter.COND_ELSE_LABEL)) +
-                    LlvmWrappers.llvmBranch(labels.get(InstrCounter.COND_END_LABEL));
+            llvm += LlvmWrappers.label(labels.get(InstrCounter.COND_ELSE_LABEL)) +
+                    LlvmWrappers.branch(labels.get(InstrCounter.COND_END_LABEL));
 
             // Set result to false if previous block was the else one (first operand is false),
             // and set result to second operand if the previous block was the if one.
-            llvm += LlvmWrappers.llvmLabel(labels.get(InstrCounter.COND_END_LABEL));
-            llvm += LlvmWrappers.llvmPhi(llvmId, LLVMTypes.BOOL, rightPair.llvmId, labels.get(InstrCounter.COND_IF_LABEL),
+            llvm += LlvmWrappers.label(labels.get(InstrCounter.COND_END_LABEL));
+            llvm += LlvmWrappers.phi(llvmId, LLVMTypes.BOOL, rightPair.llvmId, labels.get(InstrCounter.COND_IF_LABEL),
                     "0", labels.get((InstrCounter.COND_ELSE_LABEL)));
             return new ExprEval(llvmId, llvm);
         }
@@ -214,7 +214,7 @@ public class BinOp extends Expr {
 
                 // Second case : operands have a primitive type, simply check their values
                 if (primitiveOps) {
-                    return llvmBinOp(llvmId, leftId, rightId, LLVMKeywords.EQ, VSOPTypes.getLlvmTypeName(rhs.typeName));
+                    return LlvmWrappers.binOp(llvmId, leftId, rightId, LLVMKeywords.EQ, VSOPTypes.getLlvmTypeName(rhs.typeName));
                 }
 
                 // Third case : need to compare addresses, need to convert pointers to int value to do so
@@ -225,31 +225,31 @@ public class BinOp extends Expr {
 
                 // Turn class pointers to i64 : left-hand-side
                 String leftPointerValue = llvmId;
-                ret = LlvmWrappers.llvmCast(leftPointerValue, LLVMKeywords.PTRTOINT, llvmTypeLeft,
+                ret = LlvmWrappers.cast(leftPointerValue, LLVMKeywords.PTRTOINT, llvmTypeLeft,
                         LLVMTypes.INT64, leftId);
 
                 // Turn class pointers to i64 : right-hand-side
                 String rightPointerValue = counter.getNextLlvmId();
-                ret += LlvmWrappers.llvmCast(rightPointerValue, LLVMKeywords.PTRTOINT, llvmTypeRight,
+                ret += LlvmWrappers.cast(rightPointerValue, LLVMKeywords.PTRTOINT, llvmTypeRight,
                         LLVMTypes.INT64, rightId);
 
                 // Compare addresses with icmp eq
                 llvmId = counter.getNextLlvmId();
-                ret += llvmBinOp(llvmId, leftPointerValue, rightPointerValue, LLVMKeywords.EQ, LLVMTypes.INT64.getLlvmName());
+                ret += LlvmWrappers.binOp(llvmId, leftPointerValue, rightPointerValue, LLVMKeywords.EQ, LLVMTypes.INT64.getLlvmName());
                 return ret;
 
             case LOWEREQ:
-                return llvmBinOp(llvmId, leftId, rightId, LLVMKeywords.LOWEREQ);
+                return LlvmWrappers.binOp(llvmId, leftId, rightId, LLVMKeywords.LOWEREQ);
             case LOWER:
-                return llvmBinOp(llvmId, leftId, rightId, LLVMKeywords.LOWER);
+                return LlvmWrappers.binOp(llvmId, leftId, rightId, LLVMKeywords.LOWER);
             case PLUS:
-                return llvmBinOp(llvmId, leftId, rightId, LLVMKeywords.ADD);
+                return LlvmWrappers.binOp(llvmId, leftId, rightId, LLVMKeywords.ADD);
             case MINUS:
-                return llvmBinOp(llvmId, leftId, rightId, LLVMKeywords.SUB);
+                return LlvmWrappers.binOp(llvmId, leftId, rightId, LLVMKeywords.SUB);
             case TIMES:
-                return llvmBinOp(llvmId, leftId, rightId, LLVMKeywords.MUL);
+                return LlvmWrappers.binOp(llvmId, leftId, rightId, LLVMKeywords.MUL);
             case DIVIDED:
-                return llvmBinOp(llvmId, leftId, rightId, LLVMKeywords.DIV);
+                return LlvmWrappers.binOp(llvmId, leftId, rightId, LLVMKeywords.DIV);
 
             case POW:
                 // There is no ^ operator in llvm. However, there exists an intrinsic that computes the power of a
@@ -258,7 +258,7 @@ public class BinOp extends Expr {
 
                 // Turn left-hand-side into a double
                 String firstArgFloatId = llvmId;
-                ret = LlvmWrappers.llvmCast(firstArgFloatId, LLVMKeywords.INTTOFLOAT, LLVMTypes.INT32, LLVMTypes.FLOAT, leftId);
+                ret = LlvmWrappers.cast(firstArgFloatId, LLVMKeywords.INTTOFLOAT, LLVMTypes.INT32, LLVMTypes.FLOAT, leftId);
 
                 // Calls pow intrinsics on the operands
                 ArrayList<String> argumentsIds = new ArrayList<>();
@@ -270,40 +270,16 @@ public class BinOp extends Expr {
                 argumentsTypes.add(LLVMTypes.INT32.getLlvmName());
 
                 String resultFloatId = counter.getNextLlvmId();
-                ret += LlvmWrappers.llvmCall(resultFloatId, LLVMTypes.FLOAT.getLlvmName(), LLVMExternalFunctions.POW.getLlvmName(),
+                ret += LlvmWrappers.call(resultFloatId, LLVMTypes.FLOAT.getLlvmName(), LLVMExternalFunctions.POW.getLlvmName(),
                         argumentsIds, argumentsTypes);
 
                 // Turn result into an int
                 llvmId = counter.getNextLlvmId();
-                ret += LlvmWrappers.llvmCast(llvmId, LLVMKeywords.FLOATTOINT, LLVMTypes.FLOAT, LLVMTypes.INT32, resultFloatId);
+                ret += LlvmWrappers.cast(llvmId, LLVMKeywords.FLOATTOINT, LLVMTypes.FLOAT, LLVMTypes.INT32, resultFloatId);
 
                 return ret;
         }
 
         return null;
-    }
-
-    /**
-     * Convenience method with type defaulting to i32, see below
-     */
-    private String llvmBinOp(String result, String operand1, String operand2, LLVMKeywords operation) {
-        return llvmBinOp(result, operand1, operand2, operation, LLVMTypes.INT32.getLlvmName());
-    }
-
-    /**
-     * Returns a String representing an llvm operation, defined by the operation argument, on the given operands.
-     * The result is stored in the id given in argument (result) and the type of the operands must also be given
-     * in argument
-     *
-     * @param result the llvm id in which to store the result
-     * @param operand1 the llvm id of the left-hand-side operand
-     * @param operand2 the llvm id of the right-hand-side operand
-     * @param operation the operation, represented by a LLVMKeyword
-     * @param llvmType the type of the operands (must be the same for both operands)
-     *
-     * @return a String representing the binary operation written in llvm
-     */
-    private String llvmBinOp(String result, String operand1, String operand2, LLVMKeywords operation, String llvmType) {
-        return result + " = " + operation.getLlvmName() + " " + llvmType + " " + operand1 + ", " + operand2 + endLine;
     }
 }

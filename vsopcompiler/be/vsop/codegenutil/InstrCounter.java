@@ -2,6 +2,10 @@ package be.vsop.codegenutil;
 
 import java.util.HashMap;
 
+/**
+ * This class is used to generate unique ids for temporary variables, while following the rules of llvm
+ * (start from id 1 and then increment)
+ */
 public class InstrCounter {
     private int counter = 1;
     private int condLabelCounter = 1;
@@ -17,17 +21,21 @@ public class InstrCounter {
     public final static String LOOP_START_LABEL = "LOOP_START_LABEL";
     public final static String LOOP_END_LABEL = "LOOP_END_LABEL";
 
-    public InstrCounter() {
-    }
-
+    /**
+     * Returns the next llvm id to use as a temporary variable
+     *
+     * @return a string representing the llvm id
+     */
     public String getNextLlvmId() {
         return "%" + counter++;
     }
 
-    public String getLastLlvmId() {
-        return "%" + (counter - 1);
-    }
-
+    /**
+     * Returns a HashMap containing the next labels for a if expression, to be used with the constants above for
+     * accessing the labels
+     *
+     * @return a HashMap<String, String> mapping the constants above to conditional labels
+     */
     public HashMap<String, String> getNextCondLabels(){
         HashMap<String, String> map = new HashMap<>();
 
@@ -49,6 +57,12 @@ public class InstrCounter {
         return map;
     }
 
+    /**
+     * Returns a HashMap containing the next labels for a while expression, to be used with the constants above for
+     * accessing the labels
+     *
+     * @return a HashMap<String, String> mapping the constants above to loop labels
+     */
     public HashMap<String, String> getNextLoopLabel(){
         HashMap<String, String> loopLabels = new HashMap<>();
 
@@ -67,5 +81,4 @@ public class InstrCounter {
 
         return loopLabels;
     }
-
 }

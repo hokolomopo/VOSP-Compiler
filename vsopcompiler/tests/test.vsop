@@ -3,6 +3,7 @@ class Main {
     x : IO;
 
     main() : int32 {
-        if true then io else 5
+        if true then 0 else 5;
+        0
     }
 }

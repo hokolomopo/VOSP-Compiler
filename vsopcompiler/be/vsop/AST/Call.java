@@ -152,11 +152,11 @@ public class Call extends Expr {
 
             // First, cast the pointer to the current object into an int, using the ptrtoint function of llvm
             // We use i64 because an i32 could overflow on most current machines
-            llvm.append(LlvmWrappers.llvmCast(intPointer, LLVMKeywords.PTRTOINT, VSOPTypes.getLlvmTypeName(objExpr.typeName),
+            llvm.append(LlvmWrappers.cast(intPointer, LLVMKeywords.PTRTOINT, VSOPTypes.getLlvmTypeName(objExpr.typeName),
                     LLVMTypes.INT64, curArgEval.llvmId));
 
             // Then, cast the obtained int into a new pointer (using inttoptr), giving it the new type
-            llvm.append(LlvmWrappers.llvmCast(pointerNewType, LLVMKeywords.INTTOPTR, LLVMTypes.INT64,
+            llvm.append(LlvmWrappers.cast(pointerNewType, LLVMKeywords.INTTOPTR, LLVMTypes.INT64,
                     VSOPTypes.getLlvmTypeName(implementedBy), intPointer));
 
             // Add the new type pointer as first argument

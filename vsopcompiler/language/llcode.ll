@@ -6,11 +6,11 @@ declare void @exit(i32)
 declare float @llvm.powi.f32(float  %Val, i32 %power)
 
 ; The IO class has no variable only functions
-;%Vtable.IO = type { %class.IO* (%class.IO*, i8*)*, %class.IO* (%class.IO*, i1)*, %class.IO* (%class.IO*, i32)*, i8* (%class.IO*)*, i1 (%class.IO*)*, i32 (%class.IO*)*}
-;%class.IO = type { %Vtable.IO* }
+;%VTable.IO = type { %class.IO* (%class.IO*, i8*)*, %class.IO* (%class.IO*, i1)*, %class.IO* (%class.IO*, i32)*, i8* (%class.IO*)*, i1 (%class.IO*)*, i32 (%class.IO*)*}
+;%class.IO = type { %VTable.IO* }
 
-;%class.Object = type { %Vtable.Object* }
-;%Vtable.Object = type { }
+;%class.Object = type { %VTable.Object* }
+;%VTable.Object = type { }
 
 define %class.IO* @.New.IO() {
 %1 = getelementptr %class.IO, %class.IO* null, i32 1
@@ -18,13 +18,13 @@ define %class.IO* @.New.IO() {
 %3 = call i8* @malloc(i64 %2)
 %4 = ptrtoint i8* %3 to i64
 %5 = inttoptr i64 %4 to %class.IO*
-%6 = getelementptr %Vtable.IO, %Vtable.IO* null, i32 1
-%7 = ptrtoint %Vtable.IO* %6 to i64
+%6 = getelementptr %VTable.IO, %VTable.IO* null, i32 1
+%7 = ptrtoint %VTable.IO* %6 to i64
 %8 = call i8* @malloc(i64 %7)
 %9 = ptrtoint i8* %8 to i64
-%10 = inttoptr i64 %9 to %Vtable.IO*
+%10 = inttoptr i64 %9 to %VTable.IO*
 %11 = getelementptr %class.IO, %class.IO* %5, i32 0, i32 0 
-store %Vtable.IO* %10, %Vtable.IO** %11 
+store %VTable.IO* %10, %VTable.IO** %11 
 call void @.Init.IO (%class.IO* %5)
 ret %class.IO* %5
 }
@@ -34,18 +34,18 @@ define void @.Init.IO(%class.IO* %self) {
 %2 = inttoptr i64 %1 to %class.Object*
 call void @.Init.Object (%class.Object* %2)
 %3 = getelementptr %class.IO, %class.IO* %self, i32 0, i32 0 
-%4 = load %Vtable.IO*, %Vtable.IO** %3 
-%5 = getelementptr %Vtable.IO, %Vtable.IO* %4, i32 0, i32 0 
+%4 = load %VTable.IO*, %VTable.IO** %3 
+%5 = getelementptr %VTable.IO, %VTable.IO* %4, i32 0, i32 0 
 store %class.IO* (%class.IO*, i8*)* @IO.print, %class.IO* (%class.IO*, i8*)** %5 
-%6 = getelementptr %Vtable.IO, %Vtable.IO* %4, i32 0, i32 1 
+%6 = getelementptr %VTable.IO, %VTable.IO* %4, i32 0, i32 1 
 store %class.IO* (%class.IO*, i1)* @IO.printBool, %class.IO* (%class.IO*, i1)** %6 
-%7 = getelementptr %Vtable.IO, %Vtable.IO* %4, i32 0, i32 2 
+%7 = getelementptr %VTable.IO, %VTable.IO* %4, i32 0, i32 2 
 store %class.IO* (%class.IO*, i32)* @IO.printInt32, %class.IO* (%class.IO*, i32)** %7 
-%8 = getelementptr %Vtable.IO, %Vtable.IO* %4, i32 0, i32 3 
+%8 = getelementptr %VTable.IO, %VTable.IO* %4, i32 0, i32 3 
 store i8* (%class.IO*)* @IO.inputLine, i8* (%class.IO*)** %8 
-%9 = getelementptr %Vtable.IO, %Vtable.IO* %4, i32 0, i32 4 
+%9 = getelementptr %VTable.IO, %VTable.IO* %4, i32 0, i32 4 
 store i1 (%class.IO*)* @IO.inputBool, i1 (%class.IO*)** %9 
-%10 = getelementptr %Vtable.IO, %Vtable.IO* %4, i32 0, i32 5 
+%10 = getelementptr %VTable.IO, %VTable.IO* %4, i32 0, i32 5 
 store i32 (%class.IO*)* @IO.inputInt32, i32 (%class.IO*)** %10 
 ret void
 }
@@ -271,13 +271,13 @@ define %class.Object* @.New.Object() {
 %3 = call i8* @malloc(i64 %2)
 %4 = ptrtoint i8* %3 to i64
 %5 = inttoptr i64 %4 to %class.Object*
-%6 = getelementptr %Vtable.Object, %Vtable.Object* null, i32 1
-%7 = ptrtoint %Vtable.Object* %6 to i64
+%6 = getelementptr %VTable.Object, %VTable.Object* null, i32 1
+%7 = ptrtoint %VTable.Object* %6 to i64
 %8 = call i8* @malloc(i64 %7)
 %9 = ptrtoint i8* %8 to i64
-%10 = inttoptr i64 %9 to %Vtable.Object*
+%10 = inttoptr i64 %9 to %VTable.Object*
 %11 = getelementptr %class.Object, %class.Object* %5, i32 0, i32 0 
-store %Vtable.Object* %10, %Vtable.Object** %11 
+store %VTable.Object* %10, %VTable.Object** %11 
 call void @.Init.Object (%class.Object* %5)
 ret %class.Object* %5
 }

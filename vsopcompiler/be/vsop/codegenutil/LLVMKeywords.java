@@ -1,5 +1,8 @@
 package be.vsop.codegenutil;
 
+/**
+ * This enumeration contains the different llvm keywords that our program uses
+ */
 public enum LLVMKeywords {
     INBOUNDS("inbounds"),
     GETPTR("getelementptr"),
@@ -26,10 +29,20 @@ public enum LLVMKeywords {
 
     private String llvmName;
 
+    /**
+     * Creates a new LLVMKeywords from the given name
+     *
+     * @param llvmName the name
+     */
     LLVMKeywords(String llvmName) {
         this.llvmName = llvmName;
     }
 
+    /**
+     * Returns the llvm name of this LLVMKeywords
+     *
+     * @return the name
+     */
     public String getLlvmName() {
         return llvmName;
     }

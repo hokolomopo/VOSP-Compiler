@@ -1,5 +1,9 @@
 package be.vsop.exceptions.semantic;
 
+/**
+ * This class represents a semantic exception, which contains information about the location of the error and a
+ * user-defined message to be printed
+ */
 public class SemanticException extends Exception {
     protected int column, line;
     protected String message;

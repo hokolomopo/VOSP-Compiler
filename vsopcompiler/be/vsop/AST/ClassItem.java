@@ -319,7 +319,7 @@ public class ClassItem extends ASTNode{
         //Declares the vTable
         StringBuilder llvm = new StringBuilder();
 
-        llvm.append(LlvmWrappers.vtableName(type.getName())).append(" = type { ");
+        llvm.append(LlvmWrappers.vTableName(type.getName())).append(" = type { ");
         for(Method m : tmp){
             llvm.append(m.getLlvmSignature(true));
             llvm.append(", ");
@@ -621,7 +621,7 @@ public class ClassItem extends ASTNode{
      * Set up the vTable formal for this ClassItem
      */
     private void addVTable(){
-        Formal vTable = new Formal(LlvmWrappers.vtableName(type.getName()), LlvmWrappers.vtableName(type.getName()));
+        Formal vTable = new Formal(LlvmWrappers.vTableName(type.getName()), LlvmWrappers.vTableName(type.getName()));
         vTable.toClassField();
         vTable.setParentClass("%class." + this.getName());
         vTable.setClassFieldId(0);

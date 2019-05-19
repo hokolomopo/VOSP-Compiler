@@ -5,6 +5,10 @@ import java_cup.runtime.ComplexSymbolFactory;
 
 import java.util.List;
 
+/**
+ * This class represents a parser exception, which contains information about the location of the error and a
+ * user-defined message to be printed
+ */
 public class ParserException extends Error {
     private int column, line;
     private String message;
@@ -24,7 +28,9 @@ public class ParserException extends Error {
         this.line = line;
     }
 
-
+    /**
+     * See vsop.cup
+     */
     public ParserException(ComplexSymbolFactory.ComplexSymbol current, List<Integer> expected, int line, int column){
         super();
 

@@ -2,6 +2,10 @@ package be.vsop.exceptions;
 
 import java.io.IOException;
 
+/**
+ * This class represents a lexer exception, which contains information about the location of the error and a
+ * user-defined message to be printed
+ */
 public class LexerException extends IOException {
     private int column, line;
 

@@ -112,11 +112,11 @@ public abstract class Expr extends ASTNode{
 
         // First, cast the pointer to the current object into an int, using the ptrtoint function of llvm
         // We use i64 because an i32 could overflow on most current machines
-        llvm.append(LlvmWrappers.llvmCast(intPointer, LLVMKeywords.PTRTOINT, VSOPTypes.getLlvmTypeName(originalType),
+        llvm.append(LlvmWrappers.cast(intPointer, LLVMKeywords.PTRTOINT, VSOPTypes.getLlvmTypeName(originalType),
                 LLVMTypes.INT64, llvmId));
 
         // Then, cast the obtained int into a new pointer (using inttoptr), giving it the new type
-        llvm.append(LlvmWrappers.llvmCast(pointerNewType, LLVMKeywords.INTTOPTR, LLVMTypes.INT64,
+        llvm.append(LlvmWrappers.cast(pointerNewType, LLVMKeywords.INTTOPTR, LLVMTypes.INT64,
                 VSOPTypes.getLlvmTypeName(finalType), intPointer));
         return new ExprEval(pointerNewType,llvm.toString());
     }

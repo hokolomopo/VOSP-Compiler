@@ -4,6 +4,9 @@ import be.vsop.AST.ClassItem;
 
 import java.util.ArrayList;
 
+/**
+ * This class represents a semantic exception which occurs when a class inherits from one of its children
+ */
 public class CyclicInheritanceException extends SemanticException {
     public CyclicInheritanceException(ArrayList<ClassItem> inCycle) {
         this.line = inCycle.get(0).line;
