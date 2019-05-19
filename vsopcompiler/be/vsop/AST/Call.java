@@ -1,7 +1,6 @@
 package be.vsop.AST;
 
-import be.vsop.codegenutil.ExprEval;
-import be.vsop.codegenutil.InstrCounter;
+import be.vsop.codegenutil.*;
 import be.vsop.exceptions.semantic.InvalidCallException;
 import be.vsop.exceptions.semantic.MethodNotDeclaredException;
 import be.vsop.exceptions.semantic.SemanticException;

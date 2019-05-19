@@ -2,6 +2,8 @@ package be.vsop.AST;
 
 import be.vsop.codegenutil.ExprEval;
 import be.vsop.codegenutil.InstrCounter;
+import be.vsop.codegenutil.LLVMKeywords;
+import be.vsop.codegenutil.LlvmWrappers;
 import be.vsop.exceptions.semantic.ClassAlreadyDeclaredException;
 import be.vsop.exceptions.semantic.MainException;
 import be.vsop.exceptions.semantic.SemanticException;

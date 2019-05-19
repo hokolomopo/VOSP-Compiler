@@ -1,5 +1,7 @@
 package be.vsop.semantic;
 
+import be.vsop.codegenutil.LlvmWrappers;
+
 public enum VSOPTypes{
     BOOL("bool", "i1"),
     STRING("string", "i8*"),

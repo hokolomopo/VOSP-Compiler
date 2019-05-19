@@ -1,4 +1,4 @@
-package be.vsop.semantic;
+package be.vsop.codegenutil;
 
 public enum LLVMExternalFunctions {
     PRINTF("@printf"),

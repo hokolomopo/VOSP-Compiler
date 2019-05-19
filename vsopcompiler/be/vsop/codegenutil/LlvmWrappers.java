@@ -1,8 +1,8 @@
-package be.vsop.semantic;
+package be.vsop.codegenutil;
 
 import be.vsop.AST.Type;
-import be.vsop.codegenutil.ExprEval;
-import be.vsop.codegenutil.InstrCounter;
+import be.vsop.codegenutil.*;
+import be.vsop.semantic.VSOPTypes;
 
 import java.util.ArrayList;
 

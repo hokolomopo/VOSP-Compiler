@@ -2,9 +2,9 @@ package be.vsop.AST;
 
 import be.vsop.codegenutil.ExprEval;
 import be.vsop.codegenutil.InstrCounter;
-import be.vsop.semantic.LLVMKeywords;
-import be.vsop.semantic.LLVMTypes;
-import be.vsop.semantic.LlvmWrappers;
+import be.vsop.codegenutil.LLVMKeywords;
+import be.vsop.codegenutil.LLVMTypes;
+import be.vsop.codegenutil.LlvmWrappers;
 import be.vsop.semantic.VSOPTypes;
 
 /**
