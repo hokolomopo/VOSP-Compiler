@@ -8,31 +8,55 @@ import be.vsop.exceptions.ParserException;
 import java.util.List;
 
 parser code {:
-    // Connect this parser to a scanner!
-    Scanner s;
-    ComplexSymbolFactory sf;
-    ASTNode abstractTree;
+  // Connect this parser to a scanner!
+  // The scanner is a simple class that turns lexer tokens into ComplexSymbolFactory symbols
+  Scanner s;
+  ComplexSymbolFactory sf;
+  ASTNode abstractTree;
 
-    public void init(Scanner s, ComplexSymbolFactory sf){ this.s=s; this.sf = sf;}
+  /**
+   * Initializes the parser.
+   *
+   * @param s the scanner that can be called to get the next symbol (converted from a token)
+   * @param sf the complex symbol factory, useful to report errors
+   */
+  public void init(Scanner s, ComplexSymbolFactory sf){
+    this.s=s;
+    this.sf = sf;
+  }
 
-    public ASTNode getTree(){return abstractTree;}
+  /**
+   * Returns the root of the abstract syntax tree (a ClassList)
+   *
+   * @return abstractTree the ClassList object representing the root of the abstract syntax tree
+   */
+  public ASTNode getTree(){
+    return abstractTree;
+  }
 
-    public void report_error(String message, Object info) {
-        if (info instanceof ComplexSymbolFactory.ComplexSymbol) {
+  /**
+   * Reports a parsing error through a ParserException
+   *
+   * @param message the message describing the error. Unused here, present for compatibility purposes
+   * @param info a Symbol containing information about the error, here it is a Symbol containing in particular
+   *             the read symbol and its location (line and column).
+   */
+  public void report_error(String message, Object info) {
+      if (info instanceof ComplexSymbolFactory.ComplexSymbol) {
 
-          ComplexSymbolFactory.ComplexSymbol s = (ComplexSymbolFactory.ComplexSymbol)info;
+        ComplexSymbolFactory.ComplexSymbol s = (ComplexSymbolFactory.ComplexSymbol)info;
 
-          // Return previous token if current has no indication of location. Should only happen on EOF.
-          if(s.xleft == null || s.xright == null){
-              s = ((VSOPScanner)this.s).getPrev();
-          }
-          List<Integer> expected = expected_token_ids();
-
-          throw new ParserException(s, expected, s.xleft.getLine(), s.xleft.getColumn());
+        // Return previous token if current has no indication of location. Should only happen on EOF.
+        if(s.xleft == null || s.xright == null){
+            s = ((VSOPScanner)this.s).getPrev();
         }
-    }
 
+        // Return a list containing the expected tokens (the ones that could belong to a valid input at the current location).
+        List<Integer> expected = expected_token_ids();
 
+        throw new ParserException(s, expected, s.xleft.getLine(), s.xleft.getColumn());
+      }
+  }
 :}
 
 /* define how to connect to the scanner! */
@@ -62,6 +86,7 @@ non terminal Id                       identifier;
 non terminal empty;
 
 /* Precedences */
+// Note the ELSE, used to disambiguate the grammar, needed because If-Then statements without Else can exist.
 precedence left     ELSE;
 precedence right    ASSIGN;
 precedence left     AND;
@@ -80,6 +105,7 @@ program ::=
   classList:cl    {: abstractTree = cl; :}
 ;
 
+// The list of classes can't be empty
 classList ::= 
   classList:cl classItem:ci   {: RESULT = new ClassList(cl, ci); :}
 | classItem:ci                {: RESULT = new ClassList(ci); :}
@@ -121,6 +147,7 @@ classType ::=
   TYPE_IDENTIFIER:ti      {: RESULT = new Type(ti.getValue()); RESULT.line = ti.getLine(); RESULT.column = ti.getColumn(); :}
 ;
 
+// formals and formalList are separated to handle easily the fact that the last formal should not be followed by a comma
 formals ::=
   formalList:fl formal:f           {: RESULT = new FormalList(fl, f); :}
 | empty                            {: RESULT = new FormalList(); :}
@@ -195,6 +222,7 @@ expr ::=
 | block:b                                                                 {: RESULT = b; :}
 ;
 
+// args and argList are separated to handle easily the fact that the last formal should not be followed by a comma
 args ::=
   argList:al expr:e      {: RESULT = new ArgList(al, e); :}
 | empty                  {: RESULT = new ArgList(); :}
