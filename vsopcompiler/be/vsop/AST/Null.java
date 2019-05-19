@@ -16,6 +16,9 @@ public class Null extends Expr {
 		System.out.print("()");
 	}
 
+	/**
+	 * See Expr
+	 */
 	@Override
 	public ExprEval evalExpr(InstrCounter counter, String expectedType) {
 		return new ExprEval("","");

@@ -620,7 +620,7 @@ public class ClassItem extends ASTNode{
      */
     private void addVTable(){
         Formal vTable = new Formal(LlvmWrappers.vtableName(type.getName()), LlvmWrappers.vtableName(type.getName()));
-        vTable.setClassField(true);
+        vTable.toClassField();
         vTable.setParentClass("%class." + this.getName());
         vTable.setClassFieldId(0);
         this.vTable = vTable;

@@ -10,15 +10,29 @@ import be.vsop.semantic.VSOPTypes;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * This class represents a VSOP If expression
+ */
 public class If extends Expr {
     private Expr condExpr;
     private Expr thenExpr;
     private Expr elseExpr;
 
+    /**
+     * Creates a new If from the given condition and then expression, without else expression
+     * @param condExpr the condition
+     * @param thenExpr the expression to evaluate if the condition is false
+     */
     public If(Expr condExpr, Expr thenExpr) {
         this(condExpr, thenExpr, null);
     }
 
+    /**
+     * Creates a new If from the given condition, then expression and else expression
+     * @param condExpr the condition
+     * @param thenExpr the expression to evaluate if the condition is true
+     * @param elseExpr the expression to evaluate if the condition is false
+     */
     public If(Expr condExpr, Expr thenExpr, Expr elseExpr) {
         this.condExpr = condExpr;
         this.thenExpr = thenExpr;
@@ -42,27 +56,37 @@ public class If extends Expr {
         String thenType = thenExpr.typeName;
         String elseType;
 
-
-        if (condType != null && !condType.equals("bool")) {
-            errorList.add(new TypeNotExpectedException(condExpr, "bool"));
+        // condType will be null if we already found errors in the typing of the condition,
+        // otherwise it should have type bool
+        if (condType != null && !condType.equals(VSOPTypes.BOOL.getName())) {
+            errorList.add(new TypeNotExpectedException(condExpr, VSOPTypes.BOOL.getName()));
         }
 
         if (elseExpr == null) {
-            elseType = "unit";
+            elseType = VSOPTypes.UNIT.getName();
         } else {
             elseType = elseExpr.typeName;
         }
 
+        // They will be null if we already found errors in the typing of these expression
         if (thenType != null && elseType != null) {
-            if (thenType.equals("unit") || elseType.equals("unit")) {
-                typeName = "unit";
+
+            // If there is no else expression, return type of the if is unit
+            if (thenType.equals(VSOPTypes.UNIT.getName()) || elseType.equals(VSOPTypes.UNIT.getName())) {
+                typeName = VSOPTypes.UNIT.getName();
             } else if (LanguageSpecs.isPrimitiveType(thenType) || LanguageSpecs.isPrimitiveType(elseType)) {
+
+                // If the return type is a primitive type, then the types of the then and of the else should match
+                // and the type of the If is the common type
                 if (!thenType.equals(elseType)) {
                     errorList.add(new TypeNotExpectedException(thenExpr, elseExpr.typeName));
                 } else {
                     typeName = thenType;
                 }
             } else {
+
+                // If the types of the then and of the else are class types, then no error can appear as Object
+                // is a common ancestor of all classes. Simply set the type of the If to the first common ancestor thus
                 typeName = firstCommonAncestor(thenType, elseType);
             }
         }
@@ -90,6 +114,9 @@ public class If extends Expr {
         System.out.print(")");
     }
 
+    /**
+     * See Expr
+     */
     @Override
     public ExprEval evalExpr(InstrCounter counter, String expectedType) {
         HashMap<String, String> labels = counter.getNextCondLabels();
@@ -101,7 +128,6 @@ public class If extends Expr {
         if(type.equals(VSOPTypes.UNIT.getName())) {
             type = null;
         }
-
 
         //Allocate return value
         Formal retFormal = null;
@@ -154,8 +180,6 @@ public class If extends Expr {
         }
 
         ExprEval finalEval = new ExprEval(retId, llvm);
-
-
         return castEval(finalEval, thenExpr.typeName, expectedType, counter);
     }
 

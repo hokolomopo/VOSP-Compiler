@@ -9,15 +9,33 @@ import be.vsop.semantic.ScopeTable;
 
 import java.util.ArrayList;
 
+/**
+ * This class represents a VSOP Let expression
+ */
 public class Let extends Expr {
 	private Formal formal;
 	private Expr bodyExpr;
 	private Expr initExpr;
 
+	/**
+	 * Creates a new Let with the given id, type and body, without initialisation expression
+	 *
+	 * @param id the id
+	 * @param type the type
+	 * @param bodyExpr the expression representing the body
+	 */
 	public Let(Id id, Type type, Expr bodyExpr) {
 		this(id, type, null, bodyExpr);
 	}
 
+	/**
+	 * Creates a new Let with the given id, type, body and initialisation expression
+	 *
+	 * @param id the id
+	 * @param type the type
+	 * @param initExpr the initialisation expression
+	 * @param bodyExpr the expression representing the body
+	 */
 	public Let(Id id, Type type, Expr initExpr, Expr bodyExpr) {
 		this.scopeTable = new ScopeTable();
 		this.formal = new Formal(id, type);
@@ -40,6 +58,8 @@ public class Let extends Expr {
 	@Override
 	public void fillScopeTable(ScopeTable scopeTable, ArrayList<SemanticException> errorList) {
 		this.scopeTable.setParent(scopeTable);
+
+		// in VSOP we can never assign or replace self in any manner
 		if (formal.getName().equals("self")) {
 			errorList.add(new VariableAlreadyDeclaredException("self", formal.line, formal.column, 0, 0));
 		}
@@ -94,6 +114,9 @@ public class Let extends Expr {
 		System.out.print(")");
 	}
 
+	/**
+	 * See Expr
+	 */
 	@Override
 	public ExprEval evalExpr(InstrCounter counter, String expectedType) {
 
@@ -119,5 +142,4 @@ public class Let extends Expr {
 		ExprEval exprEval = new ExprEval(bodyEval.llvmId, llvm);
 		return castEval(exprEval, bodyExpr.typeName, expectedType, counter);
 	}
-
 }

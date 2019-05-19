@@ -59,7 +59,7 @@ public class LlvmWrappers {
         argumentsIds.add(sizeI64Id);
         ArrayList<String> argumentsTypes = new ArrayList<>();
         argumentsTypes.add(LLVMTypes.INT64.getLlvmName());
-        llvm.append(call(allocatedI8Id, LLVMTypes.STRING.getLlvmName(), LLVMIntrinsics.MALLOC.getLlvmName(),
+        llvm.append(call(allocatedI8Id, LLVMTypes.STRING.getLlvmName(), LLVMExternalFunctions.MALLOC.getLlvmName(),
                 argumentsIds, argumentsTypes));
 
         llvm.append(cast(allocatedI64Id, LLVMKeywords.PTRTOINT, LLVMTypes.STRING, LLVMTypes.INT64, allocatedI8Id));
@@ -176,7 +176,7 @@ public class LlvmWrappers {
 
                 // call printf
                 unusedPrintfReturnId + " = " + LLVMKeywords.CALL.getLlvmName() +
-                " " + LLVMTypes.PRINTF.getLlvmName() + " " + LLVMIntrinsics.PRINTF.getLlvmName() +
+                " " + LLVMTypes.PRINTF.getLlvmName() + " " + LLVMExternalFunctions.PRINTF.getLlvmName() +
                 "(" + LLVMTypes.STRING.getLlvmName() + " " + toPrintPtrId + ")" + endLine;
     }
 

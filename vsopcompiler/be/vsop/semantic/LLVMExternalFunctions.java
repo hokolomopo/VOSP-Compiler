@@ -1,13 +1,13 @@
 package be.vsop.semantic;
 
-public enum LLVMIntrinsics {
+public enum LLVMExternalFunctions {
     PRINTF("@printf"),
     MALLOC("@malloc"),
     POW("@llvm.powi.f32");
 
     private String llvmName;
 
-    LLVMIntrinsics(String llvmName) {
+    LLVMExternalFunctions(String llvmName) {
         this.llvmName = llvmName;
     }
 

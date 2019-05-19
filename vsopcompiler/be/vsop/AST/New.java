@@ -35,6 +35,9 @@ public class New extends Expr {
         System.out.print("New(" + type.getName() + ")");
     }
 
+    /**
+     * See Expr
+     */
     @Override
     public ExprEval evalExpr(InstrCounter counter, String expectedType) {
         String llvmId = counter.getNextLlvmId();

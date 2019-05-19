@@ -151,7 +151,7 @@ public class Method extends ASTNode {
     public void prepareForLlvm() {
         //Add self to formals
         Formal self = new Formal(new Id("self"), new Type(scopeTable.getScopeClassType().getName()));
-        formals.addFormal(self, 0);
+        formals.addFormalAtBeginning(self);
 
         super.prepareForLlvm();
     }
@@ -168,7 +168,7 @@ public class Method extends ASTNode {
         String llvm =  LLVMKeywords.DEFINE.getLlvmName() + " " + retType.getLlvmName(true) + " " +
                 LlvmWrappers.getMethodName(id.getName(), this.getParentClassName()) +
                 "(";
-        if(formals.getLength() > 0) {
+        if(formals.size() > 0) {
             llvm +=  formals.getLlvm(counter);
         }
         llvm += ") {\n";
@@ -216,11 +216,11 @@ public class Method extends ASTNode {
 
         llvm.append(retType.getLlvmName(true)).append(" (");
 
-        for(int i = 0;i < formals.getLength();i++){
+        for(int i = 0;i < formals.size();i++){
             Formal f = formals.get(i);
             llvm.append(f.getType().getLlvmName(true));
 
-            if(i != formals.getLength() - 1)
+            if(i != formals.size() - 1)
                 llvm.append(", ");
         }
 
@@ -256,7 +256,7 @@ public class Method extends ASTNode {
      */
     private Formal getMethodFormal(String vtableName){
         Formal methodFormal = new Formal(getLlvmName(), getLlvmSignature(false));
-        methodFormal.setClassField(true);
+        methodFormal.toClassField();
         methodFormal.setClassFieldId(this.llvmNumber);
         methodFormal.setParentClass(vtableName);
 

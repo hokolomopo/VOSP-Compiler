@@ -271,7 +271,7 @@ public class BinOp extends Expr {
                 argumentsTypes.add(LLVMTypes.INT32.getLlvmName());
 
                 String resultFloatId = counter.getNextLlvmId();
-                ret += LlvmWrappers.llvmCall(resultFloatId, LLVMTypes.FLOAT.getLlvmName(), LLVMIntrinsics.POW.getLlvmName(),
+                ret += LlvmWrappers.llvmCall(resultFloatId, LLVMTypes.FLOAT.getLlvmName(), LLVMExternalFunctions.POW.getLlvmName(),
                         argumentsIds, argumentsTypes);
 
                 // Turn result into an int

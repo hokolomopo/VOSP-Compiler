@@ -10,15 +10,31 @@ import be.vsop.semantic.VSOPTypes;
 
 import java.util.ArrayList;
 
+/**
+ * This class represents a VSOP class field
+ */
 public class Field extends ASTNode {
     private Id id;
     private Type type;
     private Expr initExpr;
 
+    /**
+     * Creates a new Field with the given id and type, without initialisation expression
+     *
+     * @param id the name of the field
+     * @param type the type of the field
+     */
     public Field(Id id, Type type) {
         this(id, type, null);
     }
 
+    /**
+     * Creates a new Field with the given id, type and initialisation expression.
+     *
+     * @param id the name of the field
+     * @param type the type of the field
+     * @param initExpr the value to assign to the field when creating a new instance of the class
+     */
     public Field(Id id, Type type, Expr initExpr) {
         this.id = id;
         this.type = type;
@@ -51,7 +67,7 @@ public class Field extends ASTNode {
             Formal newDeclaration = new Formal(id, type);
             newDeclaration.line = line;
             newDeclaration.column = column;
-            newDeclaration.setClassField(true);
+            newDeclaration.toClassField();
             this.scopeTable.addVariable(newDeclaration);
         }
 
@@ -104,10 +120,22 @@ public class Field extends ASTNode {
         System.out.print(")");
     }
 
+    /**
+     * Getter for the type of this Field
+     *
+     * @return the Type object of this field
+     */
     public Type getType() {
         return type;
     }
 
+    /**
+     * Returns an ExprEval initialising this field
+     *
+     * @param counter the InstCounter
+     *
+     * @return the ExprEval containing the llvm id of the result and the llvm code initialising the field
+     */
     ExprEval getInitLlvm(InstrCounter counter) {
         if (initExpr == null) {
             return new ExprEval(VSOPTypes.getLlvmDefaultInit(type.getName()), "");
@@ -115,6 +143,11 @@ public class Field extends ASTNode {
         return initExpr.evalExpr(counter, type.getName());
     }
 
+    /**
+     * Returns a Formal representing this field
+     *
+     * @return the formal
+     */
     public Formal getFormal(){
         return new Formal(id, type);
     }

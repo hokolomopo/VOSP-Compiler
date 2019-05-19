@@ -7,10 +7,18 @@ import be.vsop.exceptions.semantic.VariableNotDeclaredException;
 
 import java.util.ArrayList;
 
+/**
+ * This class represents an llvm identifier, whether variable or method identifier
+ */
 public class Id extends Expr {
 	private String name;
 	private boolean isVar;
 
+	/**
+	 * Creates a new identifier of the given name. By default, this is a variable identifier
+	 *
+	 * @param name the name of this identifier
+	 */
 	public Id(String name) {
 		this.name = name;
 		isVar = true;
@@ -44,21 +52,35 @@ public class Id extends Expr {
 		}
 	}
 
+	/**
+	 * Getter for the name of this identifier
+	 *
+	 * @return the name
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * Tells this identifier that he is now a variable identifier
+	 */
 	void toVar() {
 		isVar = true;
 	}
 
+	/**
+	 * Tells this identifier that he is now a method identifier
+	 */
 	public void toMethod() {
 		isVar = false;
 	}
 
+	/**
+	 * See Expr
+	 */
 	@Override
 	public ExprEval evalExpr(InstrCounter counter, String expectedType) {
-
+		// We don't evaluate variables of unit type, they will be replaced by their only possible value
 		if (isUnit()) {
 			return new ExprEval("","");
 		}
@@ -69,5 +91,4 @@ public class Id extends Expr {
 
 		return castEval(eval, typeName, expectedType, counter);
 	}
-
 }

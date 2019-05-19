@@ -6,9 +6,18 @@ import be.vsop.exceptions.semantic.SemanticException;
 
 import java.util.ArrayList;
 
+/**
+ * This class represents a list of VSOP expressions
+ */
 public class ExprList extends Expr {
     private ArrayList<Expr> expressions;
 
+    /**
+     * Creates a new ExprList from a previous ExprList, adding the given expression
+     *
+     * @param el the previous ExprList
+     * @param e the expression to add
+     */
     public ExprList(ExprList el, Expr e) {
         if(el == null)
             this.expressions = new ArrayList<>();
@@ -19,6 +28,9 @@ public class ExprList extends Expr {
         this.children = new ArrayList<>(this.expressions);
     }
 
+    /**
+     * Creates a new empty ExprList
+     */
     public ExprList() {
         this.expressions = new ArrayList<>();
     }
@@ -80,6 +92,9 @@ public class ExprList extends Expr {
 
     }
 
+    /**
+     * See Expr
+     */
     @Override
     public ExprEval evalExpr(InstrCounter counter, String expectedType) {
         StringBuilder builder = new StringBuilder();
@@ -89,10 +104,11 @@ public class ExprList extends Expr {
         for(int i = 0;i < expressions.size();i++){
             Expr e = expressions.get(i);
 
-            //We don't care of the return types of the expressions except for the last one
+            //We don't care about the return types of the expressions except for the last one
             String type = null;
-            if(i == (expressions.size() - 1))
+            if(i == (expressions.size() - 1)) {
                 type = this.typeName;
+            }
 
             lastEval = e.evalExpr(counter, type);
             builder.append(lastEval.llvmCode);
@@ -105,5 +121,4 @@ public class ExprList extends Expr {
         ExprEval eval = new ExprEval(lastEval.llvmId, builder.toString(), lastEval.isLiteral());
         return castEval(eval, expressions.get(expressions.size() - 1).typeName, expectedType, counter);
     }
-
 }

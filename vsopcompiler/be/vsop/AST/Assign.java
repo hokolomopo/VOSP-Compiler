@@ -80,6 +80,8 @@ public class Assign extends Expr {
         //llvm is not happy with storing in void type)
         ExprEval eval = expr.evalExpr(counter, toAssign.getType().getName());
         String store = "";
+
+        //We ignore assign that works on unit-type variables, these are replaced by their only possible values
         if (!isUnit()) {
             store = toAssign.llvmStore(eval.llvmId, counter);
         }

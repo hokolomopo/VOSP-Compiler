@@ -3,15 +3,6 @@ class Main {
     x : IO;
 
     main() : int32 {
-        if true and x.inputInt32() = 5 then io.print("true\n") else io.print("I am there\n");
-        io.printInt32(3^8);
-        io.print("\n");
-        io.printInt32(4^5);
-        io.print("\n");
-        io.printInt32(12^3);
-        io.print("\n");
-        io.printInt32(1^156);
-        io.print("\n");
-        0
+        if true then io else 5
     }
 }

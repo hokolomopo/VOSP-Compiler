@@ -3,12 +3,21 @@ package be.vsop.AST;
 import be.vsop.codegenutil.ExprEval;
 import be.vsop.codegenutil.InstrCounter;
 import be.vsop.exceptions.semantic.SemanticException;
+import be.vsop.semantic.VSOPTypes;
 
 import java.util.ArrayList;
 
+/**
+ * This class represents a VSOP string literal
+ */
 public class LiteralString extends Literal{
     private String stringId;
 
+    /**
+     * Creates a new LiteralString with the given value
+     *
+     * @param value the value of the literal (as String)
+     */
     public LiteralString(String value) {
         super(value);
     }
@@ -19,7 +28,7 @@ public class LiteralString extends Literal{
     @Override
     public void checkTypes(ArrayList<SemanticException> errorList) {
         super.checkTypes(errorList);
-        typeName = "string";
+        typeName = VSOPTypes.STRING.getName();
     }
 
     /**
@@ -33,7 +42,12 @@ public class LiteralString extends Literal{
         System.out.print(convertToEscapeSymbols(value));
     }
 
-
+    /**
+     * Returns the value as a valid llvm String (here this is an id because of our string-as-global-constants policy,
+     * it may change)
+     *
+     * @return the llvm value
+     */
     @Override
     protected String getLlvmValue() {
         return stringId;
@@ -47,37 +61,40 @@ public class LiteralString extends Literal{
         literalStrings.add(this);
     }
 
-    public void setStringId(int id){
+    /**
+     * Tells to this String its location in the list of strings (used to uniquely identify strings)
+     *
+     * @param id the number of the position of this string
+     */
+    void setStringId(int id){
         if(id == 0)
             this.stringId = "@.str";
         else
             this.stringId = "@.str." + id;
     }
 
-    public String getStringId() {
-        return stringId;
-    }
-
+    /**
+     * See Expr
+     */
     @Override
     public ExprEval evalExpr(InstrCounter counter, String expectedType) {
-        String value = String.format("getelementptr inbounds ([%d x i8], [%d x i8]* %s, i32 0, i32 0)", getLlvmLength(), getLlvmLength(), stringId);
+        String value = String.format("getelementptr inbounds ([%d x i8], [%d x i8]* %s, i32 0, i32 0)",
+                getLlvmLength(), getLlvmLength(), stringId);
         return new ExprEval(value, "", true);
     }
 
     /**
+     * Returns the llvm code that declares this string (as a global constant)
      *
-     * @return the declaration of the String in llvm
+     * @return the llvm code
      */
-    public String getLlvmDeclaration(){
+    String getLlvmDeclaration(){
         String llvmString = getLlvmString();
 
-        StringBuilder declaration = new StringBuilder();
-        declaration.append(getStringId()).append(" = ");
-        declaration.append("private unnamed_addr constant ");
-        declaration.append(String.format("[%d x i8] c\"%s\"", getLlvmLength(), llvmString));
-        declaration.append(endLine);
-
-        return declaration.toString();
+        return stringId + " = " +
+                "private unnamed_addr constant " +
+                String.format("[%d x i8] c\"%s\"", getLlvmLength(), llvmString) +
+                endLine;
     }
 
     /**
@@ -103,7 +120,7 @@ public class LiteralString extends Literal{
 
 
     /**
-     * @return the given String with escape symbols replaces by their ascii code (\x00)
+     * @return the given String with escape symbols replaced by their ascii code (\x..)
      */
     private String convertToEscapeSymbols(String str){
         String result = str;
@@ -118,7 +135,7 @@ public class LiteralString extends Literal{
     }
 
     /**
-     * @return the given String with escape symbols replaces by their ascii code in llvm (\00)
+     * @return the given String with escape symbols replaced by their ascii code in llvm (\..)
      */
     private String convertToLlvmEscapeSymbols(String str){
         String result = str;
@@ -134,7 +151,7 @@ public class LiteralString extends Literal{
     }
 
     /**
-     * @return the given String with escape symbols replaced with single character
+     * @return the given String with escape symbols replaced with a single character
      */
     private String removeEscapeSymbols(String str){
         String result = str;
