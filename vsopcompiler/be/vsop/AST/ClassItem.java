@@ -56,7 +56,7 @@ public class ClassItem extends ASTNode{
         this.children = new ArrayList<>();
         this.children.add(cel);
 
-        //Don't add Types as children because we already check for missing type of class declaration in SyntaxAnalyzer
+        //Don't add Types as children because we already check for missing type of class declaration in SemanticAnalyzer
         //when checking for cyclic inheritance
     }
 

@@ -11,7 +11,7 @@ import be.vsop.exceptions.semantic.SemanticException;
 import be.vsop.lexer.VSOPLexer;
 import be.vsop.parser.VSOPParser;
 import be.vsop.parser.VSOPScanner;
-import be.vsop.semantic.SyntaxAnalyzer;
+import be.vsop.semantic.SemanticAnalyzer;
 import java_cup.runtime.ComplexSymbolFactory;
 
 import java.io.FileNotFoundException;
@@ -83,7 +83,7 @@ public class Compiler {
         } else {
             this.program = program;
         }
-        SyntaxAnalyzer sa = new SyntaxAnalyzer(this.program, languageDirPath);
+        SemanticAnalyzer sa = new SemanticAnalyzer(this.program, languageDirPath);
         sa.analyze();
 
         if(sa.hasError()) {

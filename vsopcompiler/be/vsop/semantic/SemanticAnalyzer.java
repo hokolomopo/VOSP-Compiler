@@ -11,17 +11,29 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class SyntaxAnalyzer {
+/**
+ * This class represents a semantic analyzer for the VSOP language
+ */
+public class SemanticAnalyzer {
     private Program program;
     private String languageDirPath;
     private HashMap<String, ClassItem> classTable;
     private ArrayList<SemanticException> errors = new ArrayList<>();
 
-    public SyntaxAnalyzer(Program program, String languageDirPath) {
+    /**
+     * Creates a new SemanticAnalyzer for the given program with the given path for the default language classes
+     *
+     * @param program the program to analyse
+     * @param languageDirPath the path to the files containing the default classes
+     */
+    public SemanticAnalyzer(Program program, String languageDirPath) {
         this.program = program;
         this.languageDirPath = languageDirPath;
     }
 
+    /**
+     * analyses the program given in constructor
+     */
     public void analyze(){
         //Create the class table
         LanguageSpecs languageSpecs = new LanguageSpecs(languageDirPath);
@@ -33,6 +45,7 @@ public class SyntaxAnalyzer {
         HashSet<String> extendedButNotDeclared = new HashSet<>();
         classTable.forEach((name, classItem) -> {
             if (! involvedInCycle.contains(classItem)) {
+
                 // ArrayList to retain order : error message easier to read
                 checkForCycle(classItem, new ArrayList<>(), involvedInCycle, extendedButNotDeclared);
             }
@@ -41,20 +54,18 @@ public class SyntaxAnalyzer {
         if (!classTable.containsKey("Main")) {
             errors.add(new MainException("Input file should contain a Main class", 0, 0));
         }
-        if (errors.size() == 0) {
+
+        // We stop analyzing if we already found an error because otherwise it could generates NullPointerException
+        // or tedious problems like that
+        if (!hasError()) {
             program.fillScopeTable(null, errors);
         }
-        if (errors.size() == 0) {
+        if (!hasError()) {
             program.checkTypes(errors);
         }
-        if (errors.size() == 0) {
+        if (!hasError()) {
             program.checkScope(errors);
         }
-
-//        program.fillScopeTable(null, errors);
-//        program.checkTypes(errors);
-//        program.checkScope(errors);
-
     }
 
     /**
@@ -67,8 +78,10 @@ public class SyntaxAnalyzer {
      */
     private void checkForCycle(ClassItem current, ArrayList<ClassItem> visited,
                                HashSet<ClassItem> involvedInCycle, HashSet<String> extendedButNotDeclared) {
+
         //Report error if we find a cycle
         if(visited.contains(current)) {
+
             // We want to only print the classes that are indeed involved in the cycle.
             // For instance if A extends B, B extends A and C extends B, we exclude C from the print.
             if (visited.get(0).equals(current)) {
@@ -99,10 +112,20 @@ public class SyntaxAnalyzer {
         }
     }
 
+    /**
+     * Whether errors were found so far
+     *
+     * @return true if at least one error was already found, false otherwise
+     */
     public boolean hasError(){
         return errors.size() > 0;
     }
 
+    /**
+     * Returns the errors found so far
+     *
+     * @return the array of SemanticException, potentially empty
+     */
     public ArrayList<SemanticException> getErrors() {
         return errors;
     }
