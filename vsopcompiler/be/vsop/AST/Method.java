@@ -32,6 +32,9 @@ public class Method extends ASTNode {
         this.children.add(block);
     }
 
+    /**
+     * See ASTNode
+     */
     @Override
     public void fillScopeTable(ScopeTable scopeTable, ArrayList<SemanticException> errorList) {
         this.scopeTable.setParent(scopeTable);
@@ -56,6 +59,9 @@ public class Method extends ASTNode {
                 node.fillScopeTable(this.scopeTable, errorList);
     }
 
+    /**
+     * See ASTNode
+     */
     @Override
     public void checkTypes(ArrayList<SemanticException> errorList) {
         super.checkTypes(errorList);
@@ -64,6 +70,9 @@ public class Method extends ASTNode {
         }
     }
 
+    /**
+     * See ASTNode
+     */
     @Override
     public void checkScope(ArrayList<SemanticException> errorList){
         // getParent() because the scopeTable of this object is a fresh one containing local variables, its parent
@@ -101,6 +110,9 @@ public class Method extends ASTNode {
         super.checkScope(errorList);
     }
 
+    /**
+     * See ASTNode, a Method is printed as Method(formals, retType, block)
+     */
     @Override
     public void print(int tabLevel, boolean doTab, boolean withTypes) {
         if(doTab)
@@ -132,6 +144,9 @@ public class Method extends ASTNode {
         return retType.getName();
     }
 
+    /**
+     * See ASTNode
+     */
     @Override
     public void prepareForLlvm() {
         //Add self to formals
@@ -141,6 +156,9 @@ public class Method extends ASTNode {
         super.prepareForLlvm();
     }
 
+    /**
+     * See ASTNode
+     */
     @Override
     public String getLlvm(InstrCounter counter) {
         //The body of the function is a new scope, it needs a new counter

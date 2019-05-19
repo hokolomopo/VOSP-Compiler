@@ -9,6 +9,9 @@ public class LiteralInteger extends Literal {
         super(value);
     }
 
+    /**
+     * See ASTNode
+     */
     @Override
     public void checkTypes(ArrayList<SemanticException> errorList) {
         super.checkTypes(errorList);

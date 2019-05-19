@@ -18,6 +18,9 @@ public class Program extends ASTNode{
         this.children = new ArrayList<>(classLists);
     }
 
+    /**
+     * See ASTNode, a program is printed as ClassList1\nClassList2\n...ClassListN\n
+     */
     @Override
     public void print(int tabLevel, boolean doTab, boolean withTypes) {
         for(ClassList c : classLists) {
@@ -26,6 +29,9 @@ public class Program extends ASTNode{
         }
     }
 
+    /**
+     * See ASTNode
+     */
     @Override
     public String getLlvm(InstrCounter counter) {
         ArrayList<LiteralString> stringsLiteral = new ArrayList<>();
@@ -42,7 +48,7 @@ public class Program extends ASTNode{
 
     /**
      * Declare all the strings constant that will be used in the program
-     * @param literalStringsthe strings
+     * @param literalStrings the strings
      *
      * @return the llvm code that declares the string
      */

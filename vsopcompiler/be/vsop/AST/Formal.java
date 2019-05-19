@@ -45,6 +45,9 @@ public class Formal extends ASTNode{
         this.parentClass = formal.parentClass;
     }
 
+    /**
+     * See ASTNode
+     */
     @Override
     public void fillScopeTable(ScopeTable scopeTable, ArrayList<SemanticException> errorList) {
         this.scopeTable = scopeTable;
@@ -55,6 +58,9 @@ public class Formal extends ASTNode{
                 node.fillScopeTable(scopeTable, errorList);
     }
 
+    /**
+     * See ASTNode, a Formal is printed as id : type
+     */
     @Override
     public void print(int tabLevel, boolean doTab, boolean withTypes) {
         if(doTab)
@@ -98,6 +104,9 @@ public class Formal extends ASTNode{
         return number;
     }
 
+    /**
+     * See ASTNode
+     */
     @Override
     public String getLlvm(InstrCounter counter) {
         return type.getLlvmName(true) + " " + getLlvmId();

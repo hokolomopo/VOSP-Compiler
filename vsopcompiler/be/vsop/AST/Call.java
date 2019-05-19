@@ -25,6 +25,9 @@ public class Call extends Expr {
         this.children.add(argList);
     }
 
+    /**
+     * See ASTNode
+     */
     @Override
     public void checkTypes(ArrayList<SemanticException> errorList) {
         super.checkTypes(errorList);
@@ -66,6 +69,9 @@ public class Call extends Expr {
         }
     }
 
+    /**
+     * See ASTNode
+     */
     @Override
     public void checkScope(ArrayList<SemanticException> errorList) {
         Method called = classTable.get(objExpr.typeName).lookupMethod(methodId);
@@ -76,6 +82,9 @@ public class Call extends Expr {
         super.checkScope(errorList);
     }
 
+    /**
+     * See ASTNode, a Call is printed as Call(caller,name,argList)
+     */
     @Override
     public void print(int tabLevel, boolean doTab) {
         if (doTab)

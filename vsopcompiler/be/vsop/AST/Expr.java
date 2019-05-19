@@ -12,6 +12,9 @@ public abstract class Expr extends ASTNode{
     protected boolean withTypes;
 
 
+    /**
+     * See ASTNode, this is used to add the types to the print without modifying each child
+     */
     @Override
     public void print(int tabLevel, boolean doTab, boolean withTypes) {
         this.withTypes = withTypes;
@@ -21,6 +24,9 @@ public abstract class Expr extends ASTNode{
         }
     }
 
+    /**
+     * See ASTNode
+     */
     public abstract void print(int tabLevel, boolean doTab);
 
     public String getTypeName() {
@@ -28,6 +34,9 @@ public abstract class Expr extends ASTNode{
     }
 
 
+    /**
+     * See ASTNode
+     */
     @Override
     public String getLlvm(InstrCounter counter) {
         return evalExpr(counter, typeName).llvmCode;

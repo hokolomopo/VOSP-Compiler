@@ -9,7 +9,13 @@ import be.vsop.semantic.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * This class represent a binary operation such as +, and, =, <, ...
+ */
 public class BinOp extends Expr {
+    /**
+     * Enumeration containing all VSOP binary operations
+     */
     private enum BinOpTypes{
         AND("and"),
         EQUAL("="),
@@ -23,10 +29,22 @@ public class BinOp extends Expr {
 
         private String name;
 
+        /**
+         * Creates a new binary operation with the given VSOP name
+         *
+         * @param name the VSOP String representing the operation
+         */
         BinOpTypes(String name) {
             this.name = name;
         }
 
+        /**
+         * Returns the BinOPType corresponding to the given name
+         *
+         * @param type the name of the BinOpType
+         *
+         * @return the corresponding BinOpType
+         */
         public static BinOpTypes getType(String type){
             for(BinOpTypes t : BinOpTypes.values())
                 if(t.name.equals(type))
@@ -34,6 +52,11 @@ public class BinOp extends Expr {
             return null;
         }
 
+        /**
+         * Returns the VSOP string representing a BinOpType
+         *
+         * @return the VSOP String representing the operation
+         */
         public String getName() {
             return name;
         }
@@ -45,6 +68,13 @@ public class BinOp extends Expr {
     private String llvmId;
     private boolean primitiveOps = false;
 
+    /**
+     * Creates a new BinOp from a name (VSOP operation string), and the two operands (expressions)
+     *
+     * @param name the VSOP String representing the operation
+     * @param lhs the expression representing the left-hand-side
+     * @param rhs the expression representing the right-hand-side
+     */
     public BinOp(String name, Expr lhs, Expr rhs) {
         this.type = BinOpTypes.getType(name);
         this.lhs = lhs;
@@ -56,6 +86,9 @@ public class BinOp extends Expr {
 
     }
 
+    /**
+     * See ASTNode
+     */
     @Override
     public void checkTypes(ArrayList<SemanticException> errorList) {
         super.checkTypes(errorList);
@@ -90,6 +123,9 @@ public class BinOp extends Expr {
         }
     }
 
+    /**
+     * See ASTNode, a BinOp is printed as BinOp(type, left-hand-side, right-hand-side)
+     */
     @Override
     public void print(int tabLevel, boolean doTab) {
         if(doTab)
@@ -110,6 +146,9 @@ public class BinOp extends Expr {
         }
     }
 
+    /**
+     * See Expr
+     */
     @Override
     public ExprEval evalExpr(InstrCounter counter, String expectedType) {
 

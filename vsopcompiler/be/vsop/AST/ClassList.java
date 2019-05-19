@@ -27,6 +27,9 @@ public class ClassList extends ASTNode {
         this.children = new ArrayList<>(this.classes);
     }
 
+    /**
+     * See ASTNode, a ClassList is printed as [class1,class2,...]
+     */
     @Override
     public void print(int tabLevel, boolean doTab, boolean withTypes) {
         if(doTab)

@@ -32,6 +32,9 @@ public class If extends Expr {
             this.children.add(elseExpr);
     }
 
+    /**
+     * See ASTNode
+     */
     @Override
     public void checkTypes(ArrayList<SemanticException> errorList) {
         super.checkTypes(errorList);
@@ -65,6 +68,10 @@ public class If extends Expr {
         }
     }
 
+    /**
+     * See ASTNode, an If is printed as If(cond,then,else) of If(cond,then) depending on whether or not there is
+     * an else expression
+     */
     @Override
     public void print(int tabLevel, boolean doTab) {
         if(doTab)

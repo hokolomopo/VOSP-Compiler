@@ -43,6 +43,9 @@ public class ClassElementList extends ASTNode {
         methods = new ArrayList<>();
     }
 
+    /**
+     * See ASTNode, a ClassElementList is printed as [field1,field2,...],[method1,method2,...]
+     */
     @Override
     public void print(int tabLevel, boolean doTab, boolean withTypes) {
         if(doTab)
@@ -94,6 +97,9 @@ public class ClassElementList extends ASTNode {
         return methods;
     }
 
+    /**
+     * See ASTNode
+     */
     @Override
     public String getLlvm(InstrCounter counter) {
 

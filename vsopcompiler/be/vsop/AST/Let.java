@@ -34,6 +34,9 @@ public class Let extends Expr {
 		this.children.add(this.formal);
 	}
 
+	/**
+	 * See ASTNode
+	 */
 	@Override
 	public void fillScopeTable(ScopeTable scopeTable, ArrayList<SemanticException> errorList) {
 		this.scopeTable.setParent(scopeTable);
@@ -47,6 +50,9 @@ public class Let extends Expr {
 		}
 	}
 
+	/**
+	 * See ASTNode
+	 */
 	@Override
 	public void checkTypes(ArrayList<SemanticException> errorList) {
 		super.checkTypes(errorList);
@@ -56,6 +62,9 @@ public class Let extends Expr {
 		typeName = bodyExpr.typeName;
 	}
 
+	/**
+	 * See ASTNode
+	 */
 	@Override
 	public void checkScope(ArrayList<SemanticException> errorList){
 		formal.checkScope(errorList);
@@ -64,7 +73,10 @@ public class Let extends Expr {
 		bodyExpr.checkScope(errorList);
 	}
 
-
+	/**
+	 * See ASTNode, a Let is printed as Let(formal, initExpr, bodyExpr) or Let(formal, bodyExpr) depending on whether
+	 * or not there is an initExpr
+	 */
 	@Override
 	public void print(int tabLevel, boolean doTab) {
 		if(doTab)

@@ -38,6 +38,9 @@ public class ClassItem extends ASTNode{
         //when checking for cyclic inheritance
     }
 
+    /**
+     * See ASTNode
+     */
     @Override
     public void updateClassTable(HashMap<String, ClassItem> classTable, ArrayList<SemanticException> errorList) {
         this.classTable = classTable;
@@ -55,6 +58,9 @@ public class ClassItem extends ASTNode{
                 node.updateClassTable(classTable, errorList);
     }
 
+    /**
+     * See ASTNode
+     */
     @Override
     public void fillScopeTable(ScopeTable scopeTable, ArrayList<SemanticException> errorList) {
 
@@ -77,6 +83,9 @@ public class ClassItem extends ASTNode{
             }
     }
 
+    /**
+     * See ASTNode
+     */
     @Override
     public void checkScope(ArrayList<SemanticException> errorList) {
 
@@ -95,6 +104,9 @@ public class ClassItem extends ASTNode{
         super.checkScope(errorList);
     }
 
+    /**
+     * See ASTNode a ClassItem is printed as Class(type, parentType, classElementList)
+     */
     @Override
     public void print(int tabLevel, boolean doTab, boolean withTypes) {
         if(doTab)
@@ -135,6 +147,9 @@ public class ClassItem extends ASTNode{
         return scopeTable.lookupMethod(methodId.getName());
     }
 
+    /**
+     * See ASTNode
+     */
     @Override
     public void prepareForLlvm() {
 
@@ -171,6 +186,9 @@ public class ClassItem extends ASTNode{
         return llvm.toString();
     }
 
+    /**
+     * See ASTNode
+     */
     @Override
     public String getLlvm(InstrCounter counter) {
 

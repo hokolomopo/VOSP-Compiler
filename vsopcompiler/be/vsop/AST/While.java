@@ -22,6 +22,9 @@ public class While extends Expr {
 		this.children.add(bodyExpr);
 	}
 
+	/**
+	 * See ASTNode
+	 */
 	@Override
 	public void checkTypes(ArrayList<SemanticException> errorList) {
 		super.checkTypes(errorList);
@@ -33,6 +36,9 @@ public class While extends Expr {
 		typeName = VSOPTypes.UNIT.getName();
 	}
 
+	/**
+	 * See ASTNode, a While is printed as While(cond,body)
+	 */
 	@Override
 	public void print(int tabLevel, boolean doTab) {
 		if(doTab)

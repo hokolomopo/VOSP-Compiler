@@ -13,12 +13,18 @@ public class LiteralString extends Literal{
         super(value);
     }
 
+    /**
+     * See ASTNode
+     */
     @Override
     public void checkTypes(ArrayList<SemanticException> errorList) {
         super.checkTypes(errorList);
         typeName = "string";
     }
 
+    /**
+     * See ASTNode, a string is printed as its value with escape symbols converted (see convertToEscapeSymbols)
+     */
     @Override
     public void print(int tabLevel, boolean doTab) {
         if(doTab)
@@ -33,6 +39,9 @@ public class LiteralString extends Literal{
         return stringId;
     }
 
+    /**
+     * See ASTNode
+     */
     @Override
     public void getStringLiteral(ArrayList<LiteralString> literalStrings) {
         literalStrings.add(this);

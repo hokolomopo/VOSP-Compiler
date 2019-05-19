@@ -25,6 +25,9 @@ public class FormalList extends ASTNode{
         formals.add(index, formal);
     }
 
+    /**
+     * See ASTNode, a FormalList is printed as [formal1,formal2,...]
+     */
     @Override
     public void print(int tabLevel, boolean doTab, boolean withTypes) {
         if(doTab)
@@ -71,6 +74,9 @@ public class FormalList extends ASTNode{
         return formals.get(index);
     }
 
+    /**
+     * See ASTNode
+     */
     @Override
     public String getLlvm(InstrCounter counter) {
         StringBuilder builder = new StringBuilder();

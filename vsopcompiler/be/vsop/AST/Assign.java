@@ -7,10 +7,19 @@ import be.vsop.exceptions.semantic.SemanticException;
 
 import java.util.ArrayList;
 
+/**
+ * This class represents a VSOP assignment (var <- value).
+ */
 public class Assign extends Expr {
     private Id id;
     private Expr expr;
 
+    /**
+     * Creates a new assignment from an id and an expression value : id <- expr
+     *
+     * @param id the identifier of the variable assigned to
+     * @param expr the expression defining the value to put in the variable
+     */
     public Assign(Id id, Expr expr) {
         this.id = id;
         this.expr = expr;
@@ -20,6 +29,9 @@ public class Assign extends Expr {
         this.children.add(expr);
     }
 
+    /**
+     * See ASTNode
+     */
     @Override
     public void checkTypes(ArrayList<SemanticException> errorList) {
         super.checkTypes(errorList);
@@ -32,6 +44,9 @@ public class Assign extends Expr {
         }
     }
 
+    /**
+     * See ASTNode
+     */
     @Override
     public void checkScope(ArrayList<SemanticException> errorList) {
         if (id.getName().equals("self")) {
@@ -40,6 +55,9 @@ public class Assign extends Expr {
         super.checkScope(errorList);
     }
 
+    /**
+     * See ASTNode, an assign is printed as Assign(id, expr)
+     */
     @Override
     public void print(int tabLevel, boolean doTab) {
         if (doTab)
@@ -50,13 +68,16 @@ public class Assign extends Expr {
         System.out.print(")");
     }
 
+    /**
+     * See Expr
+     */
     @Override
     public ExprEval evalExpr(InstrCounter counter, String expectedType) {
-
         //Get the formal to assign
         Formal toAssign = scopeTable.lookupVariable(id.getName());
 
-        //Evaluate the expression and store it if needed
+        //Evaluate the expression and store it if needed (we don't store in variables of type unit because
+        //llvm is not happy with storing in void type)
         ExprEval eval = expr.evalExpr(counter, toAssign.getType().getName());
         String store = "";
         if (!isUnit()) {

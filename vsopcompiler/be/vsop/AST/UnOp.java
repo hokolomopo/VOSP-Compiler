@@ -46,6 +46,9 @@ public class UnOp extends Expr {
         this.children.add(expr);
     }
 
+    /**
+     * See ASTNode, an UnOp is printed as UnOp(name, expr)
+     */
     @Override
     public void print(int tabLevel, boolean doTab) {
         if(doTab)
@@ -56,6 +59,9 @@ public class UnOp extends Expr {
         System.out.print(")");
     }
 
+    /**
+     * See ASTNode
+     */
     @Override
     public void checkTypes(ArrayList<SemanticException> errorList) {
         super.checkTypes(errorList);

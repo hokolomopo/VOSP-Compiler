@@ -23,12 +23,18 @@ public class ExprList extends Expr {
         this.expressions = new ArrayList<>();
     }
 
+    /**
+     * See ASTNode
+     */
     @Override
     public void checkTypes(ArrayList<SemanticException> errorList) {
         super.checkTypes(errorList);
         typeName = expressions.get(expressions.size() - 1).typeName;
     }
 
+    /**
+     * See Expr, here we override because we don't want the type to be printed
+     */
     @Override
     public void print(int tabLevel, boolean doTab, boolean withTypes) {
         // A block does not print its type, as it is always the same as the type of the last expression
@@ -36,6 +42,10 @@ public class ExprList extends Expr {
         print(tabLevel, doTab);
     }
 
+    /**
+     * See ASTNode, an ExprList is printed as expr or [expr1,expr2,...] depending on whether or not there is only
+     * 1 expression in the block
+     */
     @Override
     public void print(int tabLevel, boolean doTab) {
         // Just print an expression if there is only 1 expression in the list

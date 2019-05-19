@@ -7,6 +7,9 @@ import be.vsop.exceptions.semantic.SemanticException;
 import java.util.ArrayList;
 
 public class Null extends Expr {
+	/**
+	 * See ASTNode, a Null is printed as ()
+	 */
 	public void print(int tabLevel, boolean doTab) {
 		if(doTab)
 			System.out.print(getTab(tabLevel));
@@ -18,6 +21,9 @@ public class Null extends Expr {
 		return new ExprEval("","");
 	}
 
+	/**
+	 * See ASTNode
+	 */
 	@Override
 	public void checkTypes(ArrayList<SemanticException> errorList) {
 		super.checkTypes(errorList);

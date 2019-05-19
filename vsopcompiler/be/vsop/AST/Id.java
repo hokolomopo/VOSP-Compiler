@@ -16,6 +16,9 @@ public class Id extends Expr {
 		isVar = true;
 	}
 
+	/**
+	 * See ASTNode, an Id is printed as name
+	 */
 	@Override
 	public void print(int tabLevel, boolean doTab) {
 		if(doTab)
@@ -24,6 +27,9 @@ public class Id extends Expr {
 		System.out.print(name);
 	}
 
+	/**
+	 * See ASTNode
+	 */
 	@Override
 	public void checkTypes(ArrayList<SemanticException> errorList) {
 		// An Id of method will have a null typeName, which is coherent because we never defined a typeName for methods

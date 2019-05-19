@@ -33,6 +33,9 @@ public class Field extends ASTNode {
 
     }
 
+    /**
+     * See ASTNode
+     */
     @Override
     public void fillScopeTable(ScopeTable scopeTable, ArrayList<SemanticException> errorList) {
         this.scopeTable = scopeTable;
@@ -59,6 +62,9 @@ public class Field extends ASTNode {
         }
     }
 
+    /**
+     * See ASTNode
+     */
     @Override
     public void checkTypes(ArrayList<SemanticException> errorList) {
         super.checkTypes(errorList);
@@ -67,6 +73,9 @@ public class Field extends ASTNode {
         }
     }
 
+    /**
+     * See ASTNode
+     */
     @Override
     public void checkScope(ArrayList<SemanticException> errorList) {
         Formal previousDeclaration = scopeTable.lookupVariable(id.getName(), ScopeTable.Scope.OUTER);
@@ -77,6 +86,10 @@ public class Field extends ASTNode {
         super.checkScope(errorList);
     }
 
+    /**
+     * See ASTNode, a Field is printed as Field(id, type) or Field(id, type, initExpr) depending on
+     * whether or not there is an expression for initialisation
+     */
     @Override
     public void print(int tabLevel, boolean doTab, boolean withTypes) {
         if(doTab)

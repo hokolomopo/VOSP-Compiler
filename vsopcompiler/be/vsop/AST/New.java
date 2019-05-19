@@ -17,11 +17,17 @@ public class New extends Expr {
         children.add(this.type);
     }
 
+    /**
+     * See ASTNode
+     */
     @Override
     public void checkTypes(ArrayList<SemanticException> errorList) {
         super.checkTypes(errorList);
     }
 
+    /**
+     * See ASTNode, a New is printed as New(type)
+     */
     @Override
     public void print(int tabLevel, boolean doTab) {
         if(doTab)
